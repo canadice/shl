@@ -1,0 +1,32 @@
+team;Division;conference;league;abbr;primary;secondary;alt1;alt2
+Atlanta Inferno;Atlantic;Eastern;SHL;ATL;#BE1E2D;#F26522;#ffdd00;
+Baltimore Platoon;Atlantic;Eastern;SHL;BAP;#08102c;#6c1616;;
+Buffalo Stampede;Great Lakes;Eastern;SHL;BUF;#164833;#F9BB14;;
+Chicago Syndicate;Great Lakes;Eastern;SHL;CHI;#d9ad00;#000000;;
+Hamilton Steelhawks;Great Lakes;Eastern;SHL;HAM;#3e7098;#253b50;#d1d3d4;#d1b236
+Manhattan Rage;Atlantic;Eastern;SHL;MAN;#97181b;#000000;;
+New England Wolfpack;Atlantic;Eastern;SHL;NEW;#006a36;#717276;;
+Tampa Bay Barracuda;Atlantic;Eastern;SHL;TBB;#000000;#f499c2;#0ad2d2;#ffffff
+Toronto North Stars;Great Lakes;Eastern;SHL;TOR;#195aa5;#ffffff;;
+Calgary Dragons;Northwest;Western;SHL;CAL;#a40000;#797979;#ffffff;#000000
+Edmonton Blizzard;Northwest;Western;SHL;EDM;#091e40;#33c2ef;#f5d606 ;
+Los Angeles Panthers;Southwest;Western;SHL;LAP;#006b7a;#eb7d0b;;
+Minnesota Monarchs;Northwest;Western;SHL;MIN;#11582c;#ead9a2;#453c7e;#eae1e1
+New Orleans Specters;Southwest;Western;SHL;NOLA;#8623ea;#000000;#eeeeee;
+San Francisco Pride;Southwest;Western;SHL;SFP;#360854; #d4af37;;
+Seattle Argonauts;Northwest;Western;SHL;SEA;#192e58;#c5942c;#7d92ab ;#d1d1d2 
+Texas Renegades;Southwest;Western;SHL;TEX;#000000;#616161;;
+Winnipeg Aurora;Northwest;Western;SHL;WPG;#0e2e2d;#2ef9b4;#1fc4bd;#c8c6c6
+Winnipeg Jets;Northwest;Western;SHL;WIN;#081C41;#D10923;;
+Carolina Kraken;Atlantic South East;Eastern;SMJHL;CAR;#cf5b00;#1a1a1a;#f5ece7;
+Detroit Falcons;Atlantic South East;Eastern;SMJHL;DET;#ec2227 ;#ffffff;#fbac3e;#d3d3d3
+Maine Timber;Atlantic North East;Eastern;SMJHL;MAI;#082a17;#85714d;#095f30;
+Newfoundland Berserkers;Atlantic North East;Eastern;SMJHL;NL;#4d4d4d;#ff0000;#cccccc ;
+Quebec City Citadelles;Atlantic North East;Eastern;SMJHL;QCC;#34476b;#1d9bee;#ec2e61;#d5d5d5
+St. Louis Scarecrows;Atlantic South East;Eastern;SMJHL;STL;#eaaa00;#660000;#cdaf95;#000000
+Anaheim Outlaws;Pacific South West;Western;SMJHL;ANA;#000000;#9e0404;#c20000;
+Anchorage Armada;Pacific North West;Western;SMJHL;ANC;#848482;#1e2d40;#7ea1d9;#fbb117
+Colorado Raptors;Pacific South West;Western;SMJHL;COL;#182d49;#33599f;#f3cd16;
+Kelowna Knights;Pacific North West;Western;SMJHL;KEL;#003300;#e5d478;;
+Nevada Battleborn;Pacific South West;Western;SMJHL;NBB;#06152f;#0d244d;#c6b273;#dce2de
+Vancouver Whalers;Pacific North West;Western;SMJHL;VAN;#018241;#0d1d3f;;

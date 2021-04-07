@@ -8,6 +8,10 @@
 # User-specific files
 .Ruserdata
 
+# Shinyapps files
+*/rsconnect
+.dcf
+
 # Example code in package build process
 *-Ex.R
 
