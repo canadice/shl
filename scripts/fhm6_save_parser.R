@@ -292,4 +292,144 @@ fhm6Parser <- function(
   )
 }
 
+fhm6Aggregator <- function(
+  ### Add the path to your document folder
+  saveFolder,
+  ### The BASE name of the save game
+  saveGame,
+  ### Specifies the number of test sims present with the same base name
+  ##  Defaults to 10
+  nSims = 10
+){
+  
+  if(saveFolder %>% class() != "character"){
+    stop("The saveFolder needs to be a string.")
+  }
+  
+  if(saveGame %>% class() != "character"){
+    stop("The saveGame needs to be a string.")
+  }
+  
+  allParsedData <- 
+    ### Uses parallell computation to speed up the process
+    lapply(
+      ### Creates a vector of names using the base name followed by the number
+      X = 
+        paste(
+          saveGame,
+          1:nSims %>% as.character(),
+          ".lg",
+          sep = ""
+        ),
+      FUN = fhm6Parser,
+      saveFolder = saveFolder
+    )
+  
+  return(allParsedData)
+}
+
+teamParserRaw <- function(
+  ### Adds the parsed fhm6 data
+  fhm6Data
+){
+  
+  teamData <- 
+    fhm6Data %>%
+    ### Filters out the team data
+    lapply(
+      FUN = function(x){
+        x$teams 
+      }
+    ) %>% 
+    do.call(
+      rbind,
+      args = .
+    ) %>% 
+    select(
+      TeamId,
+      Conference.Id,
+      Division.Id,
+      Name,
+      Nickname,
+      Abbr,
+      Wins,
+      Losses,
+      Ties,
+      OTL,
+      contains("Shootout"),
+      Points, 
+      contains("Goals"),
+      sim
+    )
+  
+  return(teamData)
+}
+
+casinoLines <- function(){
+  teamCasino <- 
+    googlesheets4::read_sheet(
+      ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
+      sheet = "Teams",
+      range = "A:D"
+    )
+  return(teamCasino)
+}
+  
+casinoAggregator <- function(
+  ### Adds the raw data for each team
+  teamRaw,
+  ### Adds the casino lines
+  teamCasino
+){
+  
+  casinoPredictions<-
+    teamCasino %>% 
+    full_join(
+      simTeams,
+      by = c("TeamId")
+    ) %>% 
+    arrange(
+      Conference.Id,
+      Division.Id
+    ) %>% 
+    group_by(
+      Conference.Id,
+      Division.Id,
+      TeamId,
+      Team
+    ) %>% 
+    summarize(
+      casino = mean(Casino),
+      nTests = n(),
+      over = sum(Wins > Casino),
+      under = sum(Wins < Casino),
+      meanW = mean(Wins) %>% round(2),
+      meanPts = mean(Points) %>% round(2),
+      sdW = sd(Wins) %>% round(2),
+      medianW = median(Wins),
+      lowQuartW = quantile(Wins, probs = 0.25),
+      uppQuartW = quantile(Wins, probs = 0.75)
+    ) %>% 
+    ungroup() %>% 
+    select(
+      -Conference.Id,
+      -Division.Id
+    )
+  
+  return(casinoPredictions)
+}
+
+rawDataWriter <- function(sheet){
+  googlesheets4::write_sheet(
+    simTeams,
+    ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
+    sheet = sheet)
+}
+
+casinoDataWriter <- function(sheet){
+  googlesheets4::write_sheet(
+    simTeams,
+    ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
+    sheet = sheet)
+}
 
