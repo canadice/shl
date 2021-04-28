@@ -1,9 +1,16 @@
 playerScraper <- 
   function(player){
     ### Takes the player link scraped from the team pages
-    base_link <- "https://simulationhockey.com/"
-    
-    player <- paste(base_link, player, sep = "")
+    ##  If it is a complete link with the base url there it scrapes it directly
+    ##  For use with teamLinkScraper and playerLinkScraper then only the endings are used, requiring the baseLink addition
+    if(stringr::str_detect(player, "simulationhockey")){
+      
+    } else{
+      baseLink <- "https://simulationhockey.com/"
+      
+      player <- paste(baseLink, player, sep = "")
+      
+    }
     
     ### Reads the information
     topic <- xml2::read_html(player)
