@@ -1,5 +1,5 @@
-# shl
-A repository for scripts using data coming from the new SHL Index API.
+# Github for SHL data analysis
+A repository for scripts analyzing data from the SHL, containing scripts for the new API and older web-scrapers.
 
 # How to use?
 1. Download or branch the current repository.
