@@ -14,6 +14,10 @@ require(jsonlite)
 require(tidyr)
 require(dplyr)
 
+## Loading package that can talk to Google Sheets
+require(googlesheets4)
+
+
 ### Loads Attribute Keys
 attKey <- read.csv2("csv/attribute_key.csv")
 tpeCost <- read.csv2("csv/tpe_cost.csv")
@@ -132,4 +136,40 @@ playerLoader <- function(leagueID, season = NULL){
   ) %>% 
     return()
 }
+
+
+teamLoader <-  function(leagueID, season = NULL){
+  teams <- 
+    readAPI(
+      url = "https://index.simulationhockey.com/api/v1/teams",
+      query = list(league = leagueID)
+    ) 
+  
+  return(teams)
+}
+
+gamesLoader <- function(leagueID, season = NULL){
+  schedule <- 
+    readAPI(
+      url = "https://index.simulationhockey.com/api/v1/schedule",
+      query = list(league = leagueID)
+    ) 
+  
+  return(schedule)
+}
+
+standingsLoader <- function(leagueID, season = NULL){
+  standings <- 
+    readAPI(
+      url = "https://index.simulationhockey.com/api/v1/standings",
+      query = list(league = leagueID)
+    ) 
+  
+  return(standings)
+}
+
+
+
+
+
 
