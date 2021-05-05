@@ -385,7 +385,7 @@ casinoAggregator <- function(
   casinoPredictions<-
     teamCasino %>% 
     full_join(
-      simTeams,
+      teamRaw,
       by = c("TeamId")
     ) %>% 
     arrange(
@@ -417,6 +417,44 @@ casinoAggregator <- function(
     )
   
   return(casinoPredictions)
+}
+
+teamAggregator <- function(
+  ### Adds the raw data for each team
+  teamRaw,
+  ### Which function you want to use
+  fun = mean
+){
+  
+  teamAverages <-
+    teamRaw %>% 
+    arrange(
+      Conference.Id,
+      Division.Id
+    ) %>% 
+    group_by(
+      Conference.Id,
+      Division.Id,
+      TeamId,
+      Name,
+      Nickname,
+      Abbr
+    ) %>% 
+    summarize(
+      .groups = "keep",
+      nTests = n(),
+      across(
+        where(is.integer),
+        .fns = fun  
+      )
+    ) %>% 
+    ungroup() %>% 
+    select(
+      -Conference.Id,
+      -Division.Id
+    )
+  
+  return(teamAverages)
 }
 
 rawDataWriter <- function(sheet){
