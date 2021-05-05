@@ -14,6 +14,9 @@ require(jsonlite)
 require(tidyr)
 require(dplyr)
 
+## Packages for handling strings
+require(stringr)
+
 ## Loading package that can talk to Google Sheets
 require(googlesheets4)
 
@@ -131,11 +134,51 @@ playerLoader <- function(leagueID, season = NULL){
   
   ## Return a list of the loaded data
   list(
-    players,
-    goalies
+    players = players,
+    goalies = goalies
   ) %>% 
     return()
 }
+
+
+indStatsLoader <- function(leagueID, season = NULL){
+  players <- 
+    readAPI(
+      url = "https://index.simulationhockey.com/api/v1/players/stats",
+      query = list(league = leagueID)
+    ) 
+  goalies <- 
+    readAPI(
+      url = "https://index.simulationhockey.com/api/v1/goalies/stats",
+      query = list(league = leagueID)
+    ) 
+  
+  players <-
+    players %>% 
+    mutate(
+      ## Using the format with glue grammar that allows for dynamic variable names
+      across(
+        contains("TimeOnIce"),
+        ~ format(
+          as.POSIXct(
+            .x/gamesPlayed, 
+            origin = "1970-01-01"
+          ), 
+          "%M:%S"
+        )
+      )
+    )
+    
+  ## Return a list of the loaded data
+  list(
+    players = players,
+    goalies = goalies
+  ) %>% 
+    return()
+}
+
+
+
 
 
 teamLoader <-  function(leagueID, season = NULL){
