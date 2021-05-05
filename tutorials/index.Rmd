@@ -1,0 +1,276 @@
+---
+title: "Franchise Hockey Manager 6 Saves in R"
+author: "Canadice"
+date: '2021-05-05'
+site: bookdown::bookdown_site
+output: 
+  bookdown::gitbook:
+  config:
+    toc:
+      collapse: subsection
+      scroll_highlight: yes
+      before: null
+      after: null
+    toolbar:
+      position: fixed
+    edit : null
+    download: null
+    search: yes
+    fontsettings:
+      theme: white
+      family: sans
+      size: 2
+    sharing:
+      facebook: yes
+      github: no
+      twitter: yes
+      linkedin: no
+      weibo: no
+      instapaper: no
+      vk: no
+      whatsapp: no
+      all: ['facebook', 'twitter', 'linkedin', 'weibo', 'instapaper']
+    info: yes
+---
+
+
+```{r setup, include=FALSE}
+
+require(ggplot2)
+require(ggmap)
+require(knitr)
+require(kableExtra)
+require(dplyr)
+
+knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3, warning = FALSE, message = FALSE)
+
+```
+
+# Parsing save files from Franchise Hockey Manager 6
+This tutorial hopes to teach you how to use R to parse and aggregate multiple saves from Franchise Hockey Manager 6, for instance when running multiple tests on the same season of Simulation Hockey League.
+
+## What is needed from FHM6?
+Two things are needed from FHM for this tutorial to work.
+
+1. The saved files need to be called the same thing with a number attached at the end. For instance I usually name them something similar to:
+
+![](https://cdn.discordapp.com/attachments/808778626937520218/808779746850373643/unknown.png)
+
+2. You need to *Export CSV* from each of the saves so that they end up in the folder `import_export\csv` of the saved game folder. This function is found under *World* in FHM6.
+
+## Too long did not read
+A tldr is found in chapter \@ref(tldr). This chapter only contains all the code that you need to run.
+
+# Getting started with R
+R is a programming language, mostly used by statisticians, to process and analyze data. Coding in R means to use `functions` from different `packages` meaning that you (usually) don't have to write your own code from scratch.
+
+## Installing R and RStudio
+What you need to get started is a distribution of R, downloadable from [here](https://cran.rstudio.com/). This tutorial is created using `R 4.0.5`. 
+
+It is also strongly recommended to use a graphical interface to help you along, and the most commonly used interface is RStudio, found [here](https://www.rstudio.com/products/rstudio/download/#download).
+
+Once you have downloaded and installed both programs you are ready to start up RStudio for the first time. 
+
+## The interface
+RStudio consists of four windows; the *console*, the *editor*, the *environment* and the *explorer*.
+
+- The console window is mostly used for printing code that is run and producing outputs. Anything that is written here is **not saved between sessions**.
+
+![](https://cdn.discordapp.com/attachments/798581854370398269/833991005928685608/unknown.png)
+
+- The editor window is where most of your code is written. You can start a new code document (extension `.R`) by going to *File -> New File -> R Script* or pressing *CTRL + SHIFT + N*. Anything you write in this document can be saved between sessions. Running code from this document is done by standing on the row you want to run and pressing *CTRL + ENTER*. If you want to run multiple lines of code at the same time, you can highlight the code you want to run and press *CTRL + ENTER*.
+
+![](https://cdn.discordapp.com/attachments/798581854370398269/833991142710312970/unknown.png)
+
+- The environment window is where R saves all information that you choose to save, for instance data that is loaded or the result of some analysis.
+
+![](https://cdn.discordapp.com/attachments/798581854370398269/833991283903037480/unknown.png)
+
+- The explorer window is where you can view documentation of functions and packages, plot output and your files. 
+
+![](https://cdn.discordapp.com/attachments/798581854370398269/833991416471355482/unknown.png)
+
+It is the first three windows that this tutorial will focus in on.
+
+## Your first lines of code
+The first thing to note is that R is **case-sensitive**, meaning that `a` and `A` are different things. R also uses `<-` as a way to store information into a `variable` in the environment, for instance we can store the value 3 in the variable `a` as follows:
+
+```{r}
+
+a <- 3
+
+```
+
+Copy the code above into your code document and press *CTRL + ENTER* while standing on that row. You should now see a variable added into your environment called `a` with the value 3.
+
+You can also print the value to the console by writing `a` into the console (run it by pressing *ENTER*) or on a separate line in your code document and running the line of code similar to earlier.
+
+```{r}
+a
+```
+
+You should now get the output in the console similar to above.
+
+`Functions` in R are structured in a similar way, `function(arguments = values)`, where arguments that are used for the function are written within the parentheses. For instance we can use `length()` to see how many values are present in a variable. The argument for specifying the variable in the function is `x` and here we use `=` to connect `a` to the argument.
+```{r}
+length(x = a)
+```
+
+Running this code will only produce an output but we can save this information by storing the value into another variable with `<-` like:
+
+```{r}
+size <- length(x = a)
+```
+
+Now this value is stored in the environment as `size` and can be used later on. 
+
+## Installing and loading new packages
+Easy calculations can be done with the packages already installed loaded in the base R distribution. More advanced calculations and functions must first be installed on your computer and then loaded into the session in order for them to be used.
+
+The functions used in this tutorial comes from the packages `tibble`, `tidyr`, `dplyr` and `googlesheets4`. These packages can be considered tool-kits with different types of tools that we want to use for different problems. Similar to a real life tool-kit you will need to buy it from the store before you can use them, so the first step is to install the packages using `install.packages()`. In order to do this quickly we can create a `vector` of values containing all the package names, and then use the vector as an argument in the function. 
+
+```{r, eval = FALSE}
+packages <- c("tibble", "tidyr", "dplyr", "googlesheets4")
+
+install.packages(pkgs = packages)
+```
+
+Once we have bought the tool-kits to our garage or shed, we must now put them in our workspace to gain access to the tools within. We load the packages and their functions into the current session with `require()`. 
+
+```{r}
+require(tibble)
+require(tidyr)
+require(dplyr)
+require(googlesheets4)
+```
+
+Once you have installed a package, you **do not need to** install it anymore for your current version of R, but every new session needs to load the packages with `require()`.
+
+In order to use `googlesheets4` you will need to link a Google account to R which is done the first time you use a function from the packages. 
+
+### Functions for FHM
+The functions I have created for FHM does not exist as a package but can be accessed though the SHL Github. In order to load these functions into your session in R, you need to use another function `source()`. This function reads and runs entire R scripts in one go and will create functions that can later be used in your session. The following code should import all functions that you will need to use to your environment, read directly from the SHL Github. Remember that you will have to run this code, bring out the tool-kit, everytime you start a new session, similar to loading packages.
+
+```{r}
+source("https://raw.githubusercontent.com/canadice/shl/main/scripts/fhm6SaveParser.R")
+```
+
+## Importing data sets
+
+Manually inputting large data sets into R is not feasible, but luckily there is a way of importing raw text-files. Franchise Hockey Manager 6 can export `.csv`-files from a saved game and it is these files that R can parse and aggregate. In order to import the files, R needs to know where on your computer the FHM saved games exist so you need to provide a path to that folder. 
+
+A path is considered a `string` which means that you need to save the path within quotation marks, `"path"`. The folder where FHM saves your games is usually found under `C:\Users\USER\Documents\Out of the Park Developments\Franchise Hockey Manager 6\saved_games`, but you need to find where your saved games are located. One thing to note is that R cannot handle the use of `\` in a string, so they need to be replaced with `/` instead.
+
+My path for the saved games can be found here:
+```{r}
+
+path <- "C:/Users/Canadice/Documents/Out of the Park Developments/Franchise Hockey Manager 6/saved_games/"
+  
+```
+
+# Reading the data and aggregating it
+Now we have loaded all the functions we need to read the exported `csv`-files from FHM6, and we have also set the path to the folder via `path`. Now we can start reading and aggregating the data for analysis. 
+
+If you only want to look at one test sim, you can use the `fhm6Parser()` function. The arguments that you need to provide are the path to the save game folder, and the save game name.
+
+```{r}
+gameData <- 
+  fhm6Parser(
+    saveFolder = path,
+    saveGame = "SHL-S59-Casino-1.lg"
+  )
+```
+
+The `gameData` variable is now a list of three objects:
+
+- `teams`: Team standings and statistics,
+- `schedule`: The schedule of individual played games,
+- `players`: Player statistics
+
+In order to look at one of these objects more in detail as a *data frame*, you can use the `$` operator. For instance if you want to look more in detail on the standings:
+
+```{r, eval = FALSE}
+gameData$teams
+```
+If you want to combine and compare multiple test sims at the same time you can use the above code and save each new save game as a new variable, but it might just be easier to read everything at once. The function `fhm6Aggregator()` changes one of the arguments to just a baseName (the function adds on the ".lg" extension) and `nSims` that sets the number of test sims that you have saved.  
+
+```{r}
+### Sets the base name for each test sim
+baseName <- "SHL-S59-Casino-"
+
+### Sets the number of save files present with the baseName start
+nSims <- 10
+
+### 
+testSims <- 
+  fhm6Aggregator(
+    saveFolder = path,
+    saveGame = baseName,
+    nSims = nSims
+  )
+```
+
+The variable `testSims` now contain a list of `nSims` lists, one for each test sim, similar to the lists from before in `gameData`.
+
+## Summarizing the data
+
+Raw data might be fun to look at but it's usually difficult to see general trends. The purpose of doing multiple test sims using the same tactics or line-ups is to increase the sample size of results, and it is then 
+
+
+# TLDR 
+
+```{r, eval = FALSE}
+
+### Loads the required packages
+require(tibble)
+require(tidyr)
+require(dplyr)
+require(googlesheets4)
+
+### Loads the required functions from SHL Github
+source("https://raw.githubusercontent.com/canadice/shl/main/scripts/fhm6SaveParser.R")
+
+##------------------------------------
+##  These settings are user defined!
+##
+
+### Defines your paths to the save files and the base name for your saves.
+##  Replace these strings with your folder path and save name.
+##  Note that R needs / instead of \ for paths.
+path <- 
+  "C:/Users/Canadice/Documents/Out of the Park Developments/Franchise Hockey Manager 6/saved_games/"
+
+baseName <- "SHL-S59-Casino-"
+
+### Defines the number of tests run with the save name followed by a number
+nSims <- 10
+
+##------------------------------------
+
+
+### Reads all the csv-files given the same base-name and a counting number at the end
+testSims <- 
+  ## Parallell data import with lapply()
+  lapply(
+    ## Defines the files to be read
+    X = 
+      ## Creates a vector with base-name and their numbers
+      paste(
+        baseName,
+        1:nSims %>% as.character(),
+        ".lg",
+        sep = ""
+      ),
+    ## Specifies the function where the vector is used
+    FUN = fhm6Parser,
+    ## Specifies the path to the FHM6 save path
+    saveFolder = path
+  )
+
+
+```
+
+
+
+
+

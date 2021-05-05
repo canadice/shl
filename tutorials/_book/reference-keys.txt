@@ -1,0 +1,13 @@
+parsing-save-files-from-franchise-hockey-manager-6
+what-is-needed-from-fhm6
+too-long-did-not-read
+getting-started-with-r
+installing-r-and-rstudio
+the-interface
+your-first-lines-of-code
+installing-and-loading-new-packages
+functions-for-fhm
+importing-data-sets
+reading-the-data-and-aggregating-it
+summarizing-the-data
+tldr

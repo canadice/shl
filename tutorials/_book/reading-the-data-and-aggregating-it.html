@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Reading the data and aggregating it | Franchise Hockey Manager 6 Saves in R</title>
+  <meta name="description" content="3 Reading the data and aggregating it | Franchise Hockey Manager 6 Saves in R" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Reading the data and aggregating it | Franchise Hockey Manager 6 Saves in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Reading the data and aggregating it | Franchise Hockey Manager 6 Saves in R" />
+  
+  
+  
+
+<meta name="author" content="Canadice" />
+
+
+<meta name="date" content="2021-04-19" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="getting-started-with-r.html"/>
+<link rel="next" href="tldr.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Parsing save files from Franchise Hockey Manager 6</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#what-is-needed-from-fhm6"><i class="fa fa-check"></i><b>1.1</b> What is needed from FHM6?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#too-long-did-not-read"><i class="fa fa-check"></i><b>1.2</b> Too long did not read</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html"><i class="fa fa-check"></i><b>2</b> Getting started with R</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>2.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#the-interface"><i class="fa fa-check"></i><b>2.2</b> The interface</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#your-first-lines-of-code"><i class="fa fa-check"></i><b>2.3</b> Your first lines of code</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#installing-and-loading-new-packages"><i class="fa fa-check"></i><b>2.4</b> Installing and loading new packages</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#functions-for-fhm"><i class="fa fa-check"></i><b>2.4.1</b> Functions for FHM</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#importing-data-sets"><i class="fa fa-check"></i><b>2.5</b> Importing data sets</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="reading-the-data-and-aggregating-it.html"><a href="reading-the-data-and-aggregating-it.html"><i class="fa fa-check"></i><b>3</b> Reading the data and aggregating it</a><ul>
+<li class="chapter" data-level="3.1" data-path="reading-the-data-and-aggregating-it.html"><a href="reading-the-data-and-aggregating-it.html#summarizing-the-data"><i class="fa fa-check"></i><b>3.1</b> Summarizing the data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="tldr.html"><a href="tldr.html"><i class="fa fa-check"></i><b>4</b> TLDR</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Franchise Hockey Manager 6 Saves in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="reading-the-data-and-aggregating-it" class="section level1">
+<h1><span class="header-section-number">3</span> Reading the data and aggregating it</h1>
+<p>Now we have loaded all the functions we need to read the exported <code>csv</code>-files from FHM6, and we have also set the path to the folder via <code>path</code>. Now we can start reading and aggregating the data for analysis.</p>
+<p>If you only want to look at one test sim, you can use the <code>fhm6Parser()</code> function. The arguments that you need to provide are the path to the save game folder, and the save game name.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="reading-the-data-and-aggregating-it.html#cb11-1"></a>gameData &lt;-<span class="st"> </span></span>
+<span id="cb11-2"><a href="reading-the-data-and-aggregating-it.html#cb11-2"></a><span class="st">  </span><span class="kw">fhm6Parser</span>(</span>
+<span id="cb11-3"><a href="reading-the-data-and-aggregating-it.html#cb11-3"></a>    <span class="dt">saveFolder =</span> path,</span>
+<span id="cb11-4"><a href="reading-the-data-and-aggregating-it.html#cb11-4"></a>    <span class="dt">saveGame =</span> <span class="st">&quot;SHL-S59-Casino-1.lg&quot;</span></span>
+<span id="cb11-5"><a href="reading-the-data-and-aggregating-it.html#cb11-5"></a>  )</span></code></pre></div>
+<p>The <code>gameData</code> variable is now a list of three objects:</p>
+<ul>
+<li><code>teams</code>: Team standings and statistics,</li>
+<li><code>schedule</code>: The schedule of individual played games,</li>
+<li><code>players</code>: Player statistics</li>
+</ul>
+<p>In order to look at one of these objects more in detail as a <em>data frame</em>, you can use the <code>$</code> operator. For instance if you want to look more in detail on the standings:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="reading-the-data-and-aggregating-it.html#cb12-1"></a>gameData<span class="op">$</span>teams</span></code></pre></div>
+<p>If you want to combine and compare multiple test sims at the same time you can use the above code and save each new save game as a new variable, but it might just be easier to read everything at once. The function <code>fhm6Aggregator()</code> changes one of the arguments to just a baseName (the function adds on the “.lg” extension) and <code>nSims</code> that sets the number of test sims that you have saved.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="reading-the-data-and-aggregating-it.html#cb13-1"></a><span class="co">### Sets the base name for each test sim</span></span>
+<span id="cb13-2"><a href="reading-the-data-and-aggregating-it.html#cb13-2"></a>baseName &lt;-<span class="st"> &quot;SHL-S59-Casino-&quot;</span></span>
+<span id="cb13-3"><a href="reading-the-data-and-aggregating-it.html#cb13-3"></a></span>
+<span id="cb13-4"><a href="reading-the-data-and-aggregating-it.html#cb13-4"></a><span class="co">### Sets the number of save files present with the baseName start</span></span>
+<span id="cb13-5"><a href="reading-the-data-and-aggregating-it.html#cb13-5"></a>nSims &lt;-<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb13-6"><a href="reading-the-data-and-aggregating-it.html#cb13-6"></a></span>
+<span id="cb13-7"><a href="reading-the-data-and-aggregating-it.html#cb13-7"></a><span class="co">### </span></span>
+<span id="cb13-8"><a href="reading-the-data-and-aggregating-it.html#cb13-8"></a>testSims &lt;-<span class="st"> </span></span>
+<span id="cb13-9"><a href="reading-the-data-and-aggregating-it.html#cb13-9"></a><span class="st">  </span><span class="kw">fhm6Aggregator</span>(</span>
+<span id="cb13-10"><a href="reading-the-data-and-aggregating-it.html#cb13-10"></a>    <span class="dt">saveFolder =</span> path,</span>
+<span id="cb13-11"><a href="reading-the-data-and-aggregating-it.html#cb13-11"></a>    <span class="dt">saveGame =</span> baseName,</span>
+<span id="cb13-12"><a href="reading-the-data-and-aggregating-it.html#cb13-12"></a>    <span class="dt">nSims =</span> nSims</span>
+<span id="cb13-13"><a href="reading-the-data-and-aggregating-it.html#cb13-13"></a>  )</span></code></pre></div>
+<p>The variable <code>testSims</code> now contain a list of <code>nSims</code> lists, one for each test sim, similar to the lists from before in <code>gameData</code>.</p>
+<div id="summarizing-the-data" class="section level2">
+<h2><span class="header-section-number">3.1</span> Summarizing the data</h2>
+<p>Raw data might be fun to look at but it’s usually difficult to see general trends. The purpose of doing multiple test sims using the same tactics or line-ups is to increase the sample size of results, and it is then</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="getting-started-with-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="tldr.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

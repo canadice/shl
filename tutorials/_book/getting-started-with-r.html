@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Getting started with R | Franchise Hockey Manager 6 Saves in R</title>
+  <meta name="description" content="2 Getting started with R | Franchise Hockey Manager 6 Saves in R" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Getting started with R | Franchise Hockey Manager 6 Saves in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Getting started with R | Franchise Hockey Manager 6 Saves in R" />
+  
+  
+  
+
+<meta name="author" content="Canadice" />
+
+
+<meta name="date" content="2021-04-19" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="reading-the-data-and-aggregating-it.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Parsing save files from Franchise Hockey Manager 6</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#what-is-needed-from-fhm6"><i class="fa fa-check"></i><b>1.1</b> What is needed from FHM6?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#too-long-did-not-read"><i class="fa fa-check"></i><b>1.2</b> Too long did not read</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html"><i class="fa fa-check"></i><b>2</b> Getting started with R</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>2.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#the-interface"><i class="fa fa-check"></i><b>2.2</b> The interface</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#your-first-lines-of-code"><i class="fa fa-check"></i><b>2.3</b> Your first lines of code</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#installing-and-loading-new-packages"><i class="fa fa-check"></i><b>2.4</b> Installing and loading new packages</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#functions-for-fhm"><i class="fa fa-check"></i><b>2.4.1</b> Functions for FHM</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r.html"><a href="getting-started-with-r.html#importing-data-sets"><i class="fa fa-check"></i><b>2.5</b> Importing data sets</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="reading-the-data-and-aggregating-it.html"><a href="reading-the-data-and-aggregating-it.html"><i class="fa fa-check"></i><b>3</b> Reading the data and aggregating it</a><ul>
+<li class="chapter" data-level="3.1" data-path="reading-the-data-and-aggregating-it.html"><a href="reading-the-data-and-aggregating-it.html#summarizing-the-data"><i class="fa fa-check"></i><b>3.1</b> Summarizing the data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="tldr.html"><a href="tldr.html"><i class="fa fa-check"></i><b>4</b> TLDR</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Franchise Hockey Manager 6 Saves in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="getting-started-with-r" class="section level1">
+<h1><span class="header-section-number">2</span> Getting started with R</h1>
+<p>R is a programming language, mostly used by statisticians, to process and analyze data. Coding in R means to use <code>functions</code> from different <code>packages</code> meaning that you (usually) don’t have to write your own code from scratch.</p>
+<div id="installing-r-and-rstudio" class="section level2">
+<h2><span class="header-section-number">2.1</span> Installing R and RStudio</h2>
+<p>What you need to get started is a distribution of R, downloadable from <a href="https://cran.rstudio.com/">here</a>. This tutorial is created using <code>R 4.0.5</code>.</p>
+<p>It is also strongly recommended to use a graphical interface to help you along, and the most commonly used interface is RStudio, found <a href="https://www.rstudio.com/products/rstudio/download/#download">here</a>.</p>
+<p>Once you have downloaded and installed both programs you are ready to start up RStudio for the first time.</p>
+</div>
+<div id="the-interface" class="section level2">
+<h2><span class="header-section-number">2.2</span> The interface</h2>
+<p>RStudio consists of four windows; the <em>console</em>, the <em>editor</em>, the <em>environment</em> and the <em>explorer</em>.</p>
+<ul>
+<li>The console window is mostly used for printing code that is run and producing outputs. Anything that is written here is <strong>not saved between sessions</strong>.</li>
+</ul>
+<p><img src="https://cdn.discordapp.com/attachments/798581854370398269/833991005928685608/unknown.png" /></p>
+<ul>
+<li>The editor window is where most of your code is written. You can start a new code document (extension <code>.R</code>) by going to <em>File -&gt; New File -&gt; R Script</em> or pressing <em>CTRL + SHIFT + N</em>. Anything you write in this document can be saved between sessions. Running code from this document is done by standing on the row you want to run and pressing <em>CTRL + ENTER</em>. If you want to run multiple lines of code at the same time, you can highlight the code you want to run and press <em>CTRL + ENTER</em>.</li>
+</ul>
+<p><img src="https://cdn.discordapp.com/attachments/798581854370398269/833991142710312970/unknown.png" /></p>
+<ul>
+<li>The environment window is where R saves all information that you choose to save, for instance data that is loaded or the result of some analysis.</li>
+</ul>
+<p><img src="https://cdn.discordapp.com/attachments/798581854370398269/833991283903037480/unknown.png" /></p>
+<ul>
+<li>The explorer window is where you can view documentation of functions and packages, plot output and your files.</li>
+</ul>
+<p><img src="https://cdn.discordapp.com/attachments/798581854370398269/833991416471355482/unknown.png" /></p>
+<p>It is the first three windows that this tutorial will focus in on.</p>
+</div>
+<div id="your-first-lines-of-code" class="section level2">
+<h2><span class="header-section-number">2.3</span> Your first lines of code</h2>
+<p>The first thing to note is that R is <strong>case-sensitive</strong>, meaning that <code>a</code> and <code>A</code> are different things. R also uses <code>&lt;-</code> as a way to store information into a <code>variable</code> in the environment, for instance we can store the value 3 in the variable <code>a</code> as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="getting-started-with-r.html#cb1-1"></a>a &lt;-<span class="st"> </span><span class="dv">3</span></span></code></pre></div>
+<p>Copy the code above into your code document and press <em>CTRL + ENTER</em> while standing on that row. You should now see a variable added into your environment called <code>a</code> with the value 3.</p>
+<p>You can also print the value to the console by writing <code>a</code> into the console (run it by pressing <em>ENTER</em>) or on a separate line in your code document and running the line of code similar to earlier.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="getting-started-with-r.html#cb2-1"></a>a</span></code></pre></div>
+<pre><code>## [1] 3</code></pre>
+<p>You should now get the output in the console similar to above.</p>
+<p><code>Functions</code> in R are structured in a similar way, <code>function(arguments = values)</code>, where arguments that are used for the function are written within the parentheses. For instance we can use <code>length()</code> to see how many values are present in a variable. The argument for specifying the variable in the function is <code>x</code> and here we use <code>=</code> to connect <code>a</code> to the argument.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="getting-started-with-r.html#cb4-1"></a><span class="kw">length</span>(<span class="dt">x =</span> a)</span></code></pre></div>
+<pre><code>## [1] 1</code></pre>
+<p>Running this code will only produce an output but we can save this information by storing the value into another variable with <code>&lt;-</code> like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="getting-started-with-r.html#cb6-1"></a>size &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="dt">x =</span> a)</span></code></pre></div>
+<p>Now this value is stored in the environment as <code>size</code> and can be used later on.</p>
+</div>
+<div id="installing-and-loading-new-packages" class="section level2">
+<h2><span class="header-section-number">2.4</span> Installing and loading new packages</h2>
+<p>Easy calculations can be done with the packages already installed loaded in the base R distribution. More advanced calculations and functions must first be installed on your computer and then loaded into the session in order for them to be used.</p>
+<p>The functions used in this tutorial comes from the packages <code>tibble</code>, <code>tidyr</code>, <code>dplyr</code> and <code>googlesheets4</code>. These packages can be considered tool-kits with different types of tools that we want to use for different problems. Similar to a real life tool-kit you will need to buy it from the store before you can use them, so the first step is to install the packages using <code>install.packages()</code>. In order to do this quickly we can create a <code>vector</code> of values containing all the package names, and then use the vector as an argument in the function.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="getting-started-with-r.html#cb7-1"></a>packages &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;tibble&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;googlesheets4&quot;</span>)</span>
+<span id="cb7-2"><a href="getting-started-with-r.html#cb7-2"></a></span>
+<span id="cb7-3"><a href="getting-started-with-r.html#cb7-3"></a><span class="kw">install.packages</span>(<span class="dt">pkgs =</span> packages)</span></code></pre></div>
+<p>Once we have bought the tool-kits to our garage or shed, we must now put them in our workspace to gain access to the tools within. We load the packages and their functions into the current session with <code>require()</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="getting-started-with-r.html#cb8-1"></a><span class="kw">require</span>(tibble)</span>
+<span id="cb8-2"><a href="getting-started-with-r.html#cb8-2"></a><span class="kw">require</span>(tidyr)</span>
+<span id="cb8-3"><a href="getting-started-with-r.html#cb8-3"></a><span class="kw">require</span>(dplyr)</span>
+<span id="cb8-4"><a href="getting-started-with-r.html#cb8-4"></a><span class="kw">require</span>(googlesheets4)</span></code></pre></div>
+<p>Once you have installed a package, you <strong>do not need to</strong> install it anymore for your current version of R, but every new session needs to load the packages with <code>require()</code>.</p>
+<p>In order to use <code>googlesheets4</code> you will need to link a Google account to R which is done the first time you use a function from the packages.</p>
+<div id="functions-for-fhm" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Functions for FHM</h3>
+<p>The functions I have created for FHM does not exist as a package but can be accessed though the SHL Github. In order to load these functions into your session in R, you need to use another function <code>source()</code>. This function reads and runs entire R scripts in one go and will create functions that can later be used in your session. The following code should import all functions that you will need to use to your environment, read directly from the SHL Github. Remember that you will have to run this code, bring out the tool-kit, everytime you start a new session, similar to loading packages.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="getting-started-with-r.html#cb9-1"></a><span class="kw">source</span>(<span class="st">&quot;https://raw.githubusercontent.com/canadice/shl/main/scripts/fhm6SaveParser.R&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="importing-data-sets" class="section level2">
+<h2><span class="header-section-number">2.5</span> Importing data sets</h2>
+<p>Manually inputting large data sets into R is not feasible, but luckily there is a way of importing raw text-files. Franchise Hockey Manager 6 can export <code>.csv</code>-files from a saved game and it is these files that R can parse and aggregate. In order to import the files, R needs to know where on your computer the FHM saved games exist so you need to provide a path to that folder.</p>
+<p>A path is considered a <code>string</code> which means that you need to save the path within quotation marks, <code>"path"</code>. The folder where FHM saves your games is usually found under <code>C:\Users\USER\Documents\Out of the Park Developments\Franchise Hockey Manager 6\saved_games</code>, but you need to find where your saved games are located. One thing to note is that R cannot handle the use of <code>\</code> in a string, so they need to be replaced with <code>/</code> instead.</p>
+<p>My path for the saved games can be found here:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="getting-started-with-r.html#cb10-1"></a>path &lt;-<span class="st"> &quot;C:/Users/Canadice/Documents/Out of the Park Developments/Franchise Hockey Manager 6/saved_games/&quot;</span></span></code></pre></div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="reading-the-data-and-aggregating-it.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
