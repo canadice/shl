@@ -457,16 +457,16 @@ teamAggregator <- function(
   return(teamAverages)
 }
 
-rawDataWriter <- function(file, sheet){
+rawDataWriter <- function(data, file, sheet){
   googlesheets4::write_sheet(
-    simTeams,
+    data,
     ss = file,
     sheet = sheet)
 }
 
-casinoDataWriter <- function(file, sheet){
+casinoDataWriter <- function(data, file, sheet){
   googlesheets4::write_sheet(
-    simTeams,
+    data,
     ss = file,
     sheet = sheet)
 }
