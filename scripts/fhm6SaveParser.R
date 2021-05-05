@@ -457,17 +457,17 @@ teamAggregator <- function(
   return(teamAverages)
 }
 
-rawDataWriter <- function(sheet){
+rawDataWriter <- function(file, sheet){
   googlesheets4::write_sheet(
     simTeams,
-    ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
+    ss = file,
     sheet = sheet)
 }
 
-casinoDataWriter <- function(sheet){
+casinoDataWriter <- function(file, sheet){
   googlesheets4::write_sheet(
     simTeams,
-    ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
+    ss = file,
     sheet = sheet)
 }
 
