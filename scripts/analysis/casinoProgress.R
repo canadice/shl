@@ -41,16 +41,15 @@ currentProgress <-
     by = c("TeamId" = "id")
   ) %>% 
   mutate(
-    GP = stats$wins + stats$losses + stats$overtimeLosses +
-      stats$shootoutWins + stats$shootoutLosses,
+    GP = stats$wins + stats$losses + stats$overtimeLosses + stats$shootoutLosses,
     Record = 
       paste(
-        stats$wins + stats$shootoutWins,
+        stats$wins,
         stats$losses + stats$overtimeLosses + stats$shootoutLosses,
         sep = "-"
       ),
     XWin = 
-      ((stats$wins + stats$shootoutWins)/GP * 66) %>% 
+      ((stats$wins)/GP * 66) %>% 
       round(2),
     Prediction = 
       case_when(
@@ -59,13 +58,13 @@ currentProgress <-
       ),
     RemainingRecordForOver =
       case_when(
-        (Casino - (stats$wins + stats$shootoutWins)) < 0 ~ "Achieved",
-        (Casino - (stats$wins + stats$shootoutWins)) > (66 - GP) ~ "Not possible",
+        (Casino - (stats$wins)) < 0 ~ "Achieved",
+        (Casino - (stats$wins)) > (66 - GP) ~ "Not possible",
         TRUE ~ 
           paste(
-            (Casino - (stats$wins + stats$shootoutWins)) %>% 
+            (Casino - (stats$wins)) %>% 
               ceiling(),
-            (66 - GP - (Casino - (stats$wins + stats$shootoutWins))) %>% 
+            (66 - GP - (Casino - (stats$wins))) %>% 
               floor(),
             sep = "-"
           )
