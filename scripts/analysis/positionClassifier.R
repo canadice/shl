@@ -49,7 +49,7 @@ data <-
   ###  Import the player statistics data set
   
   read.csv(
-    "../simulation_hockey_league/data_sets/bojobox_all_skaters.csv", 
+    "csv/history_skaters.csv", 
     sep = ",", 
     header = TRUE
   ) %>% 
@@ -95,7 +95,7 @@ data <-
   
   left_join(
     read.csv(
-      "../simulation_hockey_league/data_sets/positions_42-56.csv",
+      "csv/history_true_position.csv",
       sep = ",",
       header = TRUE
       ),
