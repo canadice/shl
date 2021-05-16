@@ -45,12 +45,12 @@ playerLoader <- function(leagueID, season = NULL){
   players <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/players/ratings",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   goalies <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/goalies/ratings",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   
   players <-
@@ -145,12 +145,12 @@ indStatsLoader <- function(leagueID, season = NULL){
   players <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/players/stats",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   goalies <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/goalies/stats",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   
   players <-
@@ -185,7 +185,7 @@ teamLoader <-  function(leagueID, season = NULL){
   teams <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/teams",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   
   return(teams)
@@ -195,7 +195,7 @@ gamesLoader <- function(leagueID, season = NULL){
   schedule <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/schedule",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   
   return(schedule)
@@ -205,7 +205,7 @@ standingsLoader <- function(leagueID, season = NULL){
   standings <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/standings",
-      query = list(league = leagueID)
+      query = list(league = leagueID, season = season)
     ) 
   
   return(standings)
