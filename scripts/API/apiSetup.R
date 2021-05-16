@@ -141,16 +141,16 @@ playerLoader <- function(leagueID, season = NULL){
 }
 
 
-indStatsLoader <- function(leagueID, season = NULL){
+indStatsLoader <- function(leagueID, season = NULL, type = NULL){
   players <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/players/stats",
-      query = list(league = leagueID, season = season)
+      query = list(league = leagueID, season = season, type = type)
     ) 
   goalies <- 
     readAPI(
       url = "https://index.simulationhockey.com/api/v1/goalies/stats",
-      query = list(league = leagueID, season = season)
+      query = list(league = leagueID, season = season, type = type)
     ) 
   
   players <-
