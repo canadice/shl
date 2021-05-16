@@ -20,6 +20,7 @@ require(parallel)
 require(fuzzyjoin)
 require(rvest)
 
+
 ### Sets the working directory to the current one
 setwd("./scripts/forumScrapers")
 
@@ -51,7 +52,10 @@ shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
   clusterExport(
     cl,
     varlist = 
-      ls()
+      c(
+        ls(),
+        "%>%"
+      )
   )
   
   ### Finds all unique player links from each team's roster page on the forum
@@ -69,7 +73,10 @@ shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
   ##  The function rbind.fill allows for new columns to be created if the headers don't match perfectly
   ##  Also adds NA to the previously created column
   data <- 
-    lapply(playerLinks, FUN = playerScraper) %>% 
+    clusterApply(
+      cl,
+      playerLinks, 
+      fun = playerScraper) %>% 
     do.call(
       args = .,
       what = plyr::rbind.fill
