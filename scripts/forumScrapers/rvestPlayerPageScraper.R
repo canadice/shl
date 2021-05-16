@@ -133,7 +133,7 @@ playerScraper <-
     
     PLAYERTEAM <-
       teams %>% 
-      slice(
+      dplyr::slice(
         topic %>% 
           rvest::html_nodes(".navigation") %>% 
           rvest::html_text() %>% 
