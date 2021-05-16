@@ -116,7 +116,7 @@ playerScraper <-
       topic %>% 
       rvest::html_nodes(".profile-username") %>% 
       dplyr::nth(1) %>% 
-      html_nodes(xpath = "./a") %>% 
+      rvest::html_nodes(xpath = "./a") %>% 
       rvest::html_attr("href")
     
     USERDATA <- 
