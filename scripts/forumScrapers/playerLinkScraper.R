@@ -40,3 +40,14 @@ player_scraper <- function(team){
   
   return(player_links)
 }
+
+prospectsFAScraper <- function(link){
+  base_link <- "https://simulationhockey.com/"
+  
+  players <- rvest::read_html(link)
+  
+  players %>% 
+    rvest::html_elements("table.tborder2 span.subject_new a") %>% 
+    rvest::html_attr("href") %>% 
+    return()
+}

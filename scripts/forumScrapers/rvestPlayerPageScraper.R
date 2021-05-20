@@ -83,6 +83,10 @@ playerScraper <-
       unlist() %>% 
       as.numeric()
     
+    if(length(TPE) == 0){
+      TPE = NA
+    }
+    
     
     ###  Extract user information                                     
     
@@ -90,13 +94,13 @@ playerScraper <-
     userTags <- 
       paste0(
         "Registered|Player Updaters|Rookie|Vancouver Whalers|SHL GM|Quebec City Citadelles|",
-        "Head Office|Coach|Budget Director|Graphic Graders|IIHF Federation Head|Moderators|",
+        "Head Office|Coach|Budget Director|Graphic Graders|IIHF Commissioner|Moderators|Federation Head|",
         "Fantasy League Manager|SMJHL GM|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
         "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|HOF Committee|",
         "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|SMJHL |SHL |Manhattan Rage|",
         "SMJHL HO|Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
         "HO|Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany"
+        "Germany|Commissioner|Awards Committee|Management"
       )
     
     USER <- 
@@ -119,15 +123,20 @@ playerScraper <-
       rvest::html_nodes(xpath = "./a") %>% 
       rvest::html_attr("href")
     
+    USERINFO <- 
+      USERLINK %>% 
+      user_scraper()
+    
     USERDATA <- 
       topic %>% 
       rvest::html_nodes("#mainwidth2") %>% 
       dplyr::nth(1) %>% 
       rvest::html_nodes(".float_right") %>% 
       rvest::html_text() %>% 
-      stringr::str_squish()
+      stringr::str_squish() %>% 
+      .[1:2]
     
-    names(USERDATA) <- c("Posts", "Threads", "Joined", "Reputation")
+    names(USERDATA) <- c("Posts", "Threads")
     
     ### Extract player information
     
@@ -146,13 +155,18 @@ playerScraper <-
           which()  
       )
     
+    if((PLAYERTEAM %>% nrow()) == 0){
+      PLAYERTEAM <- 
+        PLAYERTEAM %>% 
+        dplyr::add_row()
+    }
+    
     postData <- 
       topic %>% 
       rvest::html_nodes("div#two") %>% 
       dplyr::nth(1) %>% 
       rvest::html_nodes(".post_body") %>% 
-      rvest::html_text() %>% 
-      stringr::str_squish()
+      rvest::html_text()
     
     if(stringr::str_detect(postData, pattern = "Attributes")){
       postData <- 
@@ -168,66 +182,147 @@ playerScraper <-
         stringi::stri_remove_empty()
     }
     
-    ## Specifies which tags to use for the player information splits
-    playerMeta <- 
-      paste0(
-        "First Name:|First Name :|Last Name:|Position:|Born:|",
-        "Birth Date:|Handedness:|Shoots:|",
-        "Recruited By:|Recruited by:|Player Render:|Jersey Number:|",
-        "Height:|Height \\(ft.\\):|Weight:|Weight \\(lbs.\\):|Birthplace:|Player"
+    if(postData %>% length() > 2){
+      PLAYERINFO <- 
+        postData %>%
+        dplyr::nth(2) %>% 
+        stringr::str_split(
+          pattern = ":|\\n"
+        ) 
+    } else {
+      PLAYERINFO <- 
+        postData %>%
+        dplyr::nth(1) %>% 
+        stringr::str_split(
+          pattern = ":|\\n"
+        ) 
+    }
+    
+    ## Checks if a title of Player information is present in the text
+    ## If so then remove first two elements of the vector
+    ## Otherwise only remove first element.
+    if(
+      stringr::str_detect(
+        PLAYERINFO %>% paste0(collapse = ""), 
+        pattern = "Player Information"
         )
+      ){
+      PLAYERINFO <- 
+        PLAYERINFO %>% 
+        unlist() %>% 
+        .[-(1:2)] %>% 
+        stringr::str_squish() %>% 
+        matrix(nrow = 2) %>% 
+        janitor::row_to_names(1) %>% 
+        dplyr::as_tibble()
+    } else { 
+      PLAYERINFO <- 
+        PLAYERINFO %>% 
+        unlist() %>% 
+        .[-1] %>% 
+        stringr::str_squish() %>% 
+        matrix(nrow = 2) %>% 
+        janitor::row_to_names(1) %>% 
+        dplyr::as_tibble()
+    }
     
-    playerRemove <- 
-      paste0(
-        "Offensive Ratings|Defensive Ratings|Mental Ratings|Physical Ratings"
-      )
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Height")] <- "Height"
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Weight")] <- "Weight"
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Hand")] <- "Handedness"
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Shoots")] <- "Handedness"
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Recruited")] <- "Recruited"
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Jersey")] <- "Jersey Nr."
+    colnames(PLAYERINFO)[colnames(PLAYERINFO) %>% stringr::str_detect(pattern = "Birth[A-z]+")] <- "Birthplace"
     
-    ####### Some players have born or birth date as one of the player information, which means 
-    ####### that 12 on row 184 should be 13 to cover Birthplace
     
     PLAYERINFO <- 
-      postData %>%
-      dplyr::nth(1) %>% 
-      stringr::str_split(
-        pattern = playerMeta
-      ) %>% 
-      unlist() %>% 
-      stringr::str_squish() %>% 
-      dplyr::as_tibble() %>% 
-      dplyr::slice((min(nrow(.),12)-9):min(nrow(.),12)) %>% 
-      unlist() 
+      PLAYERINFO %>%  
+      dplyr::mutate(
+        `IIHF Nation` =
+          if(exists('Birthplace', where = .)){
+            dplyr::case_when(
+              stringr::str_detect(Birthplace, pattern = "Sweden") ~ "Sweden",
+              stringr::str_detect(Birthplace, pattern = "Canada|Ontario") ~ "Canada",
+              stringr::str_detect(Birthplace, pattern = "USA|United States|Michigan|NY|N.Y.|Georgia") ~ "USA",
+              stringr::str_detect(Birthplace, pattern = "Finland") ~ "Finland",
+              stringr::str_detect(Birthplace, pattern = "Russia") ~ "Russia",
+              stringr::str_detect(Birthplace, pattern = "Austria") ~ "Austria",
+              stringr::str_detect(Birthplace, pattern = "Czechia|Czech Republic|CZE") ~ "Czechia",
+              stringr::str_detect(Birthplace, pattern = "Germany") ~ "Germany",
+              stringr::str_detect(Birthplace, pattern = "England|Wales|Scotland|Northern Ireland|United Kingdom|Great Britain") ~ "Great Britain",
+              stringr::str_detect(Birthplace, pattern = "Ireland") ~ "Ireland",
+              stringr::str_detect(Birthplace, pattern = "Japan") ~ "Japan",
+              stringr::str_detect(Birthplace, pattern = "Latvia") ~ "Latvia",
+              stringr::str_detect(Birthplace, pattern = "Norway") ~ "Norway",
+              stringr::str_detect(Birthplace, pattern = "Switzerland") ~ "Switzerland",
+              TRUE ~ "Unassigned"
+            )  
+          } else {
+            "Unassigned"
+          }
+      )
     
-    ## Some players have their Player Information in a different order...
-    if(PLAYERINFO[1] == "Alexis" && PLAYERINFO[2] == "Saint-Michel"){
-      PLAYERINFO <- 
-        PLAYERINFO[c(1, 2, 3, 4, 5, 9, 10, 7, 8, 6)]
-    } else if(PLAYERINFO[1] == "Otis B." && PLAYERINFO[2] == "Driftwood"){
-      PLAYERINFO <- 
-        PLAYERINFO[-4]
-      
-      PLAYERINFO[6:10] <-
-        PLAYERINFO[5:9]
-      
-      PLAYERINFO[6] <- NA
-    }
-    
-    ## Sets the named vector to the specified order split from earlier
-    if(length(PLAYERINFO)==10){
-      names(PLAYERINFO) <- 
-        c(
-          "First Name",
-          "Last Name",
-          "Position",
-          "Handedness",
-          "Recruited",
-          "Render",
-          "Jersey Nr.",
-          "Height",
-          "Weight",
-          "Birthplace"
-        )
-    }
-    
+    ####### CODE FOR SCRAPING INFORMATION THAT IS NO LONGER USED    ####### 
+    # ## Specifies which tags to use for the player information splits
+    # playerMeta <- 
+    #   paste0(
+    #     "First Name:|First Name :|Last Name:|Position:|Born:|",
+    #     "Birth Date:|Handedness:|Shoots:|",
+    #     "Recruited By:|Recruited by:|Player Render:|Jersey Number:|",
+    #     "Height:|Height \\(ft.\\):|Weight:|Weight \\(lbs.\\):|Birthplace:|Player"
+    #     )
+    # 
+    # playerRemove <- 
+    #   paste0(
+    #     "Offensive Ratings|Defensive Ratings|Mental Ratings|Physical Ratings"
+    #   )
+    # 
+    # ####### Some players have born or birth date as one of the player information, which means 
+    # ####### that 12 on row 184 should be 13 to cover Birthplace
+    # 
+    # PLAYERINFO <- 
+    #   postData %>%
+    #   dplyr::nth(1) %>% 
+    #   stringr::str_split(
+    #     pattern = playerMeta
+    #   ) %>% 
+    #   unlist() %>% 
+    #   stringr::str_squish() %>% 
+    #   dplyr::as_tibble() %>% 
+    #   dplyr::slice((min(nrow(.),12)-9):min(nrow(.),12)) %>% 
+    #   unlist() 
+    # 
+    # ## Some players have their Player Information in a different order...
+    # if(PLAYERINFO[1] == "Alexis" && PLAYERINFO[2] == "Saint-Michel"){
+    #   PLAYERINFO <- 
+    #     PLAYERINFO[c(1, 2, 3, 4, 5, 9, 10, 7, 8, 6)]
+    # } else if(PLAYERINFO[1] == "Otis B." && PLAYERINFO[2] == "Driftwood"){
+    #   PLAYERINFO <- 
+    #     PLAYERINFO[-4]
+    #   
+    #   PLAYERINFO[6:10] <-
+    #     PLAYERINFO[5:9]
+    #   
+    #   PLAYERINFO[6] <- NA
+    # }
+    # 
+    # ## Sets the named vector to the specified order split from earlier
+    # if(length(PLAYERINFO)==10){
+    #   names(PLAYERINFO) <- 
+    #     c(
+    #       "First Name",
+    #       "Last Name",
+    #       "Position",
+    #       "Handedness",
+    #       "Recruited",
+    #       "Render",
+    #       "Jersey Nr.",
+    #       "Height",
+    #       "Weight",
+    #       "Birthplace"
+    #     )
+    # }
+    # 
     ####### CODE FOR SCRAPING ATTRIBUTES THAT IS NO LONGER USED    ####### 
     # 
     # 
@@ -349,17 +444,18 @@ playerScraper <-
     ##  Commented parts are from the discontinued playerRatings scraper that is no longer used
     data <- 
       data.frame(
-        LINK = player,
-        CLASS,
-        USER,
-        USERLINK,
-        USERDATA %>% t(),
         NAME,
+        CLASS,
         POSITION,
         TPE,
+        LINK = player,
+        USER,
+        USERLINK,
+        USERINFO,
+        USERDATA %>% t(),
         #USEDTPE, 
         PLAYERTEAM,
-        PLAYERINFO %>% t() #,
+        PLAYERINFO #,
         #PLAYERRATINGS %>% t()
       )
     

@@ -3,7 +3,7 @@
 ##             Data Loader for player page scraper             ##
 ##                                                             ##
 ##                     Created: 2021-04-28                     ##
-##                    Last edit: 2021-04-28                    ##
+##                    Last edit: 2021-05-19                    ##
 #################################################################
 
 ### Loads all the required packages
@@ -20,29 +20,32 @@ require(parallel)
 require(fuzzyjoin)
 require(rvest)
 
-
-### Sets the working directory to the current one
-setwd("./scripts/forumScrapers")
-
-
 ### Loads the separate scripts containing created scraper functions
 ## Functions to find links to teams and players from main forum page
-source("teamLinkScraper.R")
-source("playerLinkScraper.R")
+source("scripts/forumScrapers/teamLinkScraper.R")
+source("scripts/forumScrapers/playerLinkScraper.R")
+source("scripts/forumScrapers/userDataScraper.R")
 
 ## Functions to scrape and structure information from a player page
-source("rvestPlayerPageScraper.R")
+source("scripts/forumScrapers/rvestPlayerPageScraper.R")
 
 ### Loads file containing team information
 teams <- 
   read.csv2(
-    file = "../../csv/team_information.csv"
+    file = "csv/team_information.csv"
+  )
+
+iihfTransfer <- 
+  read.csv2(
+    file = "csv/iihf_transfers.csv"
   )
 
 ### Specifies link to forum page containing all the team rosters
 smjhl_link <- "https://simulationhockey.com/forumdisplay.php?fid=5"
 shl_east <- "https://simulationhockey.com/forumdisplay.php?fid=8"
 shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
+prospects <- "https://simulationhockey.com/forumdisplay.php?fid=63"
+free_agents <- "https://simulationhockey.com/forumdisplay.php?fid=43"
 
 ### Parallell processing to quicken the scraping for all the specified links
 ##  "Quicken" does not mean quick, scraping this information once takes around 10 minutes
@@ -67,6 +70,15 @@ shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
     ) %>%
     team_scraper() %>% 
     player_scraper() %>% 
+    c(
+      .,
+      c(
+        prospects,
+        free_agents
+      ) %>% 
+        sapply(FUN = prospectsFAScraper) %>% 
+        unlist()
+    ) %>% 
     unique()
   
   ### Puts everything into a structured data.frame
@@ -80,7 +92,28 @@ shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
     do.call(
       args = .,
       what = plyr::rbind.fill
-    )
+    ) %>% 
+  ## Removes height, weight attributes as they are not used
+  ## Removes duplicated position that is taken from the player info
+  ## POSITION is taken from the post title
+  select(-Weight, -Height, -Position, -(Player.Type:RiderLAKPlayer.Render)) %>%
+  left_join(
+    iihfTransfer,
+    by = c("NAME" = "player")
+  ) %>% 
+  mutate(
+    IIHF.Nation.x = 
+      case_when(
+        is.na(IIHF.Nation.y) ~ IIHF.Nation.x,
+        TRUE ~ IIHF.Nation.y
+      )
+  ) %>% 
+  rename(
+    IIHF.Nation = IIHF.Nation.x
+  ) %>% 
+  select(
+    -IIHF.Nation.y
+  )
   
   stopCluster(cl)
   
@@ -133,13 +166,7 @@ data <-
          Threads = as.numeric(str_remove_all(Threads, pattern = "[^0-9]")),
          Reputation = as.numeric(str_remove_all(Reputation, pattern = "[^0-9]")),
          Jersey.Nr. = as.numeric(str_remove_all(Jersey.Nr., pattern = "[^0-9]"))
-       ) %>%
-  
-  ## Removes height, weight attributes as they are not used
-  ## Removes duplicated position that is taken from the player info
-  ## POSITION is taken from the post title
-  select(-Weight, -Height, -Position)
+       ) 
 
-### THE RESULTING DATA SET IS data THAT CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
-##  Remember that the working directory is set to the forumScrapers folder
+### THE RESULTING DATA SET data CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
 # write.csv2(data, file = "output.csv")
