@@ -127,12 +127,19 @@ data <-
   ## This can be used in connection with the index data
   mutate(
     clean_name =
-      stringi::stri_trans_general(
-        paste(First.Name,
-              Last.Name, sep = " "
-              ),
-        id = "Latin-ASCII"
+      case_when(
+        First.Name %>% is.na() ~ 
+          stringi::stri_trans_general(
+            NAME,
+            id = "Latin-ASCII"
+            ),
+        TRUE ~ stringi::stri_trans_general(
+          paste(First.Name,
+                Last.Name, sep = " "
+          ),
+          id = "Latin-ASCII"
         )
+      )
     ) %>%
   
   ## These players have too long names (or other names) in FHM6 
@@ -148,7 +155,9 @@ data <-
          ) %>%
   
   ## Cleans up the transformation a bit
-  mutate(clean_name = str_squish(clean_name)) %>%
+  mutate(
+    clean_name = 
+      str_squish(clean_name)) %>%
   
   ## Uses standard names for positions
   ## Transforms some variables to numeric
@@ -169,4 +178,4 @@ data <-
        ) 
 
 ### THE RESULTING DATA SET data CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
-# write.csv2(data, file = "output.csv")
+# write.csv2(data, file = "csv/SHL 2021-05-20.csv")
