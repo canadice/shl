@@ -12,7 +12,10 @@ require(jsonlite)
 
 ## Data processing
 require(tidyr)
+require(plyr)
 require(dplyr)
+require(janitor)
+require(tibble)
 
 ## Packages for handling strings
 require(stringr)
@@ -53,83 +56,84 @@ playerLoader <- function(leagueID, season = NULL){
       query = list(league = leagueID, season = season)
     ) 
   
+  ## Calculates the used TPE for each player based on their attribute values
+  usedTPE <-
+    ## Starts with all players
+    players %>% 
+    ## Selects only names (for grouping) and attributes
+    select(
+      name,
+      team,
+      screening:professionalism
+    ) %>% 
+    ## Creates a attribute column and value column for each player
+    pivot_longer(
+      cols = screening:professionalism,
+      names_to = "attribute"
+    ) %>% 
+    ## Adds the TPE cost for each respective attribute value
+    dplyr::left_join(
+      tpeCost,
+      by = c("value" = "Skill.level")
+    ) %>% 
+    ## Groups by name for summarizing
+    group_by(
+      name,
+      team
+    ) %>% 
+    ## Summarizes the used TPE based on attribute value
+    summarize(
+      ## Removes the fixed attributes to 15 and compensates for 11 starting Stamina
+      usedTPE = sum(TPE) - 62*5 - 16
+    ) %>% 
+    ungroup() %>% 
+    select(name, usedTPE)
+  
   players <-
     players %>% 
-    mutate(
-      ## Calculates the used TPE for each player based on their attribute values
-      usedTPE = 
-        ## Starts with all players
-        players %>% 
-        ## Selects only names (for grouping) and attributes
-        select(
-          name,
-          team,
-          screening:professionalism
-        ) %>% 
-        ## Creates a attribute column and value column for each player
-        pivot_longer(
-          cols = screening:professionalism,
-          names_to = "attribute"
-        ) %>% 
-        ## Adds the TPE cost for each respective attribute value
-        dplyr::left_join(
-          tpeCost,
-          by = c("value" = "Skill.level")
-        ) %>% 
-        ## Groups by name for summarizing
-        group_by(
-          name,
-          team
-        ) %>% 
-        ## Summarizes the used TPE based on attribute value
-        summarize(
-          ## Removes the fixed attributes to 15 and compensates for 11 starting Stamina
-          usedTPE = sum(TPE) - 62*4 - 16
-          
-          ### TEAM PLAYER ATTRIBRUTE IS MISSING FROM THE API
-          
-        ) %>% 
-        ungroup() %>% 
-        select(usedTPE) %>% 
-        unlist()
+    left_join(
+      usedTPE,
+      by = c("name")
     )
   
-  goalies <- 
+  ## Calculates the used TPE for each player based on their attribute values
+  usedTPE <-
+    ## Starts with all goalies
     goalies %>% 
-    mutate(
-      ## Calculates the used TPE for each player based on their attribute values
-      usedTPE = 
-        ## Starts with all players
-        goalies %>% 
-        ## Selects only names (for grouping) and attributes
-        select(
-          name,
-          team,
-          blocker:professionalism
-        ) %>% 
-        ## Creates a attribute column and value column for each player
-        pivot_longer(
-          cols = blocker:professionalism,
-          names_to = "attribute"
-        ) %>% 
-        ## Adds the TPE cost for each respective attribute value
-        dplyr::left_join(
-          tpeCost,
-          by = c("value" = "Skill.level")
-        ) %>% 
-        ## Groups by name for summarizing
-        group_by(
-          name,
-          team
-        ) %>% 
-        ## Summarizes the used TPE based on attribute value
-        summarize(
-          ## Removes the fixed attributes to 15 and compensates for 8 Aggression
-          usedTPE = sum(TPE) - 62*3 - 4
-        ) %>% 
-        ungroup() %>% 
-        select(usedTPE) %>% 
-        unlist()
+    ## Selects only names (for grouping) and attributes
+    select(
+      name,
+      team,
+      blocker:professionalism
+    ) %>% 
+    ## Creates a attribute column and value column for each player
+    pivot_longer(
+      cols = blocker:professionalism,
+      names_to = "attribute"
+    ) %>% 
+    ## Adds the TPE cost for each respective attribute value
+    dplyr::left_join(
+      tpeCost,
+      by = c("value" = "Skill.level")
+    ) %>% 
+    ## Groups by name for summarizing
+    group_by(
+      name,
+      team
+    ) %>% 
+    ## Summarizes the used TPE based on attribute value
+    summarize(
+      ## Removes the fixed attributes to 15 and compensates for 8 Aggression
+      usedTPE = sum(TPE) - 62*3 - 4
+    ) %>% 
+    ungroup() %>% 
+    select(name, usedTPE)
+  
+  goalies <-
+    goalies %>% 
+    left_join(
+      usedTPE,
+      by = c("name")
     )
   
   ## Return a list of the loaded data
