@@ -17,12 +17,25 @@ require(dplyr)
 require(janitor)
 require(tibble)
 
+## Visualizations
+require(ggplot2)
+require(ggnewscale)
+require(RColorBrewer)
+
+# Used for arranging multiple plots on same page
+#require(ggpubr) 
+
+## Package for handling date and time
+require(lubridate)
+
 ## Packages for handling strings
 require(stringr)
 
 ## Loading package that can talk to Google Sheets
 require(googlesheets4)
 
+## Changes when scientific notation is used to never
+options(scipen=999)
 
 ### Loads Attribute Keys
 attKey <- read.csv2("csv/attribute_key.csv")
