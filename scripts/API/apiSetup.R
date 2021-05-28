@@ -10,6 +10,10 @@
 require(httr)
 require(jsonlite)
 
+## Packages for reading urls
+require(rvest)
+require(RCurl)
+
 ## Data processing
 require(tidyr)
 require(plyr)
@@ -21,9 +25,14 @@ require(tibble)
 require(ggplot2)
 require(ggnewscale)
 require(RColorBrewer)
+require(cowplot)
+require(ggpubr)
+require(png)
+require(grid)
 
-# Used for arranging multiple plots on same page
-#require(ggpubr) 
+# Packages for svg images
+require(magick)
+require(rsvg)
 
 ## Package for handling date and time
 require(lubridate)
@@ -37,10 +46,53 @@ require(googlesheets4)
 ## Changes when scientific notation is used to never
 options(scipen=999)
 
-### Loads Attribute Keys
+### Loading data sets
+## Loads Attribute Keys
 attKey <- read.csv2("csv/attribute_key.csv")
+
+## Loading cost for TPE
 tpeCost <- read.csv2("csv/tpe_cost.csv")
-teamInfo <- read.csv2("csv/team_information.csv")
+
+## Loading team information
+teamInfo <- read.csv2("csv/team_information.csv") %>% 
+  mutate(
+    logoImage = 
+      list(
+        image_read_svg("graphics/Atlanta.svg"),
+        image_read_svg("graphics/Baltimore.svg"),
+        image_read_svg("graphics/Buffalo.svg"),
+        image_read_svg("graphics/Chicago.svg"),
+        image_read_svg("graphics/Hamilton.svg"),
+        image_read_svg("graphics/Manhattan.svg"),
+        image_read_svg("graphics/New_England.svg"),
+        image_read_svg("graphics/Tampa_Bay.svg"),
+        image_read_svg("graphics/Toronto.svg"),
+        image_read_svg("graphics/Calgary.svg"),
+        image_read_svg("graphics/Edmonton.svg"),
+        image_read_svg("graphics/Los_Angeles.svg"),
+        image_read_svg("graphics/Minnesota.svg"),
+        image_read_svg("graphics/New_Orleans.svg"),
+        image_read_svg("graphics/San_Francisco.svg"),
+        image_read_svg("graphics/Seattle.svg"),
+        image_read_svg("graphics/Texas.svg"),
+        image_read_svg("graphics/Winnipeg.svg"),
+        NA, #Old Winnipeg Jets
+        image_read_svg("graphics/Carolina.svg"),
+        image_read_svg("graphics/Detroit.svg"),
+        image_read_svg("graphics/Maine.svg"),
+        image_read_svg("graphics/Newfoundland.svg"),
+        image_read_svg("graphics/Quebec_City.svg"),
+        image_read_svg("graphics/St_Louis.svg"),
+        image_read_svg("graphics/Anaheim.svg"),
+        image_read_svg("graphics/Anchorage.svg"),
+        image_read_svg("graphics/Colorado.svg"),
+        image_read_svg("graphics/Kelowna.svg"),
+        image_read_svg("graphics/Nevada.svg"),
+        image_read_svg("graphics/Vancouver.svg"),
+        image_read_svg("graphics/Montreal.svg"),
+        image_read_svg("graphics/Philadelphia.svg")
+      )
+  )
 
 ### Creates functions that are used multiple times 
 readAPI <- function(url, ...){
