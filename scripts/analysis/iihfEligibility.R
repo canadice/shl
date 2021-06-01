@@ -15,9 +15,6 @@ source("scripts/API/apiSetup.R")
 ### Scrapes the forums (THIS ONE TAKES A LONG TIME)
 source("scripts/forumScrapers/main.R")
 
-### Loading packages required
-require(dplyr)
-
 ### Loading the WJC HO Eligibility Sheet
 eligible <- 
   read_sheet(
