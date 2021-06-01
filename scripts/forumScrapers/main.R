@@ -178,4 +178,4 @@ data <-
        ) 
 
 ### THE RESULTING DATA SET data CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
-# write.csv2(data, file = "csv/SHL 2021-05-20.csv")
+# write.csv2(data, file = paste("csv/SHL", today(), ".csv", sep = ""), row.names = FALSE)
