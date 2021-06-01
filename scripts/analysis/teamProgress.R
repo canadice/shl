@@ -17,6 +17,6 @@ standings <-
   ) %>% 
   arrange(conference, division, position)
 
-#save(standings, file = "C:/Users/Canadice/Downloads/SHN Standings.RData")
+
 
 
