@@ -11,6 +11,5 @@ source("scripts/API/apiSetup.R")
 
 players <- indStatsLoader(0)$players
 
-# save(players, file = "C:/Users/Canadice/Downloads/SHN Stats.RData")
 
 

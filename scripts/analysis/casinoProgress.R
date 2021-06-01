@@ -144,12 +144,7 @@ strength <-
   select(-team)
 
 
-# save(
-#   strength,
-#   currentProgress, 
-#   teams,
-#   file = "C:/Users/Canadice/Downloads/SHN Issue 1.RData"
-#   )  
+
 
 
   
