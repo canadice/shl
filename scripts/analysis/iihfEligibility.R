@@ -12,8 +12,13 @@
 ### Loading API functions and loads relevant data sets
 source("scripts/API/apiSetup.R")
 
-### Scrapes the forums (THIS ONE TAKES A LONG TIME)
-source("scripts/forumScrapers/main.R")
+### Loads the data
+if(paste("csv/SHL", today(), ".csv", sep = "") %>% file.exists()){
+  data <- read.csv2(paste("csv/SHL", today(), ".csv", sep = ""))
+} else {
+  ## Scrapes the forums (THIS ONE TAKES A LONG TIME)
+  source("scripts/forumScrapers/main.R")
+}
 
 ### Loading the WJC HO Eligibility Sheet
 eligible <- 
@@ -287,12 +292,12 @@ goalies <-
 
 ### Write the eligible players to a specific sheet
 googlesheets4::write_sheet(
-  allPlayers, 
+  allPlayers,
   ss = "https://docs.google.com/spreadsheets/d/16U6JFYxrN5nzsqDxgVgqMkLbYWIOMgbMTlucAYyTqlc/edit#gid=1153624088",
   sheet = "Skaters")
 
 googlesheets4::write_sheet(
-  goalies, 
+  goalies,
   ss = "https://docs.google.com/spreadsheets/d/16U6JFYxrN5nzsqDxgVgqMkLbYWIOMgbMTlucAYyTqlc/edit#gid=1153624088",
   sheet = "Goalies")
 
