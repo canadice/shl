@@ -12,7 +12,7 @@ player_scraper <- function(team){
   
   ## As some teams have more than 20 players, the second page of the roster is added
   team_roster2 <- paste(team_roster, "&page=2", sep = "")
-  
+
   ###### OBS! THIS MIGHT MEAN THAT THE SAME PAGE IS INCLUDED TWICE IF THE TEAM HAS AT MOST 20 PLAYERS
   
   ## Summarizes both roster links

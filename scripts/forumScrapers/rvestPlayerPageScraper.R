@@ -93,14 +93,16 @@ playerScraper <-
     ## Specifies the user defined tags that will be removed from the user name
     userTags <- 
       paste0(
-        "Registered|Player Updaters|Rookie|Vancouver Whalers|SHL GM|Quebec City Citadelles|",
-        "Head Office|Coach|Budget Director|Graphic Graders|IIHF Commissioner|Moderators|Federation Head|",
-        "Fantasy League Manager|SMJHL GM|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
-        "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|SHL GM|SHL HO|",
+        "SMJHL GM|SHL GM|SHL HO|SMJHL HO|Commissioner|IIHF Commissioner|",
+        "Registered|Rookie|Historian|",
+        "Vancouver Whalers|SHL GM|Quebec City Citadelles|",
+        "Head Office|Coach|Budget Director|Graphic Graders|Moderators|Federation Head|",
+        "Fantasy League Manager|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
+        "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|",
         "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|Manhattan Rage|",
-        "SMJHL HO|Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
-        "HO|Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany|Commissioner|Awards Committee|Management|IIHF|Historian|HOF Committee"
+        "Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
+        "Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
+        "Germany|Awards Committee|Management|IIHF|Historian|HOF Committee"
       )
     
     USER <- 
