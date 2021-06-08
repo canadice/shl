@@ -1,42 +1,42 @@
-"abb";"att"
-"SCR";"Screening"
-"GTO";"Getting Open"
-"PAS";"Passing"
-"PHA";"Puckhandling"
-"SAC";"Shooting Accuracy"
-"SRA";"Shooting Range"
-"OFR";"Offensive Read"
-"CHE";"Checking"
-"HIT";"Hitting"
-"POS";"Positioning"
-"SCH";"Stickchecking"
-"SBL";"Shot Blocking"
-"FOF";"Faceoffs"
-"DFR";"Defensive Read"
-"ACC";"Acceleration"
-"AGI";"Agility"
-"BAL";"Balance"
-"SPD";"Speed"
-"STA";"Stamina"
-"STR";"Strength"
-"FIG";"Fighting"
-"AGR";"Aggression"
-"BRA";"Bravery"
-"DET";"*Determination"
-"TPL";"*Team.Player"
-"LEA";"*Leadership"
-"TEM";"*Temperament"
-"PRO";"*Professionalism"
-"MTO";"Mental Toughness"
-"GST";"Goalie Stamina"
-"GPO";"Positioning"
-"GPA";"Passing"
-"POK";"Poke Check"
-"BOK";"Blocker"
-"GLO";"Glove"
-"REB";"Rebound"
-"REC";"Recovery"
-"GPH";"Puck Handling"
-"LOW";"Low Shots"
-"GSK";"Skating"
-"REF";"Reflexes"
+abb;attributeIndex;attribute
+SCR;screening;Screening
+GTO;gettingOpen;Getting Open
+PAS;passing;Passing
+PHA;puckHandling;Puckhandling
+SAC;shootingAccuracy;Shooting Accuracy
+SRA;shootingRange;Shooting Range
+OFR;offensiveRead;Offensive Read
+CHE;checking;Checking
+HIT;hitting;Hitting
+POS;positioning;Positioning
+SCH;stickChecking;Stickchecking
+SBL;shotBlocking;Shot Blocking
+FOF;faceoffs;Faceoffs
+DFR;defensiveRead;Defensive Read
+ACC;acceleration;Acceleration
+AGI;agility;Agility
+BAL;balance;Balance
+SPD;speed;Speed
+STA;stamina;Stamina
+STR;strength;Strength
+FIG;fighting;Fighting
+AGR;aggression;Aggression
+BRA;bravery;Bravery
+DET;determination;*Determination
+TPL;teamPlayer;*Team.Player
+LEA;leadership;*Leadership
+TEM;temperament;*Temperament
+PRO;professionalism;*Professionalism
+MTO;mentalToughness;Mental Toughness
+GST;goalieStamina;Goalie Stamina
+GPO;goaliePositioning;Positioning
+GPA;goaliePassing;Passing
+POK;pokeCheck;Poke Check
+BOK;blocker;Blocker
+GLO;glove;Glove
+REB;rebound;Rebound
+REC;recovery;Recovery
+GPH;goaliePuckhandling;Puckhandling
+LOW;lowShots;Low Shots
+GSK;skating;Skating
+REF;reflexes;Reflexes
