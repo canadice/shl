@@ -20,6 +20,12 @@ require(parallel)
 require(fuzzyjoin)
 require(rvest)
 
+if(getwd() == "F:/GitHubs/shl_API"){
+  #Do Nothing
+} else {
+  setwd("F:/GitHubs/shl_API")
+}
+
 ### Loads the separate scripts containing created scraper functions
 ## Functions to find links to teams and players from main forum page
 source("scripts/forumScrapers/teamLinkScraper.R")
@@ -178,4 +184,15 @@ data <-
        ) 
 
 ### THE RESULTING DATA SET data CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
-write.csv2(data, file = paste("csv/SHL", today(), ".csv", sep = ""), row.names = FALSE)
+write.csv2(data, file = "csv/SHL Forum Scrape Results.csv", row.names = FALSE)
+
+
+# repo <- init()
+# 
+# git2r::status(repo)
+# 
+# git2r::add(repo, path = "csv/SHL Forum Scrape Results.csv")
+# 
+# git2r::commit(repo, message = "Updated Forum Scrape results.")
+# 
+# git2r::push(repo, credentials = cred)
