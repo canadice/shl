@@ -3,12 +3,7 @@ title: "Explanation of MDS"
 author: "Canadice"
 date: '2020-11-24'
 output:
-  html_document:
-    df_print: paged
-  bookdown::html_document2:
-    number_sections: no
-    fig_caption: yes
-  pdf_document: default
+  md_document
 ---
 
 ```{r setup, include=FALSE}
