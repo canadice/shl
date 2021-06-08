@@ -184,7 +184,7 @@ data <-
        ) 
 
 ### THE RESULTING DATA SET data CAN THEN BE EXPORTED VIA NORMAL EXPORT-FUNCTIONS
-write.csv2(data, file = "csv/SHL Forum Scrape Results.csv", row.names = FALSE)
+write.csv2(data, file = "csv/SHL_Forum_Scrape_Results.csv", row.names = FALSE)
 
 
 # repo <- init()
