@@ -56,6 +56,9 @@ options(scipen=999)
 raw <- "https://raw.githubusercontent.com/canadice/shl/main/"
 
 ### Loading data sets
+## Current forum scrape data
+forumData <- read.csv2(paste(raw, "csv/SHL Forum Scrape Results.csv", sep = ""))
+
 ## Loads Attribute Keys
 attKey <- read.csv2(paste(raw, "csv/attribute_key.csv", sep = ""))
 
