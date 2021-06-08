@@ -26,24 +26,14 @@ require(janitor)
 require(usmap)
 require(shinythemes)
 
-
-##---------------------------------------------------------------
-##                Setting the working directory                 -
-##---------------------------------------------------------------
-
-## Moves the working directory to the main Github folder
-setwd("..")
-
 ##----------------------------------------------------------------
 ##          Loading the API functions and some data sets         -
 ##----------------------------------------------------------------
 
-fileSources <- 
-    c(
-        "scripts/API",
-        "SHL-Analytics/app-documents"
-    )
-    
+source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
+
+fileSources <- c("app-documents")
+
 sapply(
     X = fileSources,
     FUN = function(x){
@@ -70,7 +60,7 @@ rmdFiles <-
     unlist() %>% 
     .[str_detect(., pattern = ".Rmd")]
 
-sapply(rmdFiles, rmarkdown::render, quiet = T, output_dir = "SHL-Analytics/app-documents")
+sapply(rmdFiles, rmarkdown::render, quiet = T, output_dir = "app-documents")
 
 ##---------------------------------------------------------------
 ##                  Defining the user interface                 -
