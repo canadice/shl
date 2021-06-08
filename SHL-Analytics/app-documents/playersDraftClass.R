@@ -92,6 +92,7 @@ playersSERVER <- function(id){
           datatable(
             options = 
               list(
+                extensions = c('Buttons'),
                 orderClasses = TRUE, 
                 ## Sets a scroller for the rows
                 scrollX = TRUE,
@@ -103,8 +104,12 @@ playersSERVER <- function(id){
                 columnDefs = 
                   list(
                     list(
-                      targets = "_all",
+                      targets = 3:5,
                       width = '10px' 
+                    ),
+                    list(
+                      targets = 6,
+                      width = '20px' 
                     ),
                     list(
                       targets = c(0:2),
@@ -141,10 +146,7 @@ playersSERVER <- function(id){
               )
           )
       },
-      filter = 'bottom',
-      rownames = FALSE,
-      class = 'compact cell-border stripe',
-      extensions = c('Buttons')
+      class = 'compact cell-border stripe'
       ) 
     }
   )
