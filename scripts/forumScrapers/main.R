@@ -50,8 +50,23 @@ iihfTransfer <-
 smjhl_link <- "https://simulationhockey.com/forumdisplay.php?fid=5"
 shl_east <- "https://simulationhockey.com/forumdisplay.php?fid=8"
 shl_west <- "https://simulationhockey.com/forumdisplay.php?fid=9"
-prospects <- "https://simulationhockey.com/forumdisplay.php?fid=63"
-free_agents <- "https://simulationhockey.com/forumdisplay.php?fid=43"
+prospects <- 
+  "https://simulationhockey.com/forumdisplay.php?fid=63" %>% 
+  c(
+    .,
+    paste(., "&page=2", sep = ""),
+    paste(., "&page=3", sep = ""),
+    paste(., "&page=4", sep = "")
+  )
+free_agents <- 
+  "https://simulationhockey.com/forumdisplay.php?fid=43" %>% 
+  c(
+    .,
+    paste(., "&page=2", sep = ""),
+    paste(., "&page=3", sep = ""),
+    paste(., "&page=4", sep = ""),
+    paste(., "&page=5", sep = "")
+  )
 
 ### Parallell processing to quicken the scraping for all the specified links
 ##  "Quicken" does not mean quick, scraping this information once takes around 10 minutes
