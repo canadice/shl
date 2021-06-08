@@ -17,6 +17,12 @@ time goes on. If you are interested in helping out or want to know more
 about the work, contact
 [Canadice](https://simulationhockey.com/member.php?action=profile).
 
+Players
+-------
+
+The *Players* tab ranks all players based on their earned TPE split by
+their draft class.
+
 Visualizations
 --------------
 
