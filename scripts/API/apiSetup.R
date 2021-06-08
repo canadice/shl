@@ -147,7 +147,7 @@ playerLoader <- function(leagueID, season = NULL){
       team
     ) %>% 
     ## Summarizes the used TPE based on attribute value
-    summarize(
+    dplyr::summarize(
       ## Removes the fixed attributes to 15 and compensates for 11 starting Stamina
       usedTPE = sum(TPE) - 62*5 - 16
     ) %>% 
@@ -187,7 +187,7 @@ playerLoader <- function(leagueID, season = NULL){
       team
     ) %>% 
     ## Summarizes the used TPE based on attribute value
-    summarize(
+    dplyr::summarize(
       ## Removes the fixed attributes to 15 and compensates for 8 Aggression
       usedTPE = sum(TPE) - 62*3 - 4
     ) %>% 
@@ -199,6 +199,11 @@ playerLoader <- function(leagueID, season = NULL){
     left_join(
       usedTPE,
       by = c("name")
+    ) %>% 
+    dplyr::rename(
+      goaliePassing = passing,
+      goaliePuckhandling = puckhandling,
+      goaliePositioning = positioning
     )
   
   ## Return a list of the loaded data
