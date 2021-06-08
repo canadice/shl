@@ -16,7 +16,13 @@ require(RCurl)
 
 ## Data processing
 require(tidyr)
-require(plyr)
+
+if("plyr" %in% (.packages())){
+  # Do nothing
+} else {
+  require(plyr)  
+}
+
 require(dplyr)
 require(janitor)
 require(tibble)
