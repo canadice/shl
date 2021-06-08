@@ -100,7 +100,7 @@ playerScraper <-
         "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|Manhattan Rage|",
         "SMJHL HO|Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
         "HO|Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany|Commissioner|Awards Committee|Management|IIHF|Historian|HOF Committee|"
+        "Germany|Commissioner|Awards Committee|Management|IIHF|Historian|HOF Committee"
       )
     
     USER <- 
