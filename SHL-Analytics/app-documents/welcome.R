@@ -15,7 +15,7 @@ welcome_ui <- function(id){
     ## Welcome text
     withMathJax(
       includeMarkdown(
-        "app-documents/welcome.md"
+        "app-documents/mdWelcome.md"
       )
     )
   )

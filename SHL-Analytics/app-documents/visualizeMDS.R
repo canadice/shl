@@ -109,16 +109,16 @@ mdsUI <- function(id){
            plotlyOutput(
              outputId = ns("ratingPlot")
            )
-         )#,
-         ## The explanation of distances
-         # tabPanel(
-         #   "Explanation", 
-         #   withMathJax(
-         #     includeMarkdown(
-         #       "explanation_MDS.md"
-         #     )
-         #   )
-         # )
+         ),
+         # The explanation of distances
+         tabPanel(
+           "Explanation",
+           withMathJax(
+             includeMarkdown(
+               "app-documents/mdExplanation.md"
+             )
+           )
+         )
        )
      )
    )
