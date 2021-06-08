@@ -116,13 +116,27 @@ ui <-
         navbarPage(
             "SHL Analytics",
             
-            ## Welcome tab
+            
+            #################################################################
+            ##                           Welcome                           ##
+            #################################################################
             tabPanel(
                 "Welcome",
                 welcome_ui(id = "welcome")
             ),
             
-            ## Visualization tab
+            
+            ##################################################################
+            ##                    Players by draft class                    ##
+            ##################################################################
+            tabPanel(
+                "Players",
+                playersUI(id = "playersUI")
+            ),
+            
+            ##################################################################
+            ##                       Visualizations                         ##
+            ##################################################################
             tabPanel(
                 "Visualizations",
                 tabsetPanel(
@@ -156,6 +170,8 @@ server <- function(input, output) {
     mdsSERVER(id = "simUI")
     
     radarSERVER(id = "radarUI")
+    
+    playersSERVER(id = "playersUI")
     
 }
 
