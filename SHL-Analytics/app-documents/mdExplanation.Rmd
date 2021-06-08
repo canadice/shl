@@ -23,11 +23,13 @@ y <- c(0, 1)
 
 data <- data.frame(x, y)
 
-player_example <- read.csv2(file = "player_example.csv")
-player_example$Name <- as.character(player_example$Name)
-
-# write.csv2(shl_seasonal_player_data$S56[1:10,] %>% select(Name, AGR:DFR), file = "player_example.csv", row.names = FALSE)
-
+player_example <- 
+  playerLoader(0, season = 59)$players %>% 
+  slice(1:5) %>% 
+  select(
+    name, 
+    screening:defensiveRead
+  )
 
 ```
 
@@ -101,8 +103,8 @@ differences <- abs(as.numeric(player_example[1,-1]) - as.numeric(player_example[
 
 player_sample <- rbind(player_example[1:2,], c("Difference", differences))
 
-kable(player_sample[,1:10], format = "html", row.names = FALSE, caption = "Example data used") %>%
-  kable_styling(position = "center", full_width = FALSE)
+kable(player_sample[,1:10], format = "pipe", row.names = FALSE, caption = "Example data used")# %>%
+ # kable_styling(position = "center", full_width = FALSE)
 
 ```
 
@@ -114,10 +116,15 @@ This calculation is then done with every player to produce a distance matrix tha
 
 d <- as.matrix(dist(player_example[1:5,-1], method = "manhattan"))
 
-rownames(d) <- colnames(d) <- player_example$Name[1:5]
+rownames(d) <- colnames(d) <- player_example$name[1:5]
 
-kable(d, format = "html", row.names = TRUE, caption = "Distance matrix based on 5 players") %>%
-  kable_styling(position = "center", full_width = FALSE)
+kable(
+  d, 
+  format = "pipe",
+  row.names = TRUE, 
+  caption = "Distance matrix based on 5 players"
+  )# %>%
+  #kable_styling(full_width = FALSE)
 
 
 ```
@@ -133,8 +140,8 @@ data("UScitiesD")
 
 city <- as.matrix(UScitiesD)
 
-kable(city[1:5,1:5], format = "html", row.names = TRUE, caption = "Five cities and their direct distance to one another") %>%
-  kable_styling(position = "center", full_width = FALSE)
+kable(city[1:5,1:5], format = "pipe", row.names = TRUE, caption = "Five cities and their direct distance to one another") #%>%
+  #kable_styling(position = "center", full_width = FALSE)
 
 fit <- cmdscale(UScitiesD, eig = TRUE, k = 2)
 
@@ -167,7 +174,7 @@ fit <- cmdscale(d, eig = TRUE, k = 2)
 
 fit <- data.frame(x = fit$points[,1],
                   y = fit$points[,2],
-                  Name = player_example$Name)
+                  Name = player_example$name)
 
 ggplot(fit) + aes(x, y, label = Name) + 
   geom_point(color = "black", size = 2) +

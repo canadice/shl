@@ -7,16 +7,54 @@
 #    http://shiny.rstudio.com/
 #
 
-require(XML)
+### Packages that are used
+## API packages
+require(httr)
+require(jsonlite)
+
+## Packages for reading urls
+require(rvest)
+require(RCurl)
+
+## Data processing
+require(tidyr)
+
+if("plyr" %in% (.packages())){
+    # Do nothing
+} else {
+    require(plyr)  
+}
+
+require(dplyr)
+require(janitor)
+require(tibble)
+require(fuzzyjoin)
+
+## Visualizations
 require(ggplot2)
+require(ggnewscale)
+require(RColorBrewer)
+require(cowplot)
+require(ggpubr)
+require(png)
+require(grid)
+require(plotly)
+
+# Packages for svg images
+require(magick)
+require(rsvg)
+
+## Package for handling date and time
+require(lubridate)
+
+## Packages for handling strings
 require(stringr)
 require(stringi)
-require(dplyr)
-require(tidyr)
-require(RColorBrewer)
-require(lubridate)
-require(plotly)
-require(fuzzyjoin)
+
+## Loading package that can talk to Google Sheets
+require(googlesheets4)
+
+## Loading Shiny packages
 require(shiny)
 require(DT)
 require(knitr)
@@ -34,18 +72,6 @@ source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup
 
 fileSources <- c("app-documents")
 
-sapply(
-    X = fileSources,
-    FUN = function(x){
-        files <- list.files(path = x, pattern = ".R$")
-        
-        sapply(
-            X = paste(x, files, sep = "/"),
-            FUN = source
-        )
-    }
-)
-
 ## Loads and runs RMarkdown files
 rmdFiles <- 
     sapply(
@@ -61,6 +87,20 @@ rmdFiles <-
     .[str_detect(., pattern = ".Rmd")]
 
 sapply(rmdFiles, rmarkdown::render, quiet = T, output_dir = "app-documents")
+
+## Loads files
+sapply(
+    X = fileSources,
+    FUN = function(x){
+        files <- list.files(path = x, pattern = ".R$")
+        
+        sapply(
+            X = paste(x, files, sep = "/"),
+            FUN = source
+        )
+    }
+)
+
 
 ##---------------------------------------------------------------
 ##                  Defining the user interface                 -
