@@ -26,8 +26,8 @@ playersUI <- function(id){
         selectInput(
           inputId = ns("class"),
           label = "Select Draft Class",
-          choices = unique(forumData$CLASS) %>% sort(),
-          selected = unique(forumData$CLASS) %>% min()
+          choices = unique(forumData$CLASS) %>% sort(decreasing = TRUE),
+          selected = unique(forumData$CLASS) %>% max()
         ),
         em("Source: SHL Forums")
       ),
@@ -68,8 +68,12 @@ playersSERVER <- function(id){
             secondary,
             IIHF.Nation
           ) %>% 
+          rename(
+            team = abbr
+          ) %>% 
           rename_with(
-            stringr::str_to_title()
+            .cols = c(-TPE, -IIHF.Nation),
+            stringr::str_to_title
           ) %>% 
           return()
       })
@@ -77,31 +81,71 @@ playersSERVER <- function(id){
       ## Outputs a datatable of all the players
       output$dataTable <- DT::renderDT({
         currentData() %>% 
-          arrange(TPE)
+          arrange(-TPE) %>% 
+          mutate(
+            Rank = row.names(.)
+          ) %>% 
+          relocate(
+            c(Primary, Secondary, Rank),
+            .before = Name
+          ) %>% 
+          datatable(
+            options = 
+              list(
+                orderClasses = TRUE, 
+                ## Sets a scroller for the rows
+                scrollX = TRUE,
+                scrollY = '600px',
+                ## Sets size of rows shown
+                scrollCollapse = TRUE,
+                ## Sets width of columns
+                autoWidth = TRUE,
+                columnDefs = 
+                  list(
+                    list(
+                      targets = "_all",
+                      width = '10px' 
+                    ),
+                    list(
+                      targets = c(0:2),
+                      visible = FALSE
+                    )
+                  ),
+                ## Removes pages in the table
+                paging = FALSE,
+                ## Adds scrollable horizontal
+                # scrollX = '600px',
+                # pageLength = 20,
+                # lengthMenu = c(10, 25, 50, 100),
+                dom = 'Bfrtip',
+                # bInfo = FALSE,
+                buttons = c('copy', 'csv', 'excel')
+              )
+          ) %>% 
+          formatStyle(
+            columns = 0:10,
+            valueColumns = "Primary",
+            backgroundColor = 
+              styleEqual(
+                sort(unique(forumData$primary)), 
+                sort(unique(forumData$primary))
+              )
+          ) %>% 
+          formatStyle(
+            columns = 0:10,
+            valueColumns = "Secondary",
+            color = 
+              styleEqual(
+                sort(unique(forumData$secondary)), 
+                sort(unique(forumData$secondary))
+              )
+          )
       },
       filter = 'bottom',
       rownames = FALSE,
       class = 'compact cell-border stripe',
-      selection = 'single',
-      options = 
-        list(
-          orderClasses = TRUE, 
-          ## Sets a scroller for the rows
-          scrollY = '400px',
-          ## Sets size of rows shown
-          scrollCollapse = TRUE,
-          ## Removes pages in the table
-          paging = FALSE,
-          ## Adds scrollable horizontal
-          scrollX = '600px',
-          # pageLength = 10,
-          # lengthMenu = c(10, 25, 50, 100),
-          dom = 'Bfrtip',
-          bInfo = FALSE,
-          buttons = c('copy', 'csv', 'excel')
-        ),
       extensions = c('Buttons')
-      )
+      ) 
     }
   )
 }
