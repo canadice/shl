@@ -2,7 +2,7 @@
 #################################################################
 ##                          API Set-up                         ##
 ##                     Created: 2021-04-07                     ##
-##                    Last edit: 2021-04-07                    ##
+##                    Last edit: 2021-06-08                    ##
 #################################################################
 
 ### Packages that are used
@@ -46,51 +46,54 @@ require(googlesheets4)
 ## Changes when scientific notation is used to never
 options(scipen=999)
 
+## GitHub raw url
+raw <- "https://raw.githubusercontent.com/canadice/shl/main/"
+
 ### Loading data sets
 ## Loads Attribute Keys
-attKey <- read.csv2("csv/attribute_key.csv")
+attKey <- read.csv2(paste(raw, "csv/attribute_key.csv", sep = ""))
 
 ## Loading cost for TPE
-tpeCost <- read.csv2("csv/tpe_cost.csv")
+tpeCost <- read.csv2(paste(raw, "csv/tpe_cost.csv", sep = ""))
 
 ## Loading team information
-teamInfo <- read.csv2("csv/team_information.csv") %>% 
+teamInfo <- read.csv2(paste(raw, "csv/team_information.csv", sep = "")) %>% 
   mutate(
     logoImage = 
       list(
-        image_read_svg("graphics/Atlanta.svg"),
-        image_read_svg("graphics/Baltimore.svg"),
-        image_read_svg("graphics/Buffalo.svg"),
-        image_read_svg("graphics/Chicago.svg"),
-        image_read_svg("graphics/Hamilton.svg"),
-        image_read_svg("graphics/Manhattan.svg"),
-        image_read_svg("graphics/New_England.svg"),
-        image_read_svg("graphics/Tampa_Bay.svg"),
-        image_read_svg("graphics/Toronto.svg"),
-        image_read_svg("graphics/Calgary.svg"),
-        image_read_svg("graphics/Edmonton.svg"),
-        image_read_svg("graphics/Los_Angeles.svg"),
-        image_read_svg("graphics/Minnesota.svg"),
-        image_read_svg("graphics/New_Orleans.svg"),
-        image_read_svg("graphics/San_Francisco.svg"),
-        image_read_svg("graphics/Seattle.svg"),
-        image_read_svg("graphics/Texas.svg"),
-        image_read_svg("graphics/Winnipeg.svg"),
+        image_read_svg(paste(raw, "graphics/Atlanta.svg"), sep = "")),
+        image_read_svg(paste(raw, "graphics/Baltimore.svg"), sep = "")),
+        image_read_svg(paste(raw, "graphics/Buffalo.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Chicago.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Hamilton.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Manhattan.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/New_England.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Tampa_Bay.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Toronto.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Calgary.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Edmonton.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Los_Angeles.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Minnesota.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/New_Orleans.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/San_Francisco.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Seattle.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Texas.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Winnipeg.svg"),sep = "")),
         NA, #Old Winnipeg Jets
-        image_read_svg("graphics/Carolina.svg"),
-        image_read_svg("graphics/Detroit.svg"),
-        image_read_svg("graphics/Maine.svg"),
-        image_read_svg("graphics/Newfoundland.svg"),
-        image_read_svg("graphics/Quebec_City.svg"),
-        image_read_svg("graphics/St_Louis.svg"),
-        image_read_svg("graphics/Anaheim.svg"),
-        image_read_svg("graphics/Anchorage.svg"),
-        image_read_svg("graphics/Colorado.svg"),
-        image_read_svg("graphics/Kelowna.svg"),
-        image_read_svg("graphics/Nevada.svg"),
-        image_read_svg("graphics/Vancouver.svg"),
-        image_read_svg("graphics/Montreal.svg"),
-        image_read_svg("graphics/Philadelphia.svg")
+        image_read_svg(paste(raw, "graphics/Carolina.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Detroit.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Maine.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Newfoundland.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Quebec_City.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/St_Louis.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Anaheim.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Anchorage.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Colorado.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Kelowna.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Nevada.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Vancouver.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Montreal.svg"),sep = "")),
+        image_read_svg(paste(raw, "graphics/Philadelphia.svg"),sep = ""))
       )
   )
 
