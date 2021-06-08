@@ -1,0 +1,194 @@
+---
+title: "Explanation of MDS"
+author: "Canadice"
+date: '2020-11-24'
+output:
+  html_document:
+    df_print: paged
+  bookdown::html_document2:
+    number_sections: no
+    fig_caption: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+
+require(ggplot2)
+require(ggmap)
+require(knitr)
+require(kableExtra)
+require(dplyr)
+require(janitor)
+require(usmap)
+
+knitr::opts_chunk$set(echo = FALSE, fig.width = 3, fig.height = 3)
+
+x <- c(0, 1)
+y <- c(0, 1)
+
+data <- data.frame(x, y)
+
+player_example <- read.csv2(file = "player_example.csv")
+player_example$Name <- as.character(player_example$Name)
+
+# write.csv2(shl_seasonal_player_data$S56[1:10,] %>% select(Name, AGR:DFR), file = "player_example.csv", row.names = FALSE)
+
+
+```
+
+## ELI5 or tldr
+I see how you look like and place you in the sandbox close to your lookalike. The closer you are, the more you look alike.
+
+## Introduction
+As every player is defined by more than 20 different attributes, it is difficult to try and compare and visualize players with each other in a simple manner. Fortunately a method called *multidimensional scaling* allows us to reduce the number of dimensions (or attributes) in order to facilitate this goal. 
+
+Reducing the number of dimension too much risks reducing the data to a form that summarizes or hides part of the information the data holds. On the other hand not reducing the number of dimensions enough still produces problems with visualization and interpretation.
+
+If we focus on visualization, a 2- or 3 dimensional plot provides a result that is easily created, however the interpretation of this plot might still prove difficult.
+
+## The setup to multidimensional scaling
+In order to reduce the number of dimension we must start with defining how similar each player is to one another, as this relationship is what we want to keep. As the player ratings are numerical values, this becomes relatively easy by calculating a pairwise distance value between the players.
+
+### Distance metrics
+We can look at two different types of distance metrics that can be used to calculate the distance values.
+
+First we have the *Euclidean* distance that calculates the **closest** distance between two points, as seen in figure below. Hope you remember your high school geography because the distance is calculated as the hypotenuse of the side lengths of the right angle triangle that is formed from the points. The distance in figure is thereby calculated as $\sqrt{1^2 + 1^2} = \sqrt{2} \approx 1.41$. 
+
+```{r euclidean, fig.cap='\\label{fig:euclidean}Euclidean distance between two points'}
+ggplot(data) + aes(x, y) + geom_point(size = 3) +
+  scale_x_continuous(limits = c(-0.25, 1.25),
+                     breaks = c(0, 1)) +
+  scale_y_continuous(limits = c(-0.25, 1.25),
+                     breaks = c(0, 1)) + 
+  theme_bw() + 
+  geom_line(color = "red", linetype = 2, size = 1) +
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0),
+               color = "black", linetype = 3, size = 1) +
+  geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1),
+               color = "black", linetype = 3, size = 1)
+
+
+```
+
+This measure assumes that it is possible to place values between the integers (whole numbers), which is not the case if the variable is discrete. We must then restrict that the distance between two points follows the whole numbers. A practical example of this issue is if you would want to calculate the distance you would need to walk between two streets and avenues in Manhattan, for instance the corner of the 50th Street and 3rd Avenue, and 51th Street and 2nd Avenue. The Euclidean distance assumes that you are able to walk between the corners directly, but if you've ever been in Manhattan, you would notice that there are some rather large buildings in the way. You must walk along the Street to another corner before walking along the Avenue to your destination.
+
+```{r, message=FALSE}
+
+ggmap(get_stamenmap(bbox = c(-73.971,40.7530,-73.965,40.759), zoom = 16, messaging = FALSE)) +
+  theme_bw()
+
+```
+
+This practical example shows how the *Manhattan* distance is calculated, by calculating the number of corners between your current position and your destination. The distance calculation would then be the sum of all the lengths between the two points, in the case of the figure below: $1 + 1 = 2$.
+
+```{r manhattan, fig.cap='Euclidean distance between two points'}
+ggplot(data) + aes(x, y) + geom_point(size = 3) +
+  scale_x_continuous(limits = c(-0.25, 1.25),
+                     breaks = c(0, 1)) +
+  scale_y_continuous(limits = c(-0.25, 1.25),
+                     breaks = c(0, 1)) + 
+  theme_bw() + 
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0),
+               color = "red", linetype = 2, size = 1) +
+  geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1),
+               color = "red", linetype = 2, size = 1)
+
+```
+
+We can also calculate the distance as the sum of the individual differences for each dimension, in this case the difference in $x$ from 0 to 1, and difference in $y$ from 0 to 1: $(1-0)+(1-0)=2$ 
+
+### Calculating the distances
+In the case of player ratings, they are all integers between 5 and 20, with some limitations for specific ratings. We now want to calculate the similarity of them, where players that have similar ratings also will end up closer together in the final plot. A similarity can also be considered as an inverse distance, where high similarity is equal to small distance and vice versa. As shown above, the *Manhattan* distance is to be used when we have discrete variables, so this calculation can be done with the following example data:
+
+```{r}
+
+differences <- abs(as.numeric(player_example[1,-1]) - as.numeric(player_example[2,-1]))
+
+player_sample <- rbind(player_example[1:2,], c("Difference", differences))
+
+kable(player_sample[,1:10], format = "html", row.names = FALSE, caption = "Example data used") %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+```
+
+The last row contains the the absolute differences between the two players, i.e. how many "Manhattan intersections" between them. If we tally that row of differences we would get the total distance (or inverse similarity) between the two players: `r sum(differences)`. 
+
+This calculation is then done with every player to produce a distance matrix that contain all pairwise calculated distances of all players in the data. The diagonal of the matrix will have a distance of 0 as the calculation is based on the same player. 
+
+```{r}
+
+d <- as.matrix(dist(player_example[1:5,-1], method = "manhattan"))
+
+rownames(d) <- colnames(d) <- player_example$Name[1:5]
+
+kable(d, format = "html", row.names = TRUE, caption = "Distance matrix based on 5 players") %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+
+```
+
+## Reducing the dimensions
+After the distances between the players have been calculated, we now know the relationship we want to visualize and interpret. Multidimensional scaling tries to find a set of points in $k$ dimensions that equally represent the relationships seen in the $n$ (number of attributes) dimensions. We don't need to get into the details of how this is performed but the algorithm usually performs some form of optimization to reduce the error between the observed distance matrix and the distances from the projected new dimensions.
+
+A classic example of this is how you with direct distances between different US cities can produce a map that somewhat corresponds to the real world, without providing any coordinates or similar to the method.
+
+```{r, fig.align="center", fig.cap = "Map of the United States"}
+
+data("UScitiesD")
+
+city <- as.matrix(UScitiesD)
+
+kable(city[1:5,1:5], format = "html", row.names = TRUE, caption = "Five cities and their direct distance to one another") %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+fit <- cmdscale(UScitiesD, eig = TRUE, k = 2)
+
+fit <- data.frame(x = fit$points[,1],
+                  y = fit$points[,2],
+                  city = rownames(city))
+
+# plot_usmap("states") + geom_point(data = fit, aes(x = x, y = y, label = city)) + 
+#   geom_text(data = fit, aes(x = x, y = y, label = city), nudge_y = 100, size = 2.5)
+  
+  
+ggplot(fit) + aes(x, y, label = city) + geom_point() + 
+  geom_text(nudge_y = 80, size = 2.5) + 
+  theme_bw() +
+  scale_x_continuous(limits = c(-1400, 1700)) +
+  labs(x="Dimension 1", y = "Dimension 2")
+
+
+```
+
+The dimensions of the map does not exactly correspond to the longitude and latitude but they are somewhat representative of those measures. The map produced isn't perfect, for instance it is upside down and the cities located on the corners of the map might not directly correspond to their geographic location. However the map was produced with only the calculated direct distances between the different and nothing else, which shows the value of the method.
+
+In the case of the map the two dimensions can be interpreted relatively easy, as a representation of the geographical coordinates. However in the case of the players, the reduced dimensions are not that easily interpreted as something that relates to the data. This produces some difficulty in determining what distinguishes players in one area of the plot from other areas, but the visual representation still shows how similar players in the league are to one another.
+
+```{r, fig.align="center", fig.height=4, fig.width=4}
+
+d <- as.matrix(dist(player_example[,-1], method = "manhattan"))
+
+fit <- cmdscale(d, eig = TRUE, k = 2)
+
+fit <- data.frame(x = fit$points[,1],
+                  y = fit$points[,2],
+                  Name = player_example$Name)
+
+ggplot(fit) + aes(x, y, label = Name) + 
+  geom_point(color = "black", size = 2) +
+  geom_text(nudge_y = 2, size = 2.5) +
+  theme_bw() +
+  labs(x = "Dimension 1", y = "Dimension 2") + 
+  scale_x_continuous(limits = c(-50, 50))
+  
+
+
+```
+
+
+
+
+
+
+
+
