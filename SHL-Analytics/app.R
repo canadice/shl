@@ -81,12 +81,36 @@ ui <-
     fluidPage(
         ### Adding the theme of the app
         theme = shinytheme("yeti"),
+        
+        ## Creating the navigation pane
         navbarPage(
-            "Tools for SHL",
-            ## Welcoming screen
+            "SHL Analytics",
+            
+            ## Welcome tab
             tabPanel(
                 "Welcome",
                 welcome_ui(id = "welcome")
+            ),
+            
+            ## Visualization tab
+            tabPanel(
+                "Visualizations",
+                tabsetPanel(
+                    ## Player visualization using radar charts
+                    tabPanel(
+                        "Player Attributes",
+                        titlePanel("Visualization of player attributes"),
+                        radarUI(id = "radarUI")
+                    ),
+                    ## Player similarity using multidimensional scaling
+                    tabPanel(
+                        "Player Similarity",
+                        ## Application title
+                        titlePanel(
+                            "Player similarity using multidimensional scaling"),
+                        mdsUI(id = "simUI")
+                    )
+                )
             )
         )
     )
@@ -99,7 +123,9 @@ server <- function(input, output) {
     ##---------------------------------------------------------------
     ##          Loading each of the different backend sites         -
     ##---------------------------------------------------------------
+    mdsSERVER(id = "simUI")
     
+    radarSERVER(id = "radarUI")
     
 }
 
