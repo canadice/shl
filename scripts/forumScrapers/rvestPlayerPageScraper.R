@@ -96,11 +96,11 @@ playerScraper <-
         "Registered|Player Updaters|Rookie|Vancouver Whalers|SHL GM|Quebec City Citadelles|",
         "Head Office|Coach|Budget Director|Graphic Graders|IIHF Commissioner|Moderators|Federation Head|",
         "Fantasy League Manager|SMJHL GM|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
-        "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|HOF Committee|",
-        "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|SMJHL |SHL |Manhattan Rage|",
+        "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|SHL GM|SHL HO|",
+        "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|Manhattan Rage|",
         "SMJHL HO|Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
         "HO|Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany|Commissioner|Awards Committee|Management|IIHF|Historian"
+        "Germany|Commissioner|Awards Committee|Management|IIHF|Historian|HOF Committee|"
       )
     
     USER <- 
