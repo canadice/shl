@@ -83,7 +83,8 @@ playersSERVER <- function(id){
         currentData() %>% 
           arrange(-TPE) %>% 
           mutate(
-            Rank = row.names(.)
+            Rank = row.names(.),
+            Name = iconv(Name, to = "UTF-8")
           ) %>% 
           relocate(
             c(Primary, Secondary, Rank),
