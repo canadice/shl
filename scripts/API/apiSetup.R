@@ -114,7 +114,16 @@ teamInfo <- read.csv2(paste(raw, "csv/team_information.csv", sep = "")) %>%
       )
   )
 
-### Creates functions that are used multiple times 
+
+#################################################################
+##           Creates function for different analyses           ##
+#################################################################
+
+
+##---------------------------------------------------------------
+##          Function that reads from API based on url           -
+##---------------------------------------------------------------
+
 readAPI <- function(url, ...){
   temp <- 
     url %>% 
@@ -128,6 +137,11 @@ readAPI <- function(url, ...){
     fromJSON() %>% 
     return()
 }
+
+
+##---------------------------------------------------------------
+##        Function that loads player ratings (attributes)       -
+##---------------------------------------------------------------
 
 playerLoader <- function(leagueID, season = NULL){
   players <- 
@@ -235,6 +249,10 @@ playerLoader <- function(leagueID, season = NULL){
 }
 
 
+##---------------------------------------------------------------
+##            Function that loads player statistics             -
+##---------------------------------------------------------------
+
 indStatsLoader <- function(leagueID, season = NULL, type = NULL){
   players <- 
     readAPI(
@@ -272,8 +290,9 @@ indStatsLoader <- function(leagueID, season = NULL, type = NULL){
 }
 
 
-
-
+##---------------------------------------------------------------
+##      Function that loads team statistics and information     -
+##---------------------------------------------------------------
 
 teamLoader <-  function(leagueID, season = NULL){
   teams <- 
@@ -285,6 +304,11 @@ teamLoader <-  function(leagueID, season = NULL){
   return(teams)
 }
 
+
+##----------------------------------------------------------------
+##                  Function that loads schedule                 -
+##----------------------------------------------------------------
+
 gamesLoader <- function(leagueID, season = NULL){
   schedule <- 
     readAPI(
@@ -294,6 +318,11 @@ gamesLoader <- function(leagueID, season = NULL){
   
   return(schedule)
 }
+
+
+##---------------------------------------------------------------
+##                Function that loads standings                 -
+##---------------------------------------------------------------
 
 standingsLoader <- function(leagueID, season = NULL){
   standings <- 
@@ -307,6 +336,761 @@ standingsLoader <- function(leagueID, season = NULL){
 
 
 
+##-----------------------------------------------------------------------
+##  Adding function that rescales a variable that has been normalized   -
+##-----------------------------------------------------------------------
+
+rescale <- function(x){
+  x * attr(x, 'scaled:scale') + attr(x, 'scaled:center')
+}
+
+
+##----------------------------------------------------------------------
+##  Creates a function that loads the data used for the player cards   -
+##----------------------------------------------------------------------
+
+dataLoader <- function(league, season = NULL){
+  ### Reads all players from the index
+  players <- indStatsLoader(league, season = season, type = "regular")
+  
+  ### Reads team information from the index
+  teams <- 
+    teamLoader(league, season = season) %>% 
+    left_join(
+      teamInfo %>% 
+        select(
+          team,
+          logoImage
+        ),
+      by = c("name" = "team")
+    )
+  
+  
+  ### Splits the data sets ### MOVE THIS ONE TO LOWER WHEN BUILDING GOALIE FUNCTIONS
+  goalies <- 
+    players$goalies %>%
+    do.call(data.frame, .)
+  
+  ##----------------------------------------------------------------
+  ##                      Adding new variables                     -
+  ##----------------------------------------------------------------
+  
+  skaters <- 
+    players$players %>% 
+    do.call(data.frame, .) %>% 
+    
+    ## Creates takeaway to giveaway ratio
+    ## Creates group for forwards and defencemen
+    mutate(
+      `TA_GA` = takeaways/giveaways,
+      posGroup = 
+        case_when(
+          position %in% c("LD", "RD") ~ "Def",
+          TRUE ~ "For"
+        )
+    ) %>% 
+    relocate(
+      `TA_GA`,
+      .after = "takeaways"
+    ) %>% 
+    ## Converts time on ice variables to numeric values in seconds
+    mutate(
+      across(
+        contains("timeOnIce"), 
+        ~ .x %>% 
+          str_split(":") %>%
+          lapply(
+            X = .,
+            FUN = function(x){
+              x %>% 
+                as.numeric() %>% 
+                as.matrix() %>% 
+                t()
+            }
+          ) %>% 
+          lapply(
+            X = .,
+            FUN = function(x){
+              x %*% matrix(c(60,1))
+            }
+          ) %>% 
+          unlist()
+      ),
+      ## Creates Even Strength Time On Ice
+      esTimeOnIce = timeOnIce - ppTimeOnIce - shTimeOnIce
+    ) %>% 
+    select(
+      -id, -league, -season
+    ) %>% 
+    
+    ## Calculates the Time On Ice rank within the team and skater group
+    group_by(team, posGroup) %>% 
+    mutate(
+      esRank = rank(-esTimeOnIce, ties.method = "first"),
+      ppRank = rank(-ppTimeOnIce, ties.method = "first"),
+      shRank = rank(-shTimeOnIce, ties.method = "first")
+    ) %>% 
+    ## Adds the nth text to the rank
+    mutate(
+      across(
+        contains("Rank"),
+        ~ case_when(
+          .x %in% c(11,12,13) ~ paste(.x, "th", sep = ""),
+          .x %% 10 == 1 ~ paste(.x, "st", sep = ""),
+          .x %% 10 == 2 ~ paste(.x, "nd", sep = ""),
+          .x %% 10 == 3 ~ paste(.x, "rd", sep = ""),
+          TRUE ~ paste(.x, "th", sep = "")
+        )
+      )
+    ) %>% 
+    ungroup() %>% 
+    ## Relocates variables
+    relocate(
+      esRank:shRank,
+      .after = team
+    ) %>% 
+    relocate(
+      esTimeOnIce,
+      .after = timeOnIce
+    )
+  
+  ##---------------------------------------------------------------
+  ##                  Aggregating team statistics                 -
+  ##---------------------------------------------------------------
+  
+  teamSkater <- 
+    skaters %>% 
+    group_by(team) %>% 
+    ## Calculates the sum and mean where applicable ### SHOULD MOVE GAME RATINGS TO MEAN
+    summarize(
+      across(
+        timeOnIce:defensiveGameRating,
+        sum
+      ),
+      across(
+        contains("advancedStats"),
+        mean
+      )
+    ) 
+  
+  ##----------------------------------------------------------------
+  ##    Transforming statistics in units of standard deviation     -
+  ##----------------------------------------------------------------
+  
+  teamSkaterZ <- 
+    teamSkater %>% 
+    mutate(
+      across(
+        timeOnIce:advancedStats.FFPctRel,
+        ~ .x %>% 
+          as.numeric() %>% 
+          scale()
+      )
+    ) %>% 
+    
+    ## Changes direction of AGAINST stats, larger values are worse so they become negative 
+    mutate(
+      across(
+        contains(
+          "advancedStats.GA60"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.SA60"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.CA"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.FA"
+        ),
+        ~ -.x
+      )
+    ) 
+  
+  ### Standardizing skaters
+  skatersZ <- 
+    skaters %>% 
+    ## Calculates the normalized value (z-score) of all players' variables
+    ## The z-score is the distance in units of standard deviation from the league mean
+    mutate(
+      across(
+        timeOnIce:advancedStats.FFPctRel,
+        ~ .x %>% 
+          as.numeric() %>% 
+          scale()
+      )
+    ) %>% 
+    ## Changes direction of AGAINST stats, larger values are worse so they become negative 
+    mutate(
+      across(
+        contains(
+          "advancedStats.GA60"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.SA60"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.CA"
+        ),
+        ~ -.x
+      ),
+      across(
+        contains(
+          "advancedStats.FA"
+        ),
+        ~ -.x
+      )
+    ) 
+  
+  ### Calculates the percentile of the standardized values
+  skatersZRank <- 
+    skatersZ %>% 
+    mutate(
+      across(
+        timeOnIce:advancedStats.FFPctRel,
+        ~ percent_rank(.x)
+      )
+    )
+  
+  ### Adds percentile data to the standardized stats
+  skatersZ <- 
+    skatersZ %>% 
+    left_join(
+      skatersZRank,
+      by = 
+        c("name", "position", 
+          "team", "esRank", 
+          "ppRank", "shRank", 
+          "gamesPlayed", "posGroup"),
+      suffix = c(".ind", ".rank")
+    )
+  
+  ### Removes text from the colnames
+  colnames(skatersZ) <- 
+    colnames(skatersZ) %>% 
+    str_remove_all("advancedStats.")
+  
+  colnames(teamSkaterZ) <- 
+    colnames(teamSkaterZ) %>% 
+    str_remove_all("advancedStats.")
+  
+  ### Returns list of standardized skater and team stats as well as merged teamInfo with index data
+  list(
+    skaters = skatersZ,
+    team = teamSkaterZ,
+    teamInfo = teams
+  ) %>% 
+    return()
+  ##----------------------------------------------------------------
+}
+
+
+##--------------------------------------------------------------------------
+##  Creates a function that outputs a specific player card from a league   -
+##--------------------------------------------------------------------------
+
+playerCard <- function(chosen, leagueData){
+  ## The league data used as an input is output from dataLoader()
+  
+  skatersZ <- leagueData$skaters
+  
+  teamSkaterZ <- leagueData$team
+  
+  teams <- leagueData$teamInfo
+  
+  ## Checks if the chosen player exists in the league data
+  if(!any(skatersZ$name == chosen)){
+    stop(
+      c(
+        "The player does not exist in the data. ",
+        paste(
+          "You might have meant:",
+          agrep(
+            pattern = chosen, 
+            x = skatersZ$name,
+            value = TRUE
+          )
+        )
+      )
+    )
+  }
+  
+  ## Selects the statistics that will be used for the player card
+  selectedStats <- 
+    c(
+      "goals",
+      "assists",
+      "points",
+      "ppPoints",
+      "hits",
+      "TA_GA",
+      "shotsBlocked",
+      "CFPct",
+      "FFPct"
+    )
+  
+  ## Joins individual and team standardized values
+  skatersZ <- 
+    skatersZ %>% 
+    left_join(
+      ## The team statistic is added with a suffix to distinguish the two statistics
+      ## This is required as the individual statistics already has .ind so no duplicates will be joined
+      teamSkaterZ %>% 
+        rename_with(
+          .cols = -team,
+          ~ paste0(.x,".teams")
+        ),
+      by = c("team")
+    )
+  
+  
+  ##----------------------------------------------------------------
+  ##              Creates the initial visualization                -
+  ##----------------------------------------------------------------
+  
+  visData <- 
+    skatersZ %>% 
+    
+    ## Filters the chosen player
+    filter(
+      name == chosen
+    ) %>% 
+    
+    ## Joins team information, specifically the team colors
+    left_join(
+      teams %>% 
+        select(
+          abbreviation,
+          colors
+        ),
+      by = c("team" = "abbreviation")
+    ) %>% 
+    relocate(
+      c(colors),
+      .after = team
+    ) %>% 
+    
+    ## Rescales time on ice statistics to original scale
+    mutate(
+      across(
+        contains("timeOnIce.ind"),
+        ~ rescale(.x) %>%
+          ## Converts the value to a lubridate format
+          seconds_to_period()
+      ),
+      
+      ## Adds a 0 to values that are less than 10 in order to create a good output format
+      ## 1:1 or 01:01 for 1 minute and 1 second 
+      across(
+        contains("timeOnIce.ind"),
+        ~ paste(
+          if_else(
+            minute(.x) > 9,
+            minute(.x) %>% round(0) %>% as.character(),
+            paste(0, minute(.x) %>% round(0), sep = "")
+          ),
+          if_else(
+            second(.x) > 9,
+            second(.x) %>% round(0) %>% as.character(),
+            paste(0, second(.x) %>% round(0), sep = "")
+          ), 
+          sep = ":")
+      )
+    ) %>% 
+    
+    ## Unnests the data frame to one level
+    do.call(
+      what = data.frame,
+      args = .
+    ) %>% 
+    
+    ## Adds team information again but this time only the logo image
+    left_join(
+      teams %>% 
+        select(
+          abbreviation,
+          logoImage
+        ),
+      by = c("team" = "abbreviation") 
+    ) %>% 
+    relocate(
+      logoImage,
+      .after = team
+    )
+  
+  ## Checks if the player name is too long for the default size (14)
+  if(nchar(chosen) > 12){
+    mainTextSize <- 12
+  } else {
+    mainTextSize <- 14
+  }
+  
+  ### Creates the initial base for the visualization
+  ##  Uses the visualization data on a plain background colored by the team colors
+  main <- 
+    ggplot(visData) + theme_minimal() +
+    
+    ## Creates the title 
+    annotate(
+      "text", 
+      x = 4.25, 
+      y = 29.5, 
+      label = paste(visData$name, " (", visData$position,")", sep = ""), 
+      color = visData$colors.text,
+      size = mainTextSize,
+      family = "mono",
+      hjust = 0.5
+    ) +
+    
+    ## Sets the dimensions of the plot
+    coord_cartesian(ylim = c(0, 30), xlim = c(0, 10)) +
+    labs(x = "", y = "") +
+    theme(
+      panel.background = element_rect(fill = visData$colors.primary),
+      panel.grid = element_blank(),
+      plot.margin = unit(c(0,0,-0.75,-0.75), "cm")
+    ) + 
+    scale_x_continuous(breaks = NULL) + 
+    scale_y_continuous(breaks = NULL)
+  
+  
+  ##----------------------------------------------------------------
+  ##        Creates the data for the statistic visualization       -
+  ##----------------------------------------------------------------
+  
+  ### Further processes the visualization data to value, group and id columns (pivot_longer)
+  visDataLong <-
+    visData %>% 
+    
+    ## Only pivots the statistic variables, not identifiers
+    pivot_longer(
+      -c(
+        name:gamesPlayed,
+        contains("timeOnIce"),
+        posGroup
+      ),
+      ## The .value indicates that the value variable will be split based on a suffix
+      names_to = c("stat", ".value"),
+      ## The value split is based on column names with . as a splitting character
+      names_pattern = "([^\\.]+)\\.(.*)$"
+    ) %>%
+    ## Renames the two value variables from pivot_longer to better names
+    rename(
+      Individual = ind,
+      Team = teams
+    ) %>% 
+    
+    ## Pivots even more to get individual and team statistics as observations instead of variables
+    ## measure_type indicates if the statistic is individual or team
+    ## score indicates what the value of the statistic is (normalized)
+    pivot_longer(
+      c(Individual, Team),
+      names_to = "measure_type",
+      values_to = "score"
+    ) %>% 
+    
+    ## Filter the selected stats for the player card
+    filter(
+      stat %in% selectedStats
+    ) %>% 
+    mutate(
+      ## Reformats the statistic (group) variable to a factor with a specific order set in the order of selectedStats
+      ## Changes the labels to easier read ones
+      stat = 
+        factor(
+          stat,
+          levels = 
+            selectedStats,
+          labels = 
+            c(
+              "Goals",
+              "Assists",
+              "Points",
+              "PP Points",
+              "Hits",
+              "TkA/GvA",
+              "Blocked Shots",
+              "Corsi For %",
+              "Fenwick For %"
+            )
+        ),
+      ## Round the percentile to 3 decimal places
+      rank = rank %>% round(3),
+      ## Pastes the percentile value alongside the statistic name for use as a facet title
+      statPerc = 
+        paste0(stat, "\n(", rank*100, "%)") %>% 
+        factor(
+          levels = unique(.)
+        )
+    ) %>% 
+    ## Removes all Time On Ice stats from the visualization
+    select(
+      -(timeOnIce.rank:shTimeOnIce.teams)
+    )
+  
+  
+  ##---------------------------------------------------------------
+  ##              Creates the statistic visualization             -
+  ##---------------------------------------------------------------
+  
+  statistics <- 
+    ggplot(visDataLong) + 
+    
+    ## The y (height) is the standardized score
+    aes(x = 1, y = score) + 
+    
+    ## A bar chart where the fill is defined by the score
+    ## Group defines that the individual and team scores should be included
+    ## dodge puts the two bars side by side
+    geom_bar(
+      aes(fill = score, group = measure_type),
+      stat = "identity",
+      position = "dodge"
+    ) +
+    
+    ## Sets the viewport of the diagram to always show from -3 to 3 standard deviations from the mean
+    coord_cartesian(
+      ylim = c(-3, 3)
+    ) + 
+    
+    ## Changes theme
+    theme_bw() + 
+    theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank()
+    ) + 
+    
+    ## Removes x-axis scale
+    scale_x_discrete(
+      breaks = NULL
+    ) +
+    
+    ## Changes y-axis scale to show breaks at every 1.5 steps
+    scale_y_continuous(
+      breaks = 
+        seq(-3, 3, 1.5)
+    ) + 
+    
+    ## The fill of the bars are set by their score from muted red (bad) to muted green (good)
+    scale_fill_gradientn(
+      aes(fill = score),
+      limits = c(-3,3),
+      colors = 
+        c(
+          scales::muted("red"),
+          "white",
+          scales::muted("green")
+        ),
+      guide = FALSE,
+      ## If the score is outside the limits the value is squished to the min/max (otherwise it would be gray)
+      oob = scales::squish
+    ) +
+    
+    ## As the team bar is not of interest, a new fill scale is added
+    new_scale_fill() +
+    
+    ## This new one is a bar chart on top of the earlier, filled by measure_type
+    geom_bar(
+      aes(fill = measure_type),
+      color = "black",
+      stat = "identity",
+      position = "dodge"
+    ) +
+    ## The individual bars is filled with NA to show the earlier bar color, team bar is just gray
+    scale_fill_manual(
+      "",
+      values = c(NA, "gray") # Team bar tested with visData$colors.secondary, but it was too colorful
+    ) +
+    ## Creates a tougher horizontal line on y = 0 to indicate league mean
+    geom_hline(yintercept = 0, size = 1) + 
+    
+    ## Creates a facet grid based on the statistic (including the percentile)
+    facet_wrap(
+      vars(statPerc),
+      nrow = 3
+    ) + 
+    
+    ## Revises the theme to make the text and data easy to read
+    theme(
+      strip.background = element_rect(fill = "white"),
+      strip.text = element_text(face = "bold", size = 10),
+      
+      plot.background = element_rect(fill = NA, color = NA),
+      
+      text = element_text(color = "white", family = "mono"),
+      
+      axis.title = element_text(face = "bold", size = 12),
+      axis.text = element_text(color = "white", size = 10),
+      axis.ticks.y = element_line(color = "white"),
+      
+      legend.background = element_rect(fill = NA, color = NA),
+      legend.text = element_text(size = 10)
+    ) +
+    labs(x = "", y = "z-score")
+  
+  
+  ##---------------------------------------------------------------
+  ##                Building the card using cowplot               -
+  ##---------------------------------------------------------------
+  ##### NOT CURRENTLY USED AS THE MAGICK PACKAGE IS NEEDED TO ADD SVG LOGOS
+  # ggdraw(main) + 
+  #   draw_plot(
+  #     data, 
+  #     x = 0.05,
+  #     y = 0.1,
+  #     width = 0.95,
+  #     height = 0.75
+  #   ) + 
+  #   draw_text(
+  #     text = 
+  #       c("A z-score is the player's or team's average unit of standard deviation from the league mean value."),
+  #     x = 0.1,
+  #     y = 0.1,
+  #     hjust = 0,
+  #     size = 8,
+  #     color = "white"
+  #   ) + 
+  #   draw_text(
+  #     text = "Created by: \nCanadice",
+  #     x = 0.927,
+  #     y = 0.12,
+  #     hjust = 0.5,
+  #     size = 8,
+  #     color = "white"
+  #   ) +
+  #   draw_image(
+  #     visData$logo,
+  #     x = 0.6,
+  #     y = 0.6,
+  #     width = 0.4,
+  #     height = 0.4,
+  #     scale = 0.5
+  #   ) 
+  
+  
+  ##----------------------------------------------------------------
+  ##          Building the card using ggplot and svg files         -
+  ##----------------------------------------------------------------
+  
+  ggCard <- 
+    ## Starts with the plain background and title
+    main +
+    
+    ## Add the statistic data 
+    annotation_custom(
+      statistics %>% ggplotGrob(),
+      xmin = -0.5,
+      xmax = 10.5,
+      ymin = 1,
+      ymax = 26
+    ) +
+    
+    ## Adds informative text on how to read the data on the bottom
+    annotate(
+      "text",
+      x = 0,
+      y = 0.25,
+      hjust = 0,
+      label =
+        c("A z-score is the player's, or team's average, unit of standard deviation from the league mean value.\n\n",
+          "The time on ice ranking is based on positional (forward/defenseman) ranking in the team."),
+      # \nA high Corsi against is bad, so the scale is reversed to correspond to the same color gradient."
+      size = 3.5,
+      color = "white"
+    ) +
+    
+    ## Adds subtitle
+    annotate(
+      "text",
+      x = 1.1,
+      y = 27,
+      label = "Statistic and percentile of players in the league",
+      size = 4.5,
+      color = "white",
+      family = "mono",
+      fontface = 2,
+      hjust = 0
+    ) +
+    
+    ## Adds author in bottom right
+    annotate(
+      "text",
+      x = 10,
+      y = 0.25,
+      hjust = 0.5,
+      label = "Created by: \nCanadice",
+      size = 3,
+      color = "white"
+    ) + 
+    
+    ## Adds the time on ice as information along the right hand side of the card
+    annotate(
+      "text",
+      x = 9.50, 
+      y = 21,
+      family = "mono",
+      color = "white",
+      size = 4,
+      label = 
+        paste(
+          c(
+            "ESTOI", 
+            "PPTOI", 
+            "SHTOI"
+          ),
+          c(
+            visData$esTimeOnIce.ind,
+            visData$ppTimeOnIce.ind,
+            visData$shTimeOnIce.ind
+          ),
+          sep = " - "
+        ) %>% 
+        paste(
+          .,
+          paste(
+            "(",
+            c(
+              visData$esRank,
+              visData$ppRank,
+              visData$shRank
+            ),
+            ")",
+            sep = ""
+          ),
+          sep = "\n"
+        ) %>% 
+        paste(collapse = "\n"),
+      fontface = 2
+    )
+  
+  ### Initialize the drawing into the variable card
+  card <- image_graph(res = 96)
+  print(ggCard)
+  dev.off()
+  
+  ### Using magick to add the svg image of the logo to the top right of the card
+  card %>% 
+    image_composite(
+      visData$logoImage[[1]] %>% 
+        image_resize(100),
+      offset = "+680+15", 
+    )
+}
 
 
 
