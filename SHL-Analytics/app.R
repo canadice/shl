@@ -146,6 +146,14 @@ ui <-
                         titlePanel("Visualization of player attributes"),
                         radarUI(id = "radarUI")
                     ),
+                    ## Visualizing the player card
+                    tabPanel(
+                        "Player Cards",
+                        ## Application title
+                        titlePanel(
+                            "Player cards using z-scores"),
+                        playerCardUI(id = "pCardUI")
+                    ),
                     ## Player similarity using multidimensional scaling
                     tabPanel(
                         "Player Similarity",
@@ -172,6 +180,8 @@ server <- function(input, output) {
     radarSERVER(id = "radarUI")
     
     playersSERVER(id = "playersUI")
+    
+    playerCardSERVER(id = "pCardUI")
     
 }
 
