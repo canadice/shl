@@ -398,23 +398,8 @@ dataLoader <- function(league, season = NULL){
       across(
         contains("timeOnIce"), 
         ~ .x %>% 
-          str_split(":") %>%
-          lapply(
-            X = .,
-            FUN = function(x){
-              x %>% 
-                as.numeric() %>% 
-                as.matrix() %>% 
-                t()
-            }
-          ) %>% 
-          lapply(
-            X = .,
-            FUN = function(x){
-              x %*% matrix(c(60,1))
-            }
-          ) %>% 
-          unlist()
+          ms() %>% 
+          as.numeric()
       ),
       ## Creates Even Strength Time On Ice
       esTimeOnIce = timeOnIce - ppTimeOnIce - shTimeOnIce
