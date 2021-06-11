@@ -33,7 +33,7 @@ playersUI <- function(id){
       ),
       ## Shows the results of the visualization and explanation
       mainPanel(
-        DTOutput(
+        DT::DTOutput(
           outputId = ns("dataTable")
         )
      )
@@ -92,12 +92,12 @@ playersSERVER <- function(id){
             .before = Name
           ) %>% 
           datatable(
+            extensions = c('Buttons'),
             options = 
               list(
-                extensions = c('Buttons'),
                 orderClasses = TRUE, 
                 ## Sets a scroller for the rows
-                scrollX = TRUE,
+                scrollX = FALSE,
                 scrollY = '600px',
                 ## Sets size of rows shown
                 scrollCollapse = TRUE,
