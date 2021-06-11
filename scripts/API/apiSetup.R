@@ -979,7 +979,7 @@ playerCard <- function(chosen, leagueData){
     ## Add the statistic data 
     annotation_custom(
       statistics %>% ggplotGrob(),
-      xmin = -0.5,
+      xmin = 0,
       xmax = 10.5,
       ymin = 1,
       ymax = 26
