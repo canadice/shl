@@ -64,7 +64,8 @@ forumData <-
       "csv/SHL_Forum_Scrape_Results.csv", 
       sep = ""),
     sep = ";",
-    dec = ","
+    dec = ",",
+    fileEncoding = "UTF-8"  
     )
 
 ## Loads Attribute Keys
