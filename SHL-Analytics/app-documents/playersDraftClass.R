@@ -89,7 +89,12 @@ playersSERVER <- function(id){
           mutate(
             Rank = row.names(.),
             Name = iconv(Name, to = "UTF-8"),
-            User = iconv(User, to = "UTF-8")
+            User = iconv(User, to = "UTF-8"),
+            OnlineNum = Online.for,
+            Online.for = 
+              Online.for %>% 
+              seconds_to_period() %>% 
+              as.character()
           ) %>% 
           relocate(
             c(Primary, Secondary, Rank),
@@ -101,7 +106,7 @@ playersSERVER <- function(id){
               list(
                 orderClasses = TRUE, 
                 ## Sets a scroller for the rows
-                scrollX = FALSE,
+                scrollX = TRUE,
                 scrollY = '600px',
                 ## Sets size of rows shown
                 scrollCollapse = TRUE,
@@ -109,6 +114,10 @@ playersSERVER <- function(id){
                 autoWidth = TRUE,
                 columnDefs = 
                   list(
+                    list(
+                      targets = 11,
+                      orderData = 14
+                      ),
                     list(
                       targets = 3:5,
                       width = '10px' 
@@ -118,7 +127,7 @@ playersSERVER <- function(id){
                       width = '20px' 
                     ),
                     list(
-                      targets = c(0:2),
+                      targets = c(0:2, 14),
                       visible = FALSE
                     )
                   ),
@@ -134,7 +143,7 @@ playersSERVER <- function(id){
               )
           ) %>% 
           formatStyle(
-            columns = 0:13,
+            columns = 0:14,
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
@@ -143,7 +152,7 @@ playersSERVER <- function(id){
               )
           ) %>% 
           formatStyle(
-            columns = 0:13,
+            columns = 0:14,
             valueColumns = "Secondary",
             color = 
               styleEqual(
@@ -157,7 +166,15 @@ playersSERVER <- function(id){
             interval = 3,
             mark = " ",
             digits = 0
+          ) %>% 
+          formatCurrency(
+            "Posts",
+            currency = "",
+            interval = 3, 
+            mark = " ",
+            digits = 0
           )
+        
       },
       class = 'compact cell-border stripe'
       ) 
