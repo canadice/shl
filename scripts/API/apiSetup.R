@@ -720,7 +720,7 @@ playerCard <- function(chosen, leagueData){
   
   ## Checks if the player name is too long for the default size (14)
   if(nchar(chosen) > 12){
-    mainTextSize <- 12
+    mainTextSize <- 10
   } else {
     mainTextSize <- 14
   }
