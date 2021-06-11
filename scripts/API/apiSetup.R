@@ -578,7 +578,8 @@ dataLoader <- function(league, season = NULL){
   list(
     skaters = skatersZ,
     team = teamSkaterZ,
-    teamInfo = teams
+    teamInfo = teams,
+    season = players$players$season %>% unique()
   ) %>% 
     return()
   ##----------------------------------------------------------------
@@ -1002,7 +1003,7 @@ playerCard <- function(chosen, leagueData){
     ## Adds subtitle
     annotate(
       "text",
-      x = 1.1,
+      x = 1.3,
       y = 27,
       label = "Statistic and percentile of players in the league",
       size = 4.5,
@@ -1021,6 +1022,18 @@ playerCard <- function(chosen, leagueData){
       label = "Created by: \nCanadice",
       size = 3,
       color = "white"
+    ) + 
+    
+    ## Adds season of the data
+    annotate(
+      "text",
+      x = 0.20,
+      y = 26.75,
+      label = paste("S", leagueData$season, sep = ""),
+      size = 6,
+      color = "white",
+      family = "mono",
+      fontface = 2
     ) + 
     
     ## Adds the time on ice as information along the right hand side of the card
