@@ -61,15 +61,19 @@ playersSERVER <- function(id){
             NAME,
             POSITION,
             USER,
+            Bank.Balance,
             TPE,
             Active,
+            Posts,
+            Online.For,
             abbr,
             primary,
             secondary,
             IIHF.Nation
           ) %>% 
           rename(
-            team = abbr
+            team = abbr,
+            Bank = Bank.Balance
           ) %>% 
           rename_with(
             .cols = c(-TPE, -IIHF.Nation),
@@ -130,7 +134,7 @@ playersSERVER <- function(id){
               )
           ) %>% 
           formatStyle(
-            columns = 0:10,
+            columns = 0:13,
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
@@ -139,13 +143,20 @@ playersSERVER <- function(id){
               )
           ) %>% 
           formatStyle(
-            columns = 0:10,
+            columns = 0:13,
             valueColumns = "Secondary",
             color = 
               styleEqual(
                 sort(unique(forumData$secondary)), 
                 sort(unique(forumData$secondary))
               )
+          ) %>% 
+          formatCurrency(
+            "Bank",
+            currency = "$",
+            interval = 3,
+            mark = " ",
+            digits = 0
           )
       },
       class = 'compact cell-border stripe'
