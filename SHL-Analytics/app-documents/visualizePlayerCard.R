@@ -23,38 +23,32 @@ playerCardUI <- function(id){
         width = 3,
         
         ## Selection of league
-        radioButtons(
-          inputId = ns("league"),
-          label = "Select league",
-          choices = 
-            c(
-              "SHL" = 0,
-              "SMJHL" = 1
-            ),
-          selected = 0
-        ),
+        withSpinner(
+          uiOutput(ns("selectLeague")),
+          size = 0.75,
+          hide.ui = FALSE),
         
         ## Season selection
-        numericInput(
-          inputId = ns("season"),
-          label = "Season",
-          min = 53,
-          max = 60,
-          value = 59
-        ),
-        
+        withSpinner(
+          uiOutput(ns("selectSeason")),
+          size = 0.75,
+          hide.ui = FALSE),
         
         ## Select player
-        withSpinner(uiOutput(ns("selectSkater"))),
+        withSpinner(
+          uiOutput(ns("selectSkater")),
+          size = 0.75,
+          hide.ui = FALSE),
         
-        # ## Type the name of the skater you want to see
-        # textInput(
-        #   inputId = ns("skater"),
-        #   label = "Which player do you want to visualize?",
-        #   value = "Theo Morgan",
-        #   placeholder = "Theo Morgan"
-        # ),
-        em(paste("The data is taken directly from the SHL Index"))
+        ## Generate player card
+        actionButton(
+          inputId = ns("draw"),
+          label = "Generate the <br/> player card" %>% HTML(),
+          width = '100%'
+        ),
+        br(),
+        br(),
+        em(paste("The data is taken directly from the SHL Index."))
 
       ),
       mainPanel(
@@ -99,15 +93,54 @@ playerCardSERVER <- function(id){
           label = "Which player do you want to visualize?",
           choices = skaterNames,
           selected = NULL,
-          selectize = TRUE, 
-          size = NULL
+          selectize = TRUE
         )
       })
+      
+      output$selectSeason <- 
+        renderUI(
+          {
+            numericInput(
+              inputId = session$ns("season"),
+              label = "Season",
+              min = 53,
+              max = 60,
+              value = 59
+            )
+          }
+        )
+      
+      output$selectLeague <- 
+        renderUI(
+          {
+            radioButtons(
+              inputId = session$ns("league"),
+              label = "Select league",
+              choices = 
+                c(
+                  "SHL" = 0,
+                  "SMJHL" = 1
+                ),
+              selected = 0
+            )
+          }
+        )
 
       output$playerCard <- 
         renderImage(
           {
-            if(input$skater %>% is.null()){
+            ## Only draws the image when the draw button is clicked
+            input$draw
+            
+            data <- selectedData() %>% isolate()
+            
+            if(input$skater %>% isolate() %>% is.null()){
+              tempImage <- 
+                image_blank(
+                  height= 600, width = 800, 
+                  color = "none") %>% 
+                image_write(tempfile(fileext = "png"), format = "png")
+            } else if(!(input$skater %in% data$skaters$name)){
               tempImage <- 
                 image_blank(
                   height= 600, width = 800, 
@@ -117,7 +150,7 @@ playerCardSERVER <- function(id){
               progress <- Progress$new(session, min=1, max=15)
               on.exit(progress$close())
               
-              progress$set(message = 'Calculation in progress',
+              progress$set(message = 'The player card is being drawn up!',
                            detail = 'This may take a while...')
               
               for (i in 1:15) {
@@ -126,7 +159,7 @@ playerCardSERVER <- function(id){
               }
               
               tempImage <- 
-                playerCard(input$skater, selectedData()) %>% 
+                playerCard(input$skater %>% isolate(), data) %>% 
                 image_write(tempfile(fileext = "png"), format = "png")
               
               

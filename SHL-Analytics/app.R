@@ -64,6 +64,8 @@ require(janitor)
 require(usmap)
 require(shinythemes)
 require(shinycssloaders)
+require(shinyjs)
+
 
 ##----------------------------------------------------------------
 ##          Loading the API functions and some data sets         -
@@ -110,6 +112,8 @@ sapply(
 
 ui <- 
     fluidPage(
+        tags$head( tags$style(type="text/css", "text {font-family: sans-serif, courier}")),
+        
         ### Adding the theme of the app
         theme = shinytheme("yeti"),
         
