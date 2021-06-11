@@ -98,7 +98,14 @@ user_scraper <- function(link){
           stringr::str_detect(`Last Visit`, pattern = "Yesterday") ~ lubridate::today()-1,
           TRUE ~ lubridate::as_date(`Last Visit`, format = "%m-%d-%Y")
           ),
-      Joined = lubridate::as_date(Joined, format = "%m-%d-%Y"),
+      Joined = 
+        dplyr::case_when(
+          stringr::str_detect(`Joined`, pattern = "minute") ~ lubridate::today(),
+          stringr::str_detect(`Joined`, pattern = "hour") ~ lubridate::today(),
+          stringr::str_detect(`Joined`, pattern = "Today") ~ lubridate::today(),
+          stringr::str_detect(`Joined`, pattern = "Yesterday") ~ lubridate::today()-1,
+          TRUE ~ lubridate::as_date(`Joined`, format = "%m-%d-%Y")
+        ),
       `Online For` = 
         sapply(
           X = `Online For`, 
