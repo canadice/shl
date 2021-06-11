@@ -43,13 +43,17 @@ playerCardUI <- function(id){
           value = 59
         ),
         
-        ## Type the name of the skater you want to see
-        textInput(
-          inputId = ns("skater"),
-          label = "Which player do you want to visualize?",
-          value = "Theo Morgan",
-          placeholder = "Theo Morgan"
-        ),
+        
+        ## Select player
+        withSpinner(uiOutput(ns("selectSkater"))),
+        
+        # ## Type the name of the skater you want to see
+        # textInput(
+        #   inputId = ns("skater"),
+        #   label = "Which player do you want to visualize?",
+        #   value = "Theo Morgan",
+        #   placeholder = "Theo Morgan"
+        # ),
         em(paste("The data is taken directly from the SHL Index"))
 
       ),
@@ -82,20 +86,55 @@ playerCardSERVER <- function(id){
       })
       
       
-      output$playerCard <- renderImage({
-        withProgress(
-          message = "Calculations in progress",
-          detail = "This may take a while...",
-          value = 0,
-          {
-            for (i in 1:15) {
-              incProgress(1/15)
-              Sys.sleep(0.25)
-            }
-          }
-          )
-        playerCard(input$skater, selectedData())
+      output$selectSkater <- renderUI({
+        skaterNames <- 
+          selectedData()$skaters %>% 
+          select(name) %>% 
+          arrange(name) %>% 
+          unlist() %>% 
+          unname()
+        
+        selectInput(
+          inputId = session$ns("skater"),
+          label = "Which player do you want to visualize?",
+          choices = skaterNames,
+          selected = NULL,
+          selectize = TRUE, 
+          size = NULL
+        )
       })
+
+      output$playerCard <- 
+        renderImage(
+          {
+            if(input$skater %>% is.null()){
+              tempImage <- 
+                image_blank(
+                  height= 600, width = 800, 
+                  color = "none") %>% 
+                image_write(tempfile(fileext = "png"), format = "png")
+            } else {
+              progress <- Progress$new(session, min=1, max=15)
+              on.exit(progress$close())
+              
+              progress$set(message = 'Calculation in progress',
+                           detail = 'This may take a while...')
+              
+              for (i in 1:15) {
+                progress$set(value = i)
+                Sys.sleep(0.25)
+              }
+              
+              tempImage <- 
+                playerCard(input$skater, selectedData()) %>% 
+                image_write(tempfile(fileext = "png"), format = "png")
+              
+              
+            }
+            list(src = tempImage, contentType = "image/png")
+          },
+          deleteFile = TRUE
+        )
       
     }
   )

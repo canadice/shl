@@ -736,7 +736,7 @@ playerCard <- function(chosen, leagueData){
       x = 4.25, 
       y = 29.5, 
       label = paste(visData$name, " (", visData$position,")", sep = ""), 
-      color = visData$colors.text,
+      color = "white", # visData$colors.text was used but dark on dark occurred
       size = mainTextSize,
       family = "mono",
       hjust = 0.5

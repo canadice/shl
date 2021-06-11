@@ -63,6 +63,7 @@ require(kableExtra)
 require(janitor)
 require(usmap)
 require(shinythemes)
+require(shinycssloaders)
 
 ##----------------------------------------------------------------
 ##          Loading the API functions and some data sets         -
