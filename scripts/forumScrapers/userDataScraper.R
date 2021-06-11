@@ -98,7 +98,86 @@ user_scraper <- function(link){
           stringr::str_detect(`Last Visit`, pattern = "Yesterday") ~ lubridate::today()-1,
           TRUE ~ lubridate::as_date(`Last Visit`, format = "%m-%d-%Y")
           ),
-      Joined = lubridate::as_date(Joined, format = "%m-%d-%Y")
+      Joined = lubridate::as_date(Joined, format = "%m-%d-%Y"),
+      `Online For` = 
+        sapply(
+          X = `Online For`, 
+          FUN = function(x){
+            if(x == "(Hidden)"){
+              return(NA)
+            }
+            
+            x <- 
+              x %>% 
+              stringr::str_split(",") %>% 
+              unlist()
+            
+            year <- 
+              x[stringr::str_detect(x, pattern = "Year")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(year) == 0){
+              year <- 0
+            }
+            
+            month <- 
+              x[stringr::str_detect(x, pattern = "Month")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric() 
+            
+            if(length(month) == 0){
+              month <- 0
+            }
+            
+            week <- 
+              x[stringr::str_detect(x, pattern = "Week")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(week) == 0){
+              week <- 0
+            }
+            
+            day <- 
+              x[stringr::str_detect(x, pattern = "Day")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(day) == 0){
+              day <- 0
+            }
+            
+            hour <- 
+              x[stringr::str_detect(x, pattern = "Hour")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(hour) == 0){
+              hour <- 0
+            }
+            
+            minute <- 
+              x[stringr::str_detect(x, pattern = "Minute")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(minute) == 0){
+              minute <- 0
+            }
+            
+            second <- 
+              x[stringr::str_detect(x, pattern = "Second")] %>% 
+              stringr::str_extract_all(pattern = "[0-9]+", simplify = TRUE) %>% 
+              as.numeric()
+            
+            if(length(second) == 0){
+              second <- 0
+            }
+            
+            second + 60 * (minute + 60 * (hour + 24 * (day + 7 * (week + 4.345 * (month + 12*year))))) 
+          }
+        )
     ) %>%  
     
     ## Checks if a user is considered IA (30 days of not posting)
