@@ -73,6 +73,20 @@ attKey <- read.csv2(paste(raw, "csv/attribute_key.csv", sep = ""))
 ## Loading cost for TPE
 tpeCost <- read.csv2(paste(raw, "csv/tpe_cost.csv", sep = ""))
 
+## Loading career data
+historySkaterSeason <- 
+  read.csv2(
+    paste(raw, "csv/history_skaters.csv", sep = ""),
+    sep = ",",
+    dec = ".",
+    fileEncoding = "UTF-8")
+
+historyGoalieSeason <- 
+  read.csv2(
+    paste(raw, "csv/GoalieSeasons.csv", sep = ""),
+    sep = ",",
+    dec = ".")
+
 ## Loading team information
 teamInfo <- read.csv2(paste(raw, "csv/team_information.csv", sep = "")) %>% 
   mutate(
