@@ -140,7 +140,7 @@ playerCardSERVER <- function(id){
                   height= 600, width = 800, 
                   color = "none") %>% 
                 image_write(tempfile(fileext = "png"), format = "png")
-            } else if(!(input$skater %in% data$skaters$name)){
+            } else if(!((input$skater %>% isolate()) %in% data$skaters$name)){
               tempImage <- 
                 image_blank(
                   height= 600, width = 800, 
