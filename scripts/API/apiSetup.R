@@ -79,13 +79,18 @@ historySkaterSeason <-
     paste(raw, "csv/history_skaters.csv", sep = ""),
     sep = ",",
     dec = ".",
-    fileEncoding = "UTF-8")
+    fileEncoding = "UTF-8") %>% 
+  filter(
+    Player.Name != "CPU Player",
+    !(str_detect(Player.Name, pattern = "Computer"))
+  )
 
 historyGoalieSeason <- 
   read.csv2(
     paste(raw, "csv/GoalieSeasons.csv", sep = ""),
     sep = ",",
-    dec = ".")
+    dec = ".",
+    fileEncoding = "UTF-8")
 
 ## Loading team information
 teamInfo <- read.csv2(paste(raw, "csv/team_information.csv", sep = "")) %>% 
