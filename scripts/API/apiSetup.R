@@ -82,7 +82,10 @@ historySkaterSeason <-
     fileEncoding = "UTF-8") %>% 
   filter(
     Player.Name != "CPU Player",
-    !(str_detect(Player.Name, pattern = "Computer"))
+    !(str_detect(Player.Name, pattern = "Computer")),
+    
+    ## Removes records where the player has summed stats for multiple teams in a season
+    TeamId != ""
   )
 
 historyGoalieSeason <- 
