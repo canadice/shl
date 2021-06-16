@@ -135,39 +135,48 @@ ui <-
             ##                    Players by draft class                    ##
             ##################################################################
             tabPanel(
-                "Players",
+                "Draft Class Rankings",
                 playersUI(id = "playersUI")
             ),
             
             ##################################################################
             ##                       Visualizations                         ##
             ##################################################################
-            tabPanel(
+            navbarMenu(
                 "Visualizations",
-                tabsetPanel(
-                    ## Player visualization using radar charts
-                    tabPanel(
-                        "Player Attributes",
-                        titlePanel("Visualization of player attributes"),
-                        radarUI(id = "radarUI")
+                ## Player visualization using radar charts
+                tabPanel(
+                    "Player Attributes",
+                    titlePanel(
+                        h1("Visualization of Player Attributes", align = "center")
                     ),
-                    ## Visualizing the player card
-                    tabPanel(
-                        "Player Cards",
-                        ## Application title
-                        titlePanel(
-                            "Player cards using z-scores"),
-                        playerCardUI(id = "pCardUI")
+                    radarUI(id = "radarUI")
+                ),
+                ## Visualizing the player card
+                tabPanel(
+                    "Player Stat Cards",
+                    ## Application title
+                    titlePanel(
+                        h1("Stat Card", align = "center")
                     ),
-                    ## Player similarity using multidimensional scaling
-                    tabPanel(
-                        "Player Similarity",
-                        ## Application title
-                        titlePanel(
-                            "Player similarity using multidimensional scaling"),
-                        mdsUI(id = "simUI")
-                    )
+                    playerCardUI(id = "pCardUI")
+                ),
+                ## Player similarity using multidimensional scaling
+                tabPanel(
+                    "Player Similarity",
+                    ## Application title
+                    titlePanel(
+                        "Player similarity using multidimensional scaling"),
+                    mdsUI(id = "simUI")
                 )
+            ),
+            
+            tabPanel(
+                "Player Careers",
+                titlePanel(
+                    h1("Career Card", align = "center")
+                ),
+                careerUI(id = "careerUI")
             )
         )
     )
@@ -187,6 +196,8 @@ server <- function(input, output) {
     playersSERVER(id = "playersUI")
     
     playerCardSERVER(id = "pCardUI")
+    
+    careerCardSERVER(id = "careerUI") 
     
 }
 
