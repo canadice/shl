@@ -29,7 +29,9 @@ playersUI <- function(id){
           choices = unique(forumData$CLASS) %>% sort(decreasing = TRUE),
           selected = unique(forumData$CLASS) %>% max()
         ),
-        em("Source: SHL Forums")
+        em("Source: SHL Forums, scraped daily."),
+        br(),
+        em("At high resolutions note that the headers sometimes are left aligned while the table is centered. Resize the screen manually and they will sync again.")
       ),
       ## Shows the results of the visualization and explanation
       mainPanel(
@@ -132,7 +134,7 @@ playersSERVER <- function(id){
               list(
                 orderClasses = TRUE, 
                 ## Sets a scroller for the rows
-                scrollX = TRUE,
+                scrollX = '800px',
                 scrollY = '650px',
                 ## Sets size of rows shown
                 scrollCollapse = TRUE,
