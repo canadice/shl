@@ -10,24 +10,35 @@ About the tool
 --------------
 
 This tool reads data from the forums’ index and with the different tools
-allows for deeper insight into the data.
+allows for deeper insight into the data. It is recommended to use the
+tool at a minimum 1280x1040 resolution.
 
 It is still a work in progress and more functions will be added on as
 time goes on. If you are interested in helping out or want to know more
 about the work, contact
 [Canadice](https://simulationhockey.com/member.php?action=profile).
 
-Players
--------
+Draft Class Rankings
+--------------------
 
-The *Players* tab ranks all players based on their earned TPE split by
-their draft class.
+The *Draft Class Rankings* tab ranks all players based on their earned
+TPE split by their draft class. It also includes information about their
+bank account, their activity status and more.
 
 Visualizations
 --------------
 
-Under this tab you will find two types of visualizations. The first
-allows you to view a radar chart of a player’s ratings. The second looks
-at the similarities of players in the league, and projects these
-similarities in a two-dimensional plot. You can also select single or
-groups of players to visualize their attributes in a radar chart.
+The kit offers many different visualization tools for different
+purposes: - First you can visualize a player’s attributes with the help
+of a radar chart. - The second creates *player cards* based upon
+standardized regular season statistics. - The third looks at the
+similarities of players in the league, and projects these similarities
+in a two-dimensional plot. This visualization is interactive so you can
+select single or groups of players to visualize their attributes in a
+radar chart and compare more in detail.
+
+Careers
+-------
+
+The current career tool offers some aggregated statistics for players in
+the SHL (and some from the SMJHL).
