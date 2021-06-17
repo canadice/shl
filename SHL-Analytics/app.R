@@ -68,6 +68,14 @@ require(shinyjs)
 
 
 ##----------------------------------------------------------------
+##                Loading fonts for visualizations               -
+##----------------------------------------------------------------
+
+dir.create('~/.fonts')
+file.copy("www/AnonymousPro-Regular.ttf", "~/.fonts")
+system('fc-cache -f ~/.fonts')
+
+##----------------------------------------------------------------
 ##          Loading the API functions and some data sets         -
 ##----------------------------------------------------------------
 
