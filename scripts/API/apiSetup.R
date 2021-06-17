@@ -761,7 +761,7 @@ playerCard <- function(chosen, leagueData){
       label = paste(visData$name, " (", visData$position,")", sep = ""), 
       color = "white", # visData$colors.text was used but dark on dark occurred
       size = mainTextSize,
-      family = "anon",
+      family = "mont",
       hjust = 0.5
     ) +
     
@@ -1048,7 +1048,7 @@ playerCard <- function(chosen, leagueData){
       y = 0.25,
       hjust = 0.5,
       label = "Created by: \nCanadice",
-      size = 4,
+      size = 3.5,
       color = "white"
     ) + 
     
@@ -1056,7 +1056,7 @@ playerCard <- function(chosen, leagueData){
     annotate(
       "text",
       x = 0.20,
-      y = 26.75,
+      y = 27,
       label = paste("S", leagueData$season, sep = ""),
       size = 8,
       color = "white",
@@ -1066,11 +1066,11 @@ playerCard <- function(chosen, leagueData){
     ## Adds the time on ice as information along the right hand side of the card
     annotate(
       "text",
-      x = 10, 
+      x = 9.7, 
       y = 21,
       family = "anon",
       color = "white",
-      size = 4,
+      size = 4.25,
       label = 
         paste(
           c(
@@ -1099,8 +1099,7 @@ playerCard <- function(chosen, leagueData){
           ),
           sep = "\n"
         ) %>% 
-        paste(collapse = "\n"),
-      fontface = 2
+        paste(collapse = "\n")
     )
   
   ### Initialize the drawing into the variable card
