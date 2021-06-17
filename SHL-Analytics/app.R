@@ -40,6 +40,9 @@ require(png)
 require(grid)
 require(plotly)
 
+## Fonts
+require(showtext)
+
 # Packages for svg images
 require(magick)
 require(rsvg)

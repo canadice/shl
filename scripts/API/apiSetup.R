@@ -761,7 +761,7 @@ playerCard <- function(chosen, leagueData){
       label = paste(visData$name, " (", visData$position,")", sep = ""), 
       color = "white", # visData$colors.text was used but dark on dark occurred
       size = mainTextSize,
-      family = "AnonymousPro-Regular",
+      family = "anon",
       hjust = 0.5
     ) +
     
@@ -940,7 +940,7 @@ playerCard <- function(chosen, leagueData){
       
       plot.background = element_rect(fill = NA, color = NA),
       
-      text = element_text(color = "white", family = "AnonymousPro-Regular"),
+      text = element_text(color = "white", family = "anon"),
       
       axis.title = element_text(face = "bold", size = 12),
       axis.text = element_text(color = "white", size = 10),
@@ -1030,7 +1030,7 @@ playerCard <- function(chosen, leagueData){
       label = "Statistic and percentile of players in the league",
       size = 4.5,
       color = "white",
-      family = "AnonymousPro-Regular",
+      family = "anon",
       fontface = 2,
       hjust = 0
     ) +
@@ -1054,7 +1054,7 @@ playerCard <- function(chosen, leagueData){
       label = paste("S", leagueData$season, sep = ""),
       size = 6,
       color = "white",
-      family = "AnonymousPro-Regular",
+      family = "anon",
       fontface = 2
     ) + 
     
@@ -1063,7 +1063,7 @@ playerCard <- function(chosen, leagueData){
       "text",
       x = 9.50, 
       y = 21,
-      family = "AnonymousPro-Regular",
+      family = "anon",
       color = "white",
       size = 4,
       label = 
