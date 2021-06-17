@@ -766,10 +766,16 @@ playerCard <- function(chosen, leagueData){
     ) +
     
     ## Sets the dimensions of the plot
-    coord_cartesian(ylim = c(0, 30), xlim = c(0, 10)) +
+    coord_cartesian(
+      ylim = c(0, 30), 
+      xlim = c(0, 10)
+    ) +
     labs(x = "", y = "") +
     theme(
-      panel.background = element_rect(fill = visData$colors.primary),
+      panel.background = 
+        element_rect(
+          fill = visData$colors.primary
+          ),
       panel.grid = element_blank(),
       plot.margin = unit(c(0,0,-0.75,-0.75), "cm")
     ) + 
@@ -936,13 +942,13 @@ playerCard <- function(chosen, leagueData){
     ## Revises the theme to make the text and data easy to read
     theme(
       strip.background = element_rect(fill = "white"),
-      strip.text = element_text(face = "bold", size = 10),
+      strip.text = element_text(size = 12),
       
       plot.background = element_rect(fill = NA, color = NA),
       
       text = element_text(color = "white", family = "anon"),
       
-      axis.title = element_text(face = "bold", size = 12),
+      axis.title = element_text(size = 12),
       axis.text = element_text(color = "white", size = 10),
       axis.ticks.y = element_line(color = "white"),
       
@@ -1025,13 +1031,13 @@ playerCard <- function(chosen, leagueData){
     ## Adds subtitle
     annotate(
       "text",
-      x = 1.3,
+      x = 1.5,
       y = 27,
       label = "Statistic and percentile of players in the league",
-      size = 4.5,
+      size = 6,
       color = "white",
       family = "anon",
-      fontface = 2,
+      # fontface = 2,
       hjust = 0
     ) +
     
@@ -1042,7 +1048,7 @@ playerCard <- function(chosen, leagueData){
       y = 0.25,
       hjust = 0.5,
       label = "Created by: \nCanadice",
-      size = 3,
+      size = 4,
       color = "white"
     ) + 
     
@@ -1052,16 +1058,15 @@ playerCard <- function(chosen, leagueData){
       x = 0.20,
       y = 26.75,
       label = paste("S", leagueData$season, sep = ""),
-      size = 6,
+      size = 8,
       color = "white",
-      family = "anon",
-      fontface = 2
+      family = "anon"
     ) + 
     
     ## Adds the time on ice as information along the right hand side of the card
     annotate(
       "text",
-      x = 9.50, 
+      x = 10, 
       y = 21,
       family = "anon",
       color = "white",
