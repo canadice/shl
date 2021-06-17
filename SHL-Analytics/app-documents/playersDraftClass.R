@@ -152,7 +152,7 @@ playersSERVER <- function(id){
                     list(
                       targets = 6,
                       orderData = 16,
-                      width = '80px'
+                      width = '70px'
                     ),
                     list(
                       targets = 8,
