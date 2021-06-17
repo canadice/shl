@@ -73,10 +73,9 @@ require(shinyjs)
 ##----------------------------------------------------------------
 ##                Loading fonts for visualizations               -
 ##----------------------------------------------------------------
+font_add_google("Anonymous Pro", "anon")
 
-dir.create('~/.fonts')
-file.copy("www/AnonymousPro-Regular.ttf", "~/.fonts")
-system('fc-cache -f ~/.fonts')
+showtext_auto()
 
 ##----------------------------------------------------------------
 ##          Loading the API functions and some data sets         -
