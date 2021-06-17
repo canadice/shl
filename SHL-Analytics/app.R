@@ -73,7 +73,18 @@ require(shinyjs)
 ##----------------------------------------------------------------
 ##                Loading fonts for visualizations               -
 ##----------------------------------------------------------------
-font_add_google("Anonymous Pro", "anon")
+# font_add_google("Courier Prime", "anon")
+font_add_google(
+    "Roboto Mono", 
+    family = "body",
+    regular.wt = 300,
+    bold.wt = 500)
+
+font_add_google(
+    "Josefin Sans", 
+    family = "title", 
+    regular.wt = 300,
+    bold.wt = 500)
 
 showtext_auto()
 

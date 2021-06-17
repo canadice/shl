@@ -1066,7 +1066,7 @@ playerCard <- function(chosen, leagueData){
     ## Adds the time on ice as information along the right hand side of the card
     annotate(
       "text",
-      x = 9.7, 
+      x = 9.6, 
       y = 21,
       family = "body",
       color = "white",
