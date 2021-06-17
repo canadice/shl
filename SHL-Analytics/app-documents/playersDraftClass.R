@@ -33,6 +33,8 @@ playersUI <- function(id){
       ),
       ## Shows the results of the visualization and explanation
       mainPanel(
+        tags$head(tags$style(HTML("a, a:hover, a:visited, a:active {color: inherit}"))),
+        
         DT::DTOutput(
           outputId = ns("dataTable")
         )
@@ -59,10 +61,12 @@ playersSERVER <- function(id){
           ) %>% 
           select(
             NAME,
+            LINK,
             POSITION,
             USER,
-            Bank.Balance,
+            USERLINK,
             TPE,
+            Bank.Balance,
             Active,
             Posts,
             Online.For,
@@ -82,6 +86,15 @@ playersSERVER <- function(id){
           return()
       })
       
+      ## js function for automatic reranking
+      js <- c(
+        "table.on('draw.dt', function(){",
+        "  var PageInfo = table.page.info();",
+        "  table.column(0, {page: 'current'}).nodes().each(function(cell,i){", 
+        "    cell.innerHTML = i + 1 + PageInfo.start;",
+        "  });",
+        "})")
+      
       ## Outputs a datatable of all the players
       output$dataTable <- DT::renderDT({
         currentData() %>% 
@@ -96,18 +109,31 @@ playersSERVER <- function(id){
               seconds_to_period() %>% 
               as.character()
           ) %>% 
+          mutate(
+            Namesort = Name,
+            Usersort = User,
+            Name = paste0("<a href='",Link,"' target='_blank'>",Name,"</a>"),
+            User = paste0("<a href='",Userlink,"' target='_blank'>",User,"</a>")
+          ) %>% 
+          select(
+            -Link,
+            -Userlink
+          ) %>% 
           relocate(
             c(Primary, Secondary, Rank),
             .before = Name
           ) %>% 
           datatable(
-            extensions = c('Buttons'),
+            escape = FALSE, 
+            callback = JS(js),
+            extensions = c('Buttons', 'Scroller'),
+            fillContainer = TRUE,
             options = 
               list(
                 orderClasses = TRUE, 
                 ## Sets a scroller for the rows
                 scrollX = TRUE,
-                scrollY = '600px',
+                scrollY = '650px',
                 ## Sets size of rows shown
                 scrollCollapse = TRUE,
                 ## Sets width of columns
@@ -119,22 +145,27 @@ playersSERVER <- function(id){
                       orderData = 14
                       ),
                     list(
-                      targets = 3:5,
-                      width = '10px' 
+                      targets = 4,
+                      orderData = 15,
+                      width = '100px'
                     ),
                     list(
                       targets = 6,
-                      width = '20px' 
+                      orderData = 16,
+                      width = '80px'
                     ),
                     list(
-                      targets = c(0:2, 14),
+                      targets = 8,
+                      width = '80px' 
+                    ),
+                    list(
+                      targets = c(1:3, 14:16), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
                       visible = FALSE
                     )
                   ),
                 ## Removes pages in the table
                 paging = FALSE,
                 ## Adds scrollable horizontal
-                # scrollX = '600px',
                 # pageLength = 20,
                 # lengthMenu = c(10, 25, 50, 100),
                 dom = 'Bfrtip',
