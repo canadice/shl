@@ -95,14 +95,14 @@ playerScraper <-
       paste0(
         "SMJHL GM|SHL GM|SHL HO|SMJHL HO|Commissioner|IIHF Commissioner|",
         "Registered|Rookie|Historian|",
-        "Vancouver Whalers|SHL GM|Quebec City Citadelles|",
+        "Vancouver Whalers|Quebec City Citadelles|",
         "Head Office|Coach|Budget Director|Graphic Graders|Moderators|Federation Head|",
         "Fantasy League Manager|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
         "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|",
         "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|Manhattan Rage|",
-        "Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|Site |All-Star Committee|",
+        "Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|All-Star Committee|",
         "Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany|Awards Committee|Management|IIHF|Historian|HOF Committee"
+        "Germany|Management|HOF Committee"
       )
     
     USER <- 
