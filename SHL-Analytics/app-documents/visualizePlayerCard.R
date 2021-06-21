@@ -147,13 +147,13 @@ playerCardSERVER <- function(id){
                   color = "none") %>% 
                 image_write(tempfile(fileext = "png"), format = "png")
             } else {
-              progress <- Progress$new(session, min=1, max=15)
+              progress <- Progress$new(session, min=1, max=20)
               on.exit(progress$close())
               
               progress$set(message = 'The player card is being drawn up!',
                            detail = 'This may take a while...')
               
-              for (i in 1:15) {
+              for (i in 1:20) {
                 progress$set(value = i)
                 Sys.sleep(0.25)
               }
