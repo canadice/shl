@@ -33,25 +33,33 @@ franchiseID;teamID;fhmID;team;Inaugural Season;Division;conference;league;abbr;p
 5;31;;Winnipeg Aurora;59;Northwest;Western;SHL;WPG;#0e2e2d;#2ef9b4;#1fc4bd;#c8c6c6;https://cdn.discordapp.com/attachments/747889699971923989/780536695409606676/aurora8.png
 21;32;;Montreal Patriotes;60;Atlantic;Eastern;SHL;MTL;#773141;#ffb612;#b0bac4;;https://media.discordapp.net/attachments/839098041075105832/839098109802840114/Montreal_Patriotes_trans.png
 22;33;;Philadelphia Forge;60;Norteast;Eastern;SHL;PHI;#e88900;#a00400;#212020;;https://i.imgur.com/0Lz6eRP.png
+81;81;;Lethbridge Lions;1;;;SMJHL;;;;;;
+80;80;;Anaheim Outlaws;1;;;SMJHL;;;;;;
 50;50;;Brandon Blazers;1;;;SMJHL;;;;;;
 51;51;;Prince George Firebirds;1;;;SMJHL;PGF;;;;;
 52;52;;Vancouver Whalers;1;Pacific North West;Western;SMJHL;VAN;#018241;#0d1d3f;;;https://i.imgur.com/Eoj5m74.png
 53;53;;Kelowna Knights;2;Pacific North West;Western;SMJHL;KEL;#003300;#e5d478;;;https://i.ibb.co/23xmLcj/KEL-cut.png
 50;54;;Montreal Impact;4;;;SMJHL;MTL;;;;;
+80;;;Seattle Stags;;;;SMJHL;;;;;;
+80;;;Seattle Stingrays;;;;SMJHL;;;;;;
+80;;;Los Angeles Archangels;;;;SMJHL;;;;;;
+81;;;Chicago Cougars;5;;;SMJHL;;;;;;
 54;55;;Boston Battalion;5;;;SMJHL;;;;;;
 55;56;;Detroit Falcons;5;Atlantic South East;Eastern;SMJHL;DET;#ec2227;#ffffff;#fbac3e;#d3d3d3;https://cdn.discordapp.com/attachments/472214533704908804/667439099610660874/Falcons.png
+81;;;Washington Patriots;6;;;SMJHL;;;;;;
 54;57;;Chicago Hitmen;9;;;SMJHL;CHI;;;;;
 54;58;;St. Louis Scarecrows;13;Atlantic South East;Eastern;SMJHL;STL;#eaaa00;#660000;#cdaf95;#000000;https://cdn.discordapp.com/attachments/625010064255877136/756922472573436085/St_Louis.png
 51;59;;Regina Force;18;;;SMJHL;;;;;;
 56;60;;Colorado Mammoths;25;;;SMJHL;COL;;;;;
 57;61;;Halifax Raiders;25;;;SMJHL;HFX;#000000;#ead0ae;;;
-50;62;;Montreal Militia;28;;;SMJHL;MTL;#041a54;#858685;;;
-58;62;;Anchorage Armada;42;Pacific North West;Western;SMJHL;ANC;#848482;#1e2d40;#7ea1d9;#fbb117;https://i.imgur.com/cOdA222.png
-56;63;;Colorado Raptors;42;Pacific South West;Western;SMJHL;COL;#182d49;#f3cd16;#33599f;;https://i.imgur.com/IDC85V3.png
-59;64;;Anaheim Outlaws;45;Pacific South West;Western;SMJHL;ANA;#c20000;#000000;#9e0404;;https://cdn.discordapp.com/attachments/625010064255877136/822533229080215571/Anaheim_Outlaws.png
-60;65;;Lethbridge Lions;45;;;SMJHL;;#fadc28;#000000;#ca0c00;;
-50;66;;Carolina Kraken;50;Atlantic South East;Eastern;SMJHL;CAR;#cf5b00;#1a1a1a;#f5ece7;;https://cdn.discordapp.com/attachments/472214533704908804/667439027439534121/CarolinaKraken.png
-60;67;;Newfoundland Berserkers;52;Atlantic North East;Eastern;SMJHL;NL;#4d4d4d;#ff0000;#cccccc;;https://cdn.discordapp.com/attachments/472214533704908804/667440179681689610/Berserkers_logo.png
-57;68;;Maine Timber;53;Atlantic North East;Eastern;SMJHL;MET;#082a17;#85714d;#095f30;;https://i.imgur.com/bwOGKb3.png
-61;69;;Nevada Battleborn;55;Pacific South West;Western;SMJHL;NBB;#06152f;#c6b273;#0d244d;#dce2de;https://cdn.discordapp.com/attachments/722820954585038920/723565283981262928/NevadaBattleBornFinalPrimary.png
-62;70;;Quebec City Citadelles;55;Atlantic North East;Eastern;SMJHL;QCC;#1d9bee;#34476b;#ec2e61;#d5d5d5;https://i.imgur.com/Toc33un.png
+51;62;;Prince George Firebirds;25;;;SMJHL;PGF;;;;;
+50;63;;Montreal Militia;28;;;SMJHL;MTL;#041a54;#858685;;;
+58;64;;Anchorage Armada;42;Pacific North West;Western;SMJHL;ANC;#848482;#1e2d40;#7ea1d9;#fbb117;https://i.imgur.com/cOdA222.png
+56;65;;Colorado Raptors;42;Pacific South West;Western;SMJHL;COL;#182d49;#f3cd16;#33599f;;https://i.imgur.com/IDC85V3.png
+59;66;;Anaheim Outlaws;45;Pacific South West;Western;SMJHL;ANA;#c20000;#000000;#9e0404;;https://cdn.discordapp.com/attachments/625010064255877136/822533229080215571/Anaheim_Outlaws.png
+60;67;;Lethbridge Lions;45;;;SMJHL;;#fadc28;#000000;#ca0c00;;
+50;68;;Carolina Kraken;50;Atlantic South East;Eastern;SMJHL;CAR;#cf5b00;#1a1a1a;#f5ece7;;https://cdn.discordapp.com/attachments/472214533704908804/667439027439534121/CarolinaKraken.png
+60;69;;Newfoundland Berserkers;52;Atlantic North East;Eastern;SMJHL;NL;#4d4d4d;#ff0000;#cccccc;;https://cdn.discordapp.com/attachments/472214533704908804/667440179681689610/Berserkers_logo.png
+57;70;;Maine Timber;53;Atlantic North East;Eastern;SMJHL;MET;#082a17;#85714d;#095f30;;https://i.imgur.com/bwOGKb3.png
+61;71;;Nevada Battleborn;55;Pacific South West;Western;SMJHL;NBB;#06152f;#c6b273;#0d244d;#dce2de;https://cdn.discordapp.com/attachments/722820954585038920/723565283981262928/NevadaBattleBornFinalPrimary.png
+62;72;;Quebec City Citadelles;55;Atlantic North East;Eastern;SMJHL;QCC;#1d9bee;#34476b;#ec2e61;#d5d5d5;https://i.imgur.com/Toc33un.png
