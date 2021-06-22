@@ -210,9 +210,19 @@ careerCardSERVER <- function(id){
           filter(
             Player.Name == input$skaterName,
             LeagueId == league
-          ) 
-        
-        #### NEED TO ADD TEAM INFORMATION AS THE CURRENT ONE IS ONLY AN INDEX (NUMBER)
+          ) %>% 
+          left_join(
+            teamInfo %>% 
+              select(
+                teamID,
+                franchiseID,
+                team,
+                abbr,
+                primary,
+                secondary
+              ),
+            by = c("newTeamID" = "teamID")
+          )
       })
       
       ##----------------------------------------------------------------
@@ -272,7 +282,7 @@ careerCardSERVER <- function(id){
         {
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               Season,
               GamesPlayed,
               Goals,
@@ -285,7 +295,7 @@ careerCardSERVER <- function(id){
               A = Assists,
               P = Points
             ) %>% 
-            group_by(TeamId) %>% 
+            group_by(team) %>% 
             summarize(
               `First Season` = min(Season),
               `Last Season` = max(Season),
@@ -317,7 +327,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               Goals,
@@ -334,7 +344,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               G = Goals,
               A = Assists,
               P = Points,
@@ -371,7 +381,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               Goals
@@ -383,7 +393,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               G = Goals
             ) %>%
             arrange(
@@ -409,7 +419,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               Assists,
@@ -421,7 +431,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               A = Assists,
             ) %>%
             arrange(
@@ -447,7 +457,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               Hits,
@@ -459,7 +469,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId 
+              Team = team 
             ) %>%
             arrange(
               -Hits
@@ -484,7 +494,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               ShotsBlocked
@@ -496,7 +506,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               Shots = ShotsBlocked
             ) %>%
             arrange(
@@ -522,7 +532,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               PlusMinus
@@ -534,7 +544,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               `+/-` = PlusMinus
             ) %>%
             arrange(
@@ -560,7 +570,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               Shots
@@ -572,7 +582,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId
+              Team = team
             ) %>%
             arrange(
               -Shots
@@ -602,7 +612,7 @@ careerCardSERVER <- function(id){
           
           filteredData() %>% 
             select(
-              TeamId,
+              team,
               isPlayoffs,
               Season,
               GamesPlayed,
@@ -623,7 +633,7 @@ careerCardSERVER <- function(id){
               -isPlayoffs
             ) %>% 
             rename(
-              Team = TeamId, 
+              Team = team, 
               GP = GamesPlayed,
               G = Goals,
               A = Assists,
