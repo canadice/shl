@@ -1,13 +1,13 @@
 franchiseID;teamID;fhmID;team;Inaugural Season;Division;conference;league;abbr;primary;secondary;alt1;alt2;logo
 1;1;8;Calgary Dragons;1;Northwest;Western;SHL;CGY;#a40000;#000000;#ffffff;#797979;https://cdn.discordapp.com/attachments/625010064255877136/798641370386006046/DRAGONS_-_Copy_Converted.png
 2;2;2;Hamilton Steelhawks;1;Great Lakes;Eastern;SHL;HAM;#253b50;#ffffff;#d1d3d4;#3e7098;https://i.imgur.com/817jL6x.png
-3;3;3;Toronto Stars;1;;;SHL;TOR;;;;;
+3;3;;Toronto Stars;1;;;SHL;TOR;;;;;
 4;4;;West Kendall Platoon;1;;;SHL;WKP;;;;;
 5;5;;Winnipeg Jets;1;Northwest;Western;SHL;WIN;#081C41;#D10923;;;
 6;6;;Wisconsin Monarchs;1;;;SHL;WIS;;;;;
 7;7;;Edmonton Comets;2;;;SHL;EDM;;;;;
 8;8;4;Manhattan Rage;2;Atlantic;Eastern;SHL;MAN;#97181b;#000000;;;https://cdn.discordapp.com/attachments/472214533704908804/667439621789188126/Rage.png
-3;9;;Toronto North Stars;2;Great Lakes;Eastern;SHL;TOR;#195aa5;#ffffff;;;https://cdn.discordapp.com/attachments/472214533704908804/667438610261475358/North_Stars.png
+3;9;3;Toronto North Stars;2;Great Lakes;Eastern;SHL;TOR;#195aa5;#ffffff;;;https://cdn.discordapp.com/attachments/472214533704908804/667438610261475358/North_Stars.png
 6;10;;Vancouver Ice Wolves;3;;;SHL;VAN;;;;;
 11;11;13;Los Angeles Panthers;5;Southwest;Western;SHL;LAP;#006b7a;#eb7d0b;;;https://i.imgur.com/Rz9e0eN.png
 12;12;;Minnesota Chiefs;5;;;SHL;MIN;#003300;#990000;;;
