@@ -90,7 +90,7 @@ historySkaterSeason <-
 
 historyGoalieSeason <- 
   read.csv2(
-    paste(raw, "csv/GoalieSeasons.csv", sep = ""),
+    paste(raw, "csv/history_goalies.csv", sep = ""),
     sep = ",",
     dec = ".",
     fileEncoding = "UTF-8")
@@ -99,40 +99,40 @@ historyGoalieSeason <-
 teamInfo <- read.csv2(paste(raw, "csv/team_information.csv", sep = "")) %>% 
   mutate(
     logoImage = 
-      list(
-        image_read_svg(paste(raw, "graphics/Atlanta.svg", sep = "")),
-        image_read_svg(paste(raw, "graphics/Baltimore.svg", sep = "")),
-        image_read_svg(paste(raw, "graphics/Buffalo.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Chicago.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Hamilton.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Manhattan.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/New_England.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Tampa_Bay.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Toronto.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Calgary.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Edmonton.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Los_Angeles.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Minnesota.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/New_Orleans.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/San_Francisco.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Seattle.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Texas.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Winnipeg.svg",sep = "")),
-        NA, #Old Winnipeg Jets
-        image_read_svg(paste(raw, "graphics/Carolina.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Detroit.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Maine.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Newfoundland.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Quebec_City.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/St_Louis.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Anaheim.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Anchorage.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Colorado.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Kelowna.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Nevada.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Vancouver.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Montreal.svg",sep = "")),
-        image_read_svg(paste(raw, "graphics/Philadelphia.svg",sep = ""))
+      case_when(
+        team == "Calgary Dragons" ~ image_read_svg(paste(raw, "graphics/Calgary.svg",sep = "")) %>% list(),
+        team == "Hamilton Steelhawks" ~ image_read_svg(paste(raw, "graphics/Hamilton.svg",sep = "")) %>% list(),
+        team == "Manhattan Rage" ~ image_read_svg(paste(raw, "graphics/Manhattan.svg",sep = "")) %>% list(),
+        team == "Toronto North Stars" ~ image_read_svg(paste(raw, "graphics/Toronto.svg",sep = "")) %>% list(),
+        team == "Los Angeles Panthers" ~ image_read_svg(paste(raw, "graphics/Los_Angeles.svg",sep = "")) %>% list(),
+        team == "Edmonton Blizzard" ~ image_read_svg(paste(raw, "graphics/Edmonton.svg",sep = "")) %>% list(),
+        team == "Texas Renegades" ~ image_read_svg(paste(raw, "graphics/Texas.svg",sep = "")) %>% list(),
+        team == "New England Wolfpack" ~ image_read_svg(paste(raw, "graphics/New_England.svg",sep = "" )) %>% list(),
+        team == "Buffalo Stampede" ~ image_read_svg(paste(raw, "graphics/Buffalo.svg",sep = "" )) %>% list(),
+        team == "San Francisco Pride" ~ image_read_svg(paste(raw, "graphics/San_Francisco.svg",sep = "" )) %>% list(),
+        team == "Chicago Syndicate" ~ image_read_svg(paste(raw, "graphics/Chicago.svg",sep = "" )) %>% list(),
+        team == "New Orleans Specters" ~ image_read_svg(paste(raw, "graphics/New_Orleans.svg",sep = "" )) %>% list(),
+        team == "Baltimore Platoon" ~ image_read_svg(paste(raw, "graphics/Baltimore.svg", sep = "" )) %>% list(),
+        team == "Atlanta Inferno" ~ image_read_svg(paste(raw, "graphics/Atlanta.svg", sep = "" )) %>% list(),
+        team == "Minnesota Monarchs" ~ image_read_svg(paste(raw, "graphics/Minnesota.svg",sep = "" )) %>% list(),
+        team == "Seattle Argonauts" ~ image_read_svg(paste(raw, "graphics/Seattle.svg",sep = "" )) %>% list(),
+        team == "Tampa Bay Barracuda" ~ image_read_svg(paste(raw, "graphics/Tampa_Bay.svg",sep = "" )) %>% list(),
+        team == "Winnipeg Aurora" ~ image_read_svg(paste(raw, "graphics/Winnipeg.svg",sep = "" )) %>% list(),
+        team == "Montreal Patriotes" ~ image_read_svg(paste(raw, "graphics/Montreal.svg",sep = "" )) %>% list(),
+        team == "Philadelphia Forge" ~ image_read_svg(paste(raw, "graphics/Philadelphia.svg",sep = "" )) %>% list(),
+        team == "Vancouver Whalers" ~ image_read_svg(paste(raw, "graphics/Vancouver.svg",sep = "" )) %>% list(),
+        team == "Kelowna Knights" ~ image_read_svg(paste(raw, "graphics/Kelowna.svg",sep = "" )) %>% list(),
+        team == "Detroit Falcons" ~ image_read_svg(paste(raw, "graphics/Detroit.svg",sep = "" )) %>% list(),
+        team == "St. Louis Scarecrows" ~ image_read_svg(paste(raw, "graphics/St_Louis.svg",sep = "" )) %>% list(),
+        team == "Anchorage Armada" ~ image_read_svg(paste(raw, "graphics/Anchorage.svg",sep = "" )) %>% list(),
+        team == "Colorado Raptors" ~ image_read_svg(paste(raw, "graphics/Colorado.svg",sep = "" )) %>% list(),
+        team == "Anaheim Outlaws" & Inaugural.Season == 45 ~ image_read_svg(paste(raw, "graphics/Anaheim.svg",sep = "" )) %>% list(),
+        team == "Carolina Kraken" ~ image_read_svg(paste(raw, "graphics/Carolina.svg",sep = "" )) %>% list(),
+        team == "Newfoundland Berserkers" ~ image_read_svg(paste(raw, "graphics/Newfoundland.svg",sep = "" )) %>% list(),
+        team == "Maine Timber" ~ image_read_svg(paste(raw, "graphics/Maine.svg",sep = "" )) %>% list(),
+        team == "Nevada Battleborn" ~ image_read_svg(paste(raw, "graphics/Nevada.svg",sep = "" )) %>% list(),
+        team == "Quebec City Citadelles" ~ image_read_svg(paste(raw, "graphics/Quebec_City.svg",sep = "" )) %>% list(),
+        TRUE ~ NA  %>% list()
       )
   )
 
