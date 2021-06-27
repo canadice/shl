@@ -155,9 +155,22 @@ ui <-
             ##################################################################
             ##                    Players by draft class                    ##
             ##################################################################
-            tabPanel(
-                "Draft Class Rankings",
-                playersUI(id = "playersUI")
+            navbarMenu(
+                "Trackers",
+                tabPanel(
+                    "Draft Class Rankings",
+                    titlePanel(
+                        h1("Draft Class Tracker", align = "center")
+                    ),
+                    playersUI(id = "playersUI")
+                ),
+                tabPanel(
+                    "Position Tracker",
+                    titlePanel(
+                        h1("Position Tracker", align = "center")
+                    ),
+                    posTrackerUI(id = "posTrackerUI")
+                )
             ),
             
             ##################################################################
@@ -236,6 +249,8 @@ server <- function(input, output) {
     careerCardSERVER(id = "careerUI") 
     
     iihfSERVER(id = "iihfUI") 
+    
+    posTrackerSERVER(id = "posTrackerUI")
     
 }
 

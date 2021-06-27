@@ -169,9 +169,30 @@ iihfSERVER <- function(id){
       
       output$aggData <- DT::renderDT({
         currentData() %>% 
+          mutate(
+            Position =
+              case_when(
+                Position %>% str_detect(pattern = "Defense") ~ "Defense",
+                Position %>% str_detect(pattern = "Goalie") ~ "Goalie",
+                TRUE ~ "Forward"
+              ) %>% 
+              factor(
+                levels = 
+                  c(
+                    "Forward",
+                    "Defense",
+                    "Goalie"
+                  )
+              )
+          ) %>% 
           group_by(Active, League, Position) %>% 
           summarize(
-            Nr = n()
+            Amount = n()
+          ) %>% 
+          pivot_wider(
+            names_from = League,
+            names_sep = " ",
+            values_from = Amount
           )
       },
       class = 'compact cell-border stripe',
