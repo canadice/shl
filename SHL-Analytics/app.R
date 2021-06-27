@@ -192,12 +192,27 @@ ui <-
                 )
             ),
             
+            ##################################################################
+            ##                       Career Data                            ##
+            ##################################################################
             tabPanel(
                 "Player Careers",
                 titlePanel(
                     h1("Career Card", align = "center")
                 ),
                 careerUI(id = "careerUI")
+            ),
+            
+            
+            ##################################################################
+            ##                            IIHF                              ##
+            ##################################################################
+            tabPanel(
+                "IIHF",
+                titlePanel(
+                    h1("IIHF Nation Rosters", align = "center")
+                ),
+                iihfUI(id = "iihfUI")
             )
         )
     )
@@ -219,6 +234,8 @@ server <- function(input, output) {
     playerCardSERVER(id = "pCardUI")
     
     careerCardSERVER(id = "careerUI") 
+    
+    iihfSERVER(id = "iihfUI") 
     
 }
 

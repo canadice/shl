@@ -188,9 +188,22 @@ data <-
              POSITION %in% c("C", "Centre") ~ "Center",
              POSITION %in% c("D", "Defence", "Defenseman") ~ "Defense",
              POSITION == "LW" ~ "Left Wing",
-             POSITION == "RHD" ~ "Right Defense",
+             POSITION %in% c("RHD", "Right Defence", "Right Defenseman", "Right Defender") ~ "Right Defense",
+             POSITION %in% c("LHD", "Left Defence", "Left Defenseman", "Left Defender") ~ "Left Defense",
              POSITION %in% c("RW", "Right Winger") ~ "Right Wing",
              TRUE ~ POSITION
+           ) %>% 
+           factor(
+             levels = 
+               c(
+                 "Goalie",
+                 "Defense",
+                 "Left Defense",
+                 "Right Defense",
+                 "Left Wing",
+                 "Center",
+                 "Right Wing"
+                 )
            ),
          Posts = as.numeric(str_remove_all(Posts, pattern = "[^0-9]")),
          Threads = as.numeric(str_remove_all(Threads, pattern = "[^0-9]")),
