@@ -143,6 +143,9 @@ posTrackerSERVER <- function(id){
             League,
             Active
           ) %>% 
+          filter(
+            Active == "Active"
+          ) %>% 
           mutate(
             Position =
               case_when(
@@ -166,9 +169,6 @@ posTrackerSERVER <- function(id){
           group_by(League, Position) %>% 
           mutate(
             leagueAmount = n()
-          ) %>% 
-          filter(
-            Active == "Active"
           ) %>% 
           select(Position, League, leagueAmount) %>% 
           unique() %>% 
