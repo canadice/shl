@@ -85,8 +85,8 @@ free_agents <-
   ### Finds all unique player links from each team's roster page on the forum
   playerLinks <-
     c(
-      shl_east, 
-      shl_west, 
+      # shl_east, 
+      # shl_west, 
       smjhl_link
     ) %>%
     team_scraper() %>% 
@@ -108,7 +108,7 @@ free_agents <-
   data <- 
     clusterApply(
       cl,
-      playerLinks, 
+      playerLinks[1:10], 
       fun = playerScraper) %>% 
     do.call(
       args = .,

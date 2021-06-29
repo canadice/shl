@@ -155,15 +155,19 @@ playerScraper <-
             pattern = teams$team
           ) %>% 
           which()  
-      ) %>% 
-      filter(
-        Inaugural.Season == max(Inaugural.Season)
-      )
+      ) 
+      
     
     if((PLAYERTEAM %>% nrow()) == 0){
       PLAYERTEAM <- 
         PLAYERTEAM %>% 
         dplyr::add_row()
+    } else {
+      PLAYERTEAM <- 
+        PLAYERTEAM %>% 
+        dplyr::filter(
+          Inaugural.Season == max(Inaugural.Season)
+        )
     }
     
     postData <- 
