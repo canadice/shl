@@ -155,6 +155,9 @@ playerScraper <-
             pattern = teams$team
           ) %>% 
           which()  
+      ) %>% 
+      filter(
+        Inaugural.Season == max(Inaugural.Season)
       )
     
     if((PLAYERTEAM %>% nrow()) == 0){
