@@ -143,6 +143,9 @@ posTrackerSERVER <- function(id){
             League,
             Active
           ) %>% 
+          filter(
+            Active == "Active"
+          ) %>% 
           mutate(
             Position =
               case_when(
@@ -166,9 +169,6 @@ posTrackerSERVER <- function(id){
           group_by(League, Position) %>% 
           mutate(
             leagueAmount = n()
-          ) %>% 
-          filter(
-            Active == "Active"
           ) %>% 
           select(Position, League, leagueAmount) %>% 
           unique() %>% 
@@ -223,7 +223,14 @@ posTrackerSERVER <- function(id){
                 scrollX = '600px',
                 # pageLength = 10,
                 # lengthMenu = c(10, 25, 50, 100),
-                dom = 't'
+                dom = 't',
+                columnDefs = 
+                  list(
+                    list(
+                      targets = c(5,6),
+                      visible = FALSE  
+                    )
+                  )
               )
           ) %>% 
           formatStyle(

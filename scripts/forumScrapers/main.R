@@ -85,8 +85,8 @@ free_agents <-
   ### Finds all unique player links from each team's roster page on the forum
   playerLinks <-
     c(
-      shl_east, 
-      shl_west, 
+      shl_east,
+      shl_west,
       smjhl_link
     ) %>%
     team_scraper() %>% 
@@ -114,27 +114,31 @@ free_agents <-
       args = .,
       what = plyr::rbind.fill
     ) %>% 
-  ## Removes height, weight attributes as they are not used
-  ## Removes duplicated position that is taken from the player info
-  ## POSITION is taken from the post title
-  select(-Weight, -Height, -Position, -(Player.Type:RiderLAKPlayer.Render)) %>%
-  left_join(
-    iihfTransfer,
-    by = c("NAME" = "player")
-  ) %>% 
-  mutate(
-    IIHF.Nation.x = 
-      case_when(
-        is.na(IIHF.Nation.y) ~ IIHF.Nation.x,
-        TRUE ~ IIHF.Nation.y
-      )
-  ) %>% 
-  rename(
-    IIHF.Nation = IIHF.Nation.x
-  ) %>% 
-  select(
-    -IIHF.Nation.y
-  )
+    ## Removes height, weight attributes as they are not used
+    ## Removes duplicated position that is taken from the player info
+    ## POSITION is taken from the post title
+    select(-Weight, -Height, -Position, -(Player.Type:last_col())) %>%
+    left_join(
+      iihfTransfer %>% 
+        group_by(player) %>% 
+        dplyr::filter(
+          Transfer.Season == max(Transfer.Season)
+        ),
+      by = c("NAME" = "player")
+    ) %>% 
+    mutate(
+      IIHF.Nation.x = 
+        case_when(
+          is.na(IIHF.Nation.y) ~ IIHF.Nation.x,
+          TRUE ~ IIHF.Nation.y
+        )
+    ) %>% 
+    rename(
+      IIHF.Nation = IIHF.Nation.x
+    ) %>% 
+    select(
+      -IIHF.Nation.y
+    )
   
   stopCluster(cl)
   
