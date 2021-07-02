@@ -14,4 +14,5 @@ Most of these analyses can be used through the [SHL Analytics app](https://canad
 2. Position tracker for international play
 3. Scheduling tool for sim teams
 4. Career card 
+5. Create function to add budget information to players from [link](https://docs.google.com/spreadsheets/d/1EgWsNTbveHdG9knS_4i1h9j2yGQivQr8TlU9Dc1aVoI/edit#gid=263507878)
 
