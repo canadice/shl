@@ -1,0 +1,21 @@
+TeamId;LeagueId;Name;Nickname;Abbr;Parent Team 1;Parent Team 2;Parent Team 3;Parent Team 4;Parent Team 5;Parent Team 6;Parent Team 7;Parent Team 8;Primary Color;Secondary Color;Text Color;Conference Id;Division Id
+0;0;Buffalo;Stampede;BUF;-1;-1;-1;-1;-1;-1;-1;-1;#164833;#f6bf11;#ffffff;0;0
+1;0;Chicago;Syndicate;CHI;-1;-1;-1;-1;-1;-1;-1;-1;#1a1a18;#d9ad00;#ffffff;1;0
+2;0;Hamilton;Steelhawks;HAM;-1;-1;-1;-1;-1;-1;-1;-1;#243b50;#bab9b9;#ffffff;0;0
+3;0;Toronto;North Stars;TOR;-1;-1;-1;-1;-1;-1;-1;-1;#195aa5;#195aa5;#ffffff;0;0
+4;0;Manhattan;Rage;MAN;-1;-1;-1;-1;-1;-1;-1;-1;#97181b;#1a1a18;#ffffff;0;1
+5;0;New England;Wolfpack;NEW;-1;-1;-1;-1;-1;-1;-1;-1;#008236;#6d6e72;#ffffff;0;0
+6;0;Tampa Bay;Barracuda;TBB;-1;-1;-1;-1;-1;-1;-1;-1;#0ad2d2;#f499c2;#ffffff;0;1
+7;0;Baltimore;Platoon;BAP;-1;-1;-1;-1;-1;-1;-1;-1;#08102c;#6b1616;#ffffff;0;1
+8;0;Calgary;Dragons;CGY;-1;-1;-1;-1;-1;-1;-1;-1;#a40000;#797979;#ffffff;1;1
+9;0;Edmonton;Blizzard;EDM;-1;-1;-1;-1;-1;-1;-1;-1;#091e40;#249cc4;#ffffff;1;1
+10;0;Minnesota;Monarchs;MIN;-1;-1;-1;-1;-1;-1;-1;-1;#0e3b1e;#322460;#ffffff;1;0
+11;0;Winnipeg;Aurora;WPG;-1;-1;-1;-1;-1;-1;-1;-1;#0e2e2d;#2ef9b4;#ffffff;1;0
+12;0;San Francisco;Pride;SFP;-1;-1;-1;-1;-1;-1;-1;-1;#360854;#d4af37;#ffffff;1;1
+13;0;Los Angeles;Panthers;LAP;-1;-1;-1;-1;-1;-1;-1;-1;#006a7a;#eb7d0b;#ffffff;1;1
+14;0;New Orleans;Specters;NOL;-1;-1;-1;-1;-1;-1;-1;-1;#860efd;#1a1a18;#ffffff;1;0
+15;0;Texas;Renegades;TEX;-1;-1;-1;-1;-1;-1;-1;-1;#1a1a18;#606060;#ffffff;1;0
+18;0;Atlanta;Inferno;ATL;-1;-1;-1;-1;-1;-1;-1;-1;#be1e2d;#f26522;#ffffff;0;1
+19;0;Seattle;Argonauts;SEA;-1;-1;-1;-1;-1;-1;-1;-1;#192e58;#c5942c;#ffffff;1;1
+20;0;Montreal;Patriotes;MTL;-1;-1;-1;-1;-1;-1;-1;-1;#773141;#ffb612;#ffffff;0;0
+21;0;Philadelphia;Forge;PHI;-1;-1;-1;-1;-1;-1;-1;-1;#e88900;#a00400;#ffffff;0;1
