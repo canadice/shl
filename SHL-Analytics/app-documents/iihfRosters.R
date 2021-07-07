@@ -185,7 +185,7 @@ iihfSERVER <- function(id){
                   )
               )
           ) %>% 
-          group_by(Active, League, Position) %>% 
+          group_by(Active, Position, League) %>% 
           summarize(
             Amount = n()
           ) %>% 

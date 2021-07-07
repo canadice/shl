@@ -256,7 +256,7 @@ playerScraper <-
               stringr::str_detect(Birthplace, pattern = "Finland") ~ "Finland",
               stringr::str_detect(Birthplace, pattern = "Russia") ~ "Russia",
               stringr::str_detect(Birthplace, pattern = "Austria") ~ "Austria",
-              stringr::str_detect(Birthplace, pattern = "Czechia|Czech Republic|CZE") ~ "Czechia",
+              stringr::str_detect(Birthplace, pattern = "Czechia|Czech Republic|CZE|Czechoslovakia") ~ "Czechia",
               stringr::str_detect(Birthplace, pattern = "Germany") ~ "Germany",
               stringr::str_detect(Birthplace, pattern = "England|Wales|Scotland|Northern Ireland|United Kingdom|Great Britain") ~ "Great Britain",
               stringr::str_detect(Birthplace, pattern = "Ireland") ~ "Ireland",
