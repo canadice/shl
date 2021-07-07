@@ -165,11 +165,21 @@ ui <-
                     playersUI(id = "playersUI")
                 ),
                 tabPanel(
-                    "Position Tracker",
+                    "SHL and SMJHL Positions",
                     titlePanel(
                         h1("Position Tracker", align = "center")
                     ),
                     posTrackerUI(id = "posTrackerUI")
+                ),
+                ##################################################################
+                ##                            IIHF                              ##
+                ##################################################################
+                tabPanel(
+                    "IIHF Eligibility",
+                    titlePanel(
+                        h1("IIHF Eligibility", align = "center")
+                    ),
+                    iihfUI(id = "iihfUI")
                 )
             ),
             
@@ -214,18 +224,6 @@ ui <-
                     h1("Career Card", align = "center")
                 ),
                 careerUI(id = "careerUI")
-            ),
-            
-            
-            ##################################################################
-            ##                            IIHF                              ##
-            ##################################################################
-            tabPanel(
-                "IIHF",
-                titlePanel(
-                    h1("IIHF Nation Rosters", align = "center")
-                ),
-                iihfUI(id = "iihfUI")
             )
         )
     )
