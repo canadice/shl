@@ -43,7 +43,8 @@ teams <-
 
 iihfTransfer <- 
   read.csv2(
-    file = "csv/iihf_transfers.csv"
+    file = "csv/iihf_transfers.csv",
+    encoding = "UTF-8"
   )
 
 ### Specifies link to forum page containing all the team rosters

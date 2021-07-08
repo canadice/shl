@@ -95,14 +95,16 @@ playerScraper <-
       paste0(
         "SMJHL GM|SHL GM|SHL HO|SMJHL HO|Commissioner|IIHF Commissioner|",
         "Registered|Rookie|Historian|",
-        "Vancouver Whalers|Quebec City Citadelles|",
+        "Vancouver Whalers|Quebec City Citadelles|Detroit Falcons|Anchorage Armada|",
+        "Chicago Syndicate|Manhattan Rage|Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|",
+        "Winnipeg Aurora|Tampa Bay Barracuda|Calgary Dragons|Buffalo Stampede|",
         "Head Office|Coach|Budget Director|Graphic Graders|Moderators|Federation Head|",
-        "Fantasy League Manager|Simmer|Calgary Dragons|Head Updater|Buffalo Stampede|",
+        "Player Updaters|PGS Grader|",
+        "Fantasy League Manager|Simmer|Head Updater|",
         "Owner|Media Graders|Bank Manager|Simmer|Mentor|Comissioner|",
-        "Chicago Syndicate|Team |Detroit Falcons|Awards Committee|Manhattan Rage|",
-        "Edmonton Blizzard|Los Angeles Panthers|Baltimore Platoon|All-Star Committee|",
-        "Anchorage Armada|Winnipeg Aurora|Tampa Bay Barracuda|Czech Republic|PGS Grader|",
-        "Germany|Management|HOF Committee"
+        "Team [A-z ]+|Awards Committee|",
+        "All-Star Committee|",
+        "Management|HOF Committee"
       )
     
     USER <- 
@@ -191,10 +193,15 @@ playerScraper <-
         stringi::stri_remove_empty()
     }
     
+    infoIndex <- 
+      postData %>% 
+      stringr::str_detect("First Name") %>% 
+      which()
+    
     if(postData %>% length() > 2){
       PLAYERINFO <- 
         postData %>%
-        dplyr::nth(2) %>% 
+        dplyr::nth(infoIndex) %>% 
         stringr::str_split(
           pattern = ":|\\n"
         ) 
