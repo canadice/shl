@@ -18,7 +18,19 @@ posTrackerUI <- function(id){
     fluidPage(
       fluidRow(
         column(
-          width = 3
+          width = 3,
+          radioButtons(
+            inputId = ns("activity"),
+            label = "Filter on activity",
+            choices = 
+              c(
+                "Active" = "Active",
+                "Inactives" = "IA",
+                "All" = "All"
+              ),
+            selected = "Active",
+            width = "100%"
+          )
         ),
         column(
           width = 6,
@@ -142,10 +154,19 @@ posTrackerSERVER <- function(id){
             Position,
             League,
             Active
-          ) %>% 
-          filter(
-            Active == "Active"
-          ) %>% 
+          )
+        
+        
+        if(input$activity != "All"){
+          temp <- 
+            temp %>% 
+            filter(
+              Active == input$activity
+            )  
+        }
+        
+        temp <- 
+          temp %>% 
           mutate(
             Position =
               case_when(
@@ -203,7 +224,11 @@ posTrackerSERVER <- function(id){
           mutate(
             fillSHL = SHL / slotsSHL,
             fillSMJHL = SMJHL / slotsSMJHL
-          ) 
+          ) %>% 
+          rename(
+            `Slots in SHL` = slotsSHL,
+            `Slots in SMJHL` = slotsSMJHL 
+          )
         
         datatable(
             temp,
@@ -236,7 +261,8 @@ posTrackerSERVER <- function(id){
           formatStyle(
             "SHL",
             valueColumns = "fillSHL",
-            background = styleColorBar(c(0,1), 'steelblue', angle = -90),
+            color = styleInterval(cuts = c(0.8, 1), values = c("black", "#e08b46", "red")),
+            background = styleColorBar(c(0,1), "#2c6185", angle = -90),
             backgroundSize = '100% 90%',
             backgroundRepeat = 'no-repeat',
             backgroundPosition = 'center'
@@ -244,7 +270,8 @@ posTrackerSERVER <- function(id){
           formatStyle(
             "SMJHL",
             valueColumns = "fillSMJHL",
-            background = styleColorBar(c(0,1), 'steelblue', angle = -90),
+            color = styleInterval(cuts = c(0.8, 1), values = c("black", "#e08b46", "red")),
+            background = styleColorBar(c(0,1), "#2c6185", angle = -90),
             backgroundSize = '100% 90%',
             backgroundRepeat = 'no-repeat',
             backgroundPosition = 'center'
