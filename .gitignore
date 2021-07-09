@@ -1,7 +1,7 @@
 # History files
-.Rhistory
-.Rapp.history
-.log
+*.Rhistory
+*.Rapp.history
+*.log
 
 # Session Data files
 .RData
@@ -12,7 +12,6 @@
 # Shinyapps files
 */rsconnect
 .dcf
-SHL-Analytics/app-documents/**/*.png
 
 # Example code in package build process
 *-Ex.R
