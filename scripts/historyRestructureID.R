@@ -50,9 +50,9 @@ history <-
         
         TeamId == 45 ~ 25,#New Orleans Specters
         
-        TeamId == 62 ~ 28,#Atlanta Inferno
+        TeamId == 63 ~ 28,#Atlanta Inferno
         
-        TeamId == 63 ~ 30,#Seattle Argonauts
+        TeamId == 62 ~ 30,#Seattle Argonauts
         TRUE ~ NaN
       )
   ) %>% 
