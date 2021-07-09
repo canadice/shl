@@ -12,7 +12,7 @@
 # Shinyapps files
 */rsconnect
 .dcf
-*/app-documents/*.png
+SHL-Analytics/app-documents/**/*.png
 
 # Example code in package build process
 *-Ex.R
