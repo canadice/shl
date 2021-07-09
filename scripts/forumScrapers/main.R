@@ -118,7 +118,7 @@ free_agents <-
     ## Removes height, weight attributes as they are not used
     ## Removes duplicated position that is taken from the player info
     ## POSITION is taken from the post title
-    select(-Weight, -Height, -Position, -(Player.Type:last_col())) %>%
+    # select(-Weight, -Height, -Position, -(Player.Type:last_col())) %>%
     left_join(
       iihfTransfer %>% 
         group_by(player) %>% 
