@@ -197,10 +197,15 @@ playerScraper <-
       rvest::html_nodes(".post_body") 
     
     ### Checks if information is written in special fonts
-    if(postData %>% 
-       rvest::html_nodes(".mycode_font") %>% 
-       rvest::html_text() %>% 
-       stringr::str_detect(pattern = "First Name")){
+    checkText <- postData %>% 
+      rvest::html_nodes(".mycode_font") %>% 
+      rvest::html_text()
+    
+    if(length(checkText) == 0){
+      postData <- 
+        postData %>% 
+        rvest::html_text()  
+    } else if(stringr::str_detect(string = checkText, pattern = "First Name")){
       postData <- 
         postData %>% 
         rvest::html_nodes(".mycode_font") %>% 
@@ -209,7 +214,7 @@ playerScraper <-
     } else {
       postData <- 
         postData %>% 
-        rvest::html_text()  
+        rvest::html_text()
     }
     
     FIRSTNAME <- 
