@@ -1,0 +1,62 @@
+---
+title: "Welcome"
+author: "Canadice"
+date: '2020-12-16'
+output: 
+  md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Simulation Hockey League Analytics Tool
+
+Welcome to an Analytics Tool for the [Simulation Hockey League](https://simulationhockey.com/index.php). The SHL is a forums based simulation hockey league where players from all around the world create and develop players. 
+
+## About the application
+
+This app is created by [Canadice](https://simulationhockey.com/member.php?action=profile) using a Shiny Dashboard through R. The app reads data from the [SHL Index](https://index.simulationhockey.com/) using its API, and directly from the forum itself using the package [rvest](https://github.com/tidyverse/rvest). 
+
+The different tools available allows you to get a deeper understanding of the league and its players. It is recommended to use the app at a minimum 1280x1040 resolution.
+
+It is still a work in progress and more tools will be added on in due course. If you are interested in helping out or want to know more about the work, contact [Canadice](https://simulationhockey.com/member.php?action=profile).
+
+## The Tools
+
+### Trackers
+The app includes a couple of trackers:
+
+- The **Draft Class Rankings** tool ranks all players based on their earned TPE split by their draft class. It also includes information about their bank account, their activity status and more. 
+
+- The **Casino Tracker** shows the current standings and records of teams in the SHL compared to their casino lines, as well as predictions based on their record. 
+
+- The **Position Tracker** tracks the number of players (active and inactive) for every position in the SHL and SMJHL.
+
+### IIHF
+- In order for Federation Heads to get an overview of their national eligibility roster, the **IIHF Eligibility** tool filters all players based on their IIHF Nation. 
+
+- The **IIHF Rankings** are automatically calculated using the past four seasons of results. Also includes a group identifier to know which team is to play in which group for the upcoming tournament.
+
+
+### Visualizations
+The app offers many different visualization tools for different purposes:
+
+- First you can visualize a **player's attributes** with the help of a radar chart. 
+- The second creates **player cards** based upon standardized regular season statistics.
+- The third looks at the **similarities of players** in the league, and projects these similarities in a two-dimensional plot. This visualization is interactive so you can select single or groups of players to visualize their attributes in a radar chart and compare more in detail. 
+
+### Careers and League Records
+The current **Career** tool offers some aggregated statistics for skaters and goalies in the SHL (and some from the SMJHL). 
+
+There is also a first version of the **League Records** that looks at skater and goalie records on a season-by-season and career basis. 
+
+
+### Miscellaneous Tools
+Some other general tools for different purposes:
+
+- **Scheduling** tool for the sim team to create a formatted output of the FHM exported *schedules.csv*.
+- **Regression** tool that calculates the amount of TPE each player has to regress at a set point in time.
+
+
+

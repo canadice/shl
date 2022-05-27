@@ -1,0 +1,97 @@
+franchiseID;teamID;fhmID;team;Inaugural Season;leagueID;league;abbr;primary;secondary;alt1;alt2
+1;1;8;Calgary Dragons;1;0;SHL;CGY;#a40000;#000000;#ffffff;#797979
+2;2;2;Hamilton Steelhawks;1;0;SHL;HAM;#253b50;#ffffff;#d1d3d4;#3e7098
+3;3;;Toronto Stars;1;0;SHL;TOR;;;;
+4;4;;West Kendall Platoon;1;0;SHL;WKP;;;;
+5;5;;Winnipeg Jets;1;0;SHL;WIN;#081C41;#D10923;;
+6;6;;Wisconsin Monarchs;1;0;SHL;WISC;;;;
+7;7;;Edmonton Comets;2;0;SHL;EDM;;;;
+8;8;4;Manhattan Rage;2;0;SHL;MAN;#97181b;#ffffff;#000000;
+3;9;3;Toronto North Stars;2;0;SHL;TOR;#195aa5;#ffffff;;
+6;10;;Vancouver Ice Wolves;3;0;SHL;VAN;;;;
+11;11;13;Los Angeles Panthers;5;0;SHL;LAP;#006b7a;#eb7d0b;;
+12;12;;Minnesota Chiefs;5;0;SHL;MIN;#003300;#990000;;
+6;13;;Vancouver Nightmare;6;0;SHL;VAN;;;;
+6;14;;Las Vegas Kings;8;0;SHL;LVK;;;;
+7;15;9;Edmonton Blizzard;10;0;SHL;EDM;#091e40;#33c2ef;#f5d606;
+13;16;;Tampa Bay Hydras;10;0;SHL;TBH;;;;
+14;17;15;Texas Renegades;10;0;SHL;TEX;#000000;#616161;;
+13;18;;Hartford Hydras;11;0;SHL;HFD;;;;
+13;19;5;New England Wolfpack;13;0;SHL;NEW;#006a36;#ffffff;#717276;
+6;20;;Seattle Riot;15;0;SHL;SEA;#2b3856;#40e0d0;;
+15;21;0;Buffalo Stampede;25;0;SHL;BUF;#164833;#F9BB14;;
+16;22;;Portland Admirals;25;0;SHL;POR;;;;
+16;23;12;San Francisco Pride;37;0;SHL;SFP;#360854;#d4af37;;
+17;24;1;Chicago Syndicate;46;0;SHL;CHI;#d9ad00;#000000;;
+18;25;14;New Orleans Specters;46;0;SHL;NOLA;#8623ea;#eeeeee;#000000;
+6;26;;Tampa Bay Barracuda (old);46;0;SHL;TBB;#227383;#FF882C;;
+4;27;7;Baltimore Platoon;54;0;SHL;BAP;#08102c;#ffffff;#6c1616;
+19;28;18;Atlanta Inferno;56;0;SHL;ATL;#BE1E2D;#ffdd00;#F26522;
+12;29;10;Minnesota Monarchs;56;0;SHL;MIN;#11582c;#ead9a2;#453c7e;#eae1e1
+20;30;19;Seattle Argonauts;56;0;SHL;SEA;#192e58;#c5942c;#7d92ab;#d1d1d2
+6;31;6;Tampa Bay Barracuda;59;0;SHL;TBB;#000000;#f499c2;#0ad2d2;#ffffff
+5;32;11;Winnipeg Aurora;59;0;SHL;WPG;#0e2e2d;#2ef9b4;#1fc4bd;#c8c6c6
+21;33;20;Montreal Patriotes;60;0;SHL;MTL;#773141;#ffb612;#b0bac4;
+22;34;21;Philadelphia Forge;60;0;SHL;PHI;#e88900;#a00400;#212020;
+81;81;;Lethbridge Lions;1;1;SMJHL;;;;;
+80;80;;Anaheim Outlaws (old);2;1;SMJHL;;;;;
+50;50;;Brandon Blazers;1;1;SMJHL;;;;;
+51;51;;Prince George Firebirds;1;1;SMJHL;PGF;;;;
+52;52;3;Vancouver Whalers;1;1;SMJHL;VAN;#018241;#0d1d3f;;
+53;53;1;Kelowna Knights;2;1;SMJHL;KEL;#003300;#e5d478;;
+50;54;;Montreal Impact;5;1;SMJHL;MTL;;;;
+80;83;;Seattle Stags;7;1;SMJHL;;;;;
+80;82;;Seattle Stingrays;5;1;SMJHL;;;;;
+80;85;;Los Angeles Archangels;8;1;SMJHL;;;;;
+81;84;;Chicago Cougars;5;1;SMJHL;;;;;
+54;55;;Boston Battalion;5;1;SMJHL;;;;;
+55;56;7;Detroit Falcons;5;1;SMJHL;DET;#ec2227;#ffffff;#fbac3e;#d3d3d3
+81;86;;Washington Patriots;6;1;SMJHL;;;;;
+54;57;;Chicago Hitmen;9;1;SMJHL;CHI;;;;
+54;58;8;St. Louis Scarecrows;14;1;SMJHL;STL;#eaaa00;#660000;#cdaf95;#000000
+51;59;;Regina Force;18;1;SMJHL;;;;;
+56;60;;Colorado Mammoths;25;1;SMJHL;COL;;;;
+57;61;;Halifax Raiders;25;1;SMJHL;HFX;#000000;#ead0ae;;
+51;62;;Prince George Firebirds;25;1;SMJHL;PGF;;;;
+50;63;;Montreal Militia;28;1;SMJHL;MTL;#041a54;#858685;;
+58;64;0;Anchorage Armada;42;1;SMJHL;ANC;#848482;#1e2d40;#7ea1d9;#fbb117
+56;65;6;Colorado Raptors;42;1;SMJHL;COL;#182d49;#f3cd16;#33599f;
+59;66;;Anaheim Outlaws;45;1;SMJHL;ANA;#c20000;#000000;#9e0404;
+60;67;;Lethbridge Lions;45;1;SMJHL;;#fadc28;#000000;#ca0c00;
+50;68;9;Carolina Kraken;50;1;SMJHL;CAR;#cf5b00;#1a1a1a;#f5ece7;
+60;69;4;Newfoundland Berserkers;51;1;SMJHL;NL;#4d4d4d;#ff0000;#cccccc;
+57;70;2;Maine Timber;53;1;SMJHL;MET;#082a17;#85714d;#095f30;
+61;71;14;Nevada Battleborn;55;1;SMJHL;NBB;#06152f;#c6b273;#0d244d;#dce2de
+62;72;15;Quebec City Citadelles;55;1;SMJHL;QCC;#1d9bee;#34476b;#ec2e61;#d5d5d5
+63;73;17;Great Falls Grizzlies;61;1;SMJHL;GFG;#b6985a;#936b48;#151211;
+64;74;16;Regina Elk;61;1;SMJHL;REG;#2F0038;#FBBC19;#D4780D;
+59;75;5;Yukon Malamutes;65;1;SMJHL;YUM;#b1162c;#00a6f7;#366e9b;#ebebeb
+101;101;4;Austria;;2;IIHF;AUT;#ed2939;#ffffff;;
+102;102;5;Canada;;2;IIHF;CAN;#cc3333;#ffffff;;
+103;103;6;Czechia;;2;IIHF;CZE;#d7141a;#ffffff;#11457e;
+104;104;7;Finland;;2;IIHF;FIN;#0f80cc;#ffffff;;
+105;105;0;Germany;;2;IIHF;GER;#ffcc00;#000000;;
+106;106;1;Great Britain;;2;IIHF;GBR;#00247d;#ffffff;#cf142b;
+107;107;2;Ireland;;2;IIHF;IRL;#169B62;#ffffff;#FF8200;
+108;108;12;Japan;;2;IIHF;JAP;#FFFFFF;#EF3340;;
+109;109;13;Latvia;;2;IIHF;LAT;#800000;#ffffff;;
+110;110;14;Norway;;2;IIHF;NOR;#004a99;#ffffff;;
+111;111;8;Russia;;2;IIHF;RUS;#b3261f;#ffffff;#0b3c81;
+112;112;9;Sweden;;2;IIHF;SWE;#fcd116;#005b99;;
+113;113;10;Switzerland;;2;IIHF;SWI;#DA291C;#ffffff;;
+114;114;11;USA;;2;IIHF;USA;#002868;#ffffff;#be0f25;
+999;999;;Unassigned;;2;IIHF;UNA;#000000;#ffffff;;
+201;201;0;British Isles;;3;WJC;BRI;;;;
+202;202;5;Canada;;3;WJC;CAN;#cc3333;#ffffff;;
+203;203;;Canada Red;;3;WJC;CNW;#cc3333;#ffffff;;
+204;204;;Canada White;;3;WJC;CNR;#ffffff;#cc3333;;
+205;205;9;DACH;;3;WJC;DCH;;;;
+206;206;6;Finland;;3;WJC;FIN;#0f80cc;#ffffff;;
+207;207;12;North America;;3;WJC;NA;;;;
+208;208;7;Sweden;;3;WJC;SWE;#fcd116;#005b99;;
+209;209;2;UCORCAL;;3;WJC;RCL;;;;
+210;210;1;United States;;3;WJC;USA;#041E42;#ffffff;;
+211;211;;United States Blue;;3;WJC;USB;#041E42;#ffffff;;
+212;212;;United States Red;;3;WJC;USR;#BF0D3E;#041E42;;
+213;213;4;World;;3;WJC;WOR;;;;
+214;214;13;Young Guns;;3;WJC;YG;;;;

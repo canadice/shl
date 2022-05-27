@@ -1,0 +1,228 @@
+CREATE TABLE userData (
+	user text PRIMARY KEY,
+	userPage text,
+	joined datetime,
+	lastVisit datetime,
+	timeOnline text,
+	bank numeric,
+	posts integer,
+	threads integer,
+	reputation integer
+);
+
+CREATE TABLE teamData(
+	teamID, 
+	fhmID, 
+	franchiseID, 
+	leagueID, 
+	name, 
+	abbr, 
+	primaryCol, 
+	secondaryCol, 
+	alt1Col, 
+	alt2Col, 
+	inaugural, 
+	primary key(teamID)
+);
+
+CREATE TABLE playerData(
+	playerID, 
+	currentTeam, 
+	user, 
+	name, 
+	nickname, 
+	fhmName, 
+	draftClass, 
+	position, 
+	activeStatus, 
+	currentTPE, 
+	shoots, 
+	jerseyNr, 
+	recruitedBy, 
+	playerRender, 
+	birthplace, 
+	retired, 
+	primary key(playerID), 
+	FOREIGN KEY (user) REFERENCES userData(user), 
+	FOREIGN KEY (currentTeam) REFERENCES teamData(teamID)
+);
+
+CREATE TABLE shlDraft(
+	playerID, 
+	player, 
+	teamID, 
+	season, 
+	pick, 
+	primary key(playerID), 
+	FOREIGN KEY (playerID) REFERENCES players(playerID), 
+	FOREIGN KEY (teamID) REFERENCES teamData(teamID)
+);
+
+/* CREATE TABLE smjhlDraft (
+	playerID integer PRIMARY KEY,
+	teamID integer,
+	season integer,
+	pick integer,
+	FOREIGN KEY (playerID) REFERENCES players(playerID),
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+); */
+
+CREATE TABLE iihfData(
+	playerID, 
+	iihfID, 
+	originalID, 
+	transferred, 
+	primary key(playerID), 
+	FOREIGN KEY (playerID) REFERENCES players(playerID), 
+	FOREIGN KEY (iihfID) REFERENCES teamData(teamID), 
+	FOREIGN KEY (originalID) REFERENCES teamData(teamID)
+);
+
+DONE UP TO HERE
+
+CREATE TABLE championships (
+	leagueID integer,
+	season integer,
+	teamID integer,
+	PRIMARY KEY (leagueID, season),
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+);
+
+CREATE TABLE playerAwards (
+	leagueID integer,
+	season integer,
+	award text,
+	'win/nom' integer,
+	playerID integer, 
+	PRIMARY KEY (leagueID, season, award, playerID),
+	FOREIGN KEY (playerID) REFERENCES players(playerID)
+);
+
+CREATE TABLE userAwards (
+	leagueID integer,
+	season integer,
+	award text,
+	'win/nom' integer,
+	user text, 
+	PRIMARY KEY (leagueID, season, award, user),
+	FOREIGN KEY (user) REFERENCES userData(user)
+);
+
+CREATE TABLE teamAwards (
+	leagueID integer,
+	season integer,
+	award text,
+	'win/nom' integer,
+	teamID integer, 
+	PRIMARY KEY (leagueID, season, award, teamID), 
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+);	
+
+CREATE TABLE skaterHistory (
+	playerID integer,
+	season integer,
+	type text,
+	leagueID integer,
+	teamID integer,
+	GP integer,
+	G integer,
+	A integer,
+	P integer,
+	'+/-' integer,
+	PIM integer,
+	Hit integer,
+	S integer,
+	SB integer,
+	TOI integer,
+	PPG integer,
+	PPA integer,
+	PPP integer,
+	PPTOI integer,
+	SHG integer,
+	SHA integer,
+	SHP integer,
+	SHTOI integer,
+	Fights integer,
+	FightsWon integer,
+	FightsLost integer,
+	GvA integer,
+	TkA integer,
+	PDO numeric,
+	GF60 numeric,
+	GA60 numeric,
+	SF60 numeric,
+	SA60 numeric,
+	CF numeric,
+	CA numeric,
+	'CF%' numeric,
+	'CF%Rel' numeric,
+	FF numeric,
+	FA numeric,
+	'FF%' numeric,
+	'FF%Rel' numeric,
+	primary key (playerID, season, type, leagueID, teamID),
+	FOREIGN KEY (playerID) REFERENCES players(playerID), 
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+);
+
+CREATE TABLE goalieHistory (
+	playerID integer,
+	season integer,
+	type text,
+	leagueID integer,
+	teamID integer,
+	GP integer,
+	Min integer,
+	W integer,
+	L integer,
+	OT integer,
+	SA integer,
+	SV integer,
+	GA integer,
+	GAA integer,
+	SO integer,
+	'SV%' integer,
+	primary key (playerID, season, type, leagueID, teamID),
+	FOREIGN KEY (playerID) REFERENCES players(playerID), 
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+);
+
+CREATE TABLE teamHistory (
+	teamID integer,
+	leagueID integer,
+	season integer,
+	type text,
+	GM text,
+	W integer,
+	L integer,
+	OT integer,
+	P integer,
+	'P%' numeric,
+	RW integer,
+	ROW integer,
+	SOW integer,
+	SOL integer,
+	GF integer,
+	GA integer,
+	'GF/GP' numeric,
+	'GA/GP' numeric,
+	primary key (leagueID, teamID, season, type),
+	FOREIGN KEY (teamID) REFERENCES teamInformation(teamID)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
