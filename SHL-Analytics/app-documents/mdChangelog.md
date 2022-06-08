@@ -3,6 +3,10 @@
 <!-- ## v1.2.0 -->
 <!-- - Added first version of a box score scraper with instructions. -->
 
+## v1.1.9
+
+-   Fixes to the position tracker
+
 ## v1.1.8
 
 -   Fixes update to the IIHF Ranking calculations based on a new

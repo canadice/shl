@@ -189,20 +189,6 @@ posTrackerSERVER <- function(id){
                 -TPE
               ),
             stringr::str_to_title
-          ) %>%
-          mutate(
-            Name = iconv(Name, to = "UTF-8"),
-            User = iconv(User, to = "UTF-8")
-          ) %>%
-          mutate(
-            Namesort = Name,
-            Usersort = User,
-            Name = paste0("<a href='",Link,"' target='_blank'>",Name,"</a>"),
-            User = paste0("<a href='",Userlink,"' target='_blank'>",User,"</a>")
-          ) %>%
-          select(
-            -Link,
-            -Userlink
           ) 
         
         if(input$activity != "All"){

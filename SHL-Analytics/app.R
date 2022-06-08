@@ -13,104 +13,104 @@
   # devtools::install_github("Canadice/shlrtools")
   require(shlrtools)
   
-## API packages
-require(httr)
-require(jsonlite)
-
-## Packages for reading urls
-require(rvest)
-require(RCurl)
-
-## Data processing
-require(tidyr)
-
-if("plyr" %in% (.packages())){
-    # Do nothing
-} else {
-    require(plyr)  
-}
-
-require(dplyr)
-require(janitor)
-require(tibble)
-require(fuzzyjoin)
-require(purrr)
-
-## Visualizations
-require(ggplot2)
-require(ggnewscale)
-require(RColorBrewer)
-require(cowplot)
-require(ggpubr)
-require(png)
-require(grid)
-require(plotly)
-
-## Fonts
-require(showtext)
-
-## Packages for markdown
-require(markdown)
-
-# Packages for svg images
-require(magick)
-require(rsvg)
+  ## API packages
+  require(httr)
+  require(jsonlite)
   
-## Comparison packages
-require(arsenal)
-require(stringdist)
-
-## Packages for image recognition
-# require(tesseract)
-
-## Package for handling date and time
-require(lubridate)
-
-## Packages for handling strings
-require(stringr)
-require(stringi)
-
-## Loading package that can talk to Google Sheets
-require(googlesheets4)
-require(googledrive)
-
-# Hash creation for saving files to Google Drive
-require(digest)
-
-## Loading Shiny packages
-require(shiny)
-require(DT)
-require(knitr)
-require(ggmap)
-require(kableExtra)
-require(janitor)
-require(usmap)
-# require(shinythemes)
-require(shinycssloaders)
-require(shinyjs)
-require(shinydashboard)
-require(dashboardthemes)
+  ## Packages for reading urls
+  require(rvest)
+  require(RCurl)
+  
+  ## Data processing
+  require(tidyr)
+  
+  if("plyr" %in% (.packages())){
+      # Do nothing
+  } else {
+      require(plyr)  
+  }
+  
+  require(dplyr)
+  require(janitor)
+  require(tibble)
+  require(fuzzyjoin)
+  require(purrr)
+  
+  ## Visualizations
+  require(ggplot2)
+  require(ggnewscale)
+  require(RColorBrewer)
+  require(cowplot)
+  require(ggpubr)
+  require(png)
+  require(grid)
+  require(plotly)
+  
+  ## Fonts
+  require(showtext)
+  
+  ## Packages for markdown
+  require(markdown)
+  
+  # Packages for svg images
+  require(magick)
+  require(rsvg)
+    
+  ## Comparison packages
+  require(arsenal)
+  require(stringdist)
+  
+  ## Packages for image recognition
+  # require(tesseract)
+  
+  ## Package for handling date and time
+  require(lubridate)
+  
+  ## Packages for handling strings
+  require(stringr)
+  require(stringi)
+  
+  ## Loading package that can talk to Google Sheets
+  require(googlesheets4)
+  require(googledrive)
+  
+  # Hash creation for saving files to Google Drive
+  require(digest)
+  
+  ## Loading Shiny packages
+  require(shiny)
+  require(DT)
+  require(knitr)
+  require(ggmap)
+  require(kableExtra)
+  require(janitor)
+  require(usmap)
+  # require(shinythemes)
+  require(shinycssloaders)
+  require(shinyjs)
+  require(shinydashboard)
+  require(dashboardthemes)
 }
 
-version <- "v1.1.8"
+version <- "v1.1.9"
 
 
 ##----------------------------------------------------------------
 ##                Loading fonts for visualizations               -
 ##----------------------------------------------------------------
-font_add_google(
-    "Roboto Mono",
-    family = "body",
-    regular.wt = 300,
-    bold.wt = 500)
-
-font_add_google(
-    "Josefin Sans",
-    family = "title",
-    regular.wt = 300,
-    bold.wt = 500)
-
-showtext_auto()
+# font_add_google(
+#     "Roboto Mono",
+#     family = "body",
+#     regular.wt = 300,
+#     bold.wt = 500)
+# 
+# font_add_google(
+#     "Josefin Sans",
+#     family = "title",
+#     regular.wt = 300,
+#     bold.wt = 500)
+# 
+# showtext_auto()
 
 shlBlue <- "#2c6185"
 shlOrange <- "#e08b46"
@@ -241,6 +241,9 @@ customTheme <-
 ##----------------------------------------------------------------
 
 source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
+# Internal sourcing
+# source("../scripts/API/apiSetup.R")
+
 
 fileSources <- c("app-documents")
 
