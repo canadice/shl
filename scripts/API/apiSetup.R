@@ -100,11 +100,14 @@ print(paste("Forum Data done:", Sys.time()))
 
 ## Loading career data
 historySkaterSeason <- 
-  read.csv2(
-    paste(raw, "csv/history_skaters.csv", sep = ""),
-    sep = ",",
-    dec = ".",
-    fileEncoding = "UTF-8") %>% 
+  # read.csv2(
+  #   paste(raw, "csv/history_skaters.csv", sep = ""),
+  #   sep = ",",
+  #   dec = ".",
+  #   fileEncoding = "UTF-8") %>% 
+  
+  ### Uses the internal history data from the shlrtools package
+  shlrtools::historySkaterSeason %>% 
   filter(
     Name != "CPU Player",
     !(str_detect(Name, pattern = "Computer")),
