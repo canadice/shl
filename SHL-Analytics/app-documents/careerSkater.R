@@ -269,7 +269,7 @@ careerCardSERVER <- function(id){
           session = getDefaultReactiveDomain(),
           inputId = "skaterName",
           choices = 
-            historySkaterSeason$Player.Name %>% 
+            historySkaterSeason$Name %>% 
             unique() %>% 
             sort(),
           selected = "Sarmad Khan",
@@ -281,7 +281,7 @@ careerCardSERVER <- function(id){
       filteredDraftData <- reactive({
         draftData %>% 
           filter(
-            Player == input$skaterName
+            `Player Name` == input$skaterName
           )
       })
       
@@ -300,8 +300,8 @@ careerCardSERVER <- function(id){
         
         historySkaterSeason %>% 
           filter(
-            Player.Name == input$skaterName,
-            LeagueId == league
+            Name == input$skaterName,
+            leagueID == league
           ) %>% 
           left_join(
             teamInfo %>% 
