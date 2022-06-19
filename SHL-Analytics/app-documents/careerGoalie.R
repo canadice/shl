@@ -269,7 +269,7 @@ careerGoalieSERVER <- function(id){
           session = getDefaultReactiveDomain(),
           inputId = "goalieName",
           choices = 
-            historyGoalieSeason$Player.Name %>% 
+            historyGoalieSeason$Name %>% 
             unique() %>% 
             sort(),
           selected = "Mike Honcho",
@@ -281,7 +281,7 @@ careerGoalieSERVER <- function(id){
       filteredDraftData <- reactive({
         draftData %>% 
           filter(
-            Player == input$goalieName
+            `Player Name` == input$goalieName
           )
       })
       
@@ -300,7 +300,7 @@ careerGoalieSERVER <- function(id){
         
         historyGoalieSeason %>% 
           filter(
-            Player.Name == input$goalieName,
+            Name == input$goalieName,
             LeagueId == league
           ) %>% 
           left_join(

@@ -40,10 +40,16 @@ careerRecordsUI <- function(id){
           ),
           column(
             width = 4,
-            actionButton(
+            selectInput(
               inputId = ns("league"),
-              label = "SMJHL Stats?",
-              width = "100%"
+              label = "Select league",
+              width = "100%",
+              choices = 
+                c(
+                  "SHL" = 0,
+                  "SMJHL" = 1, 
+                  "IIHF" = 2
+                )
             )
           ),
           column(
@@ -110,7 +116,7 @@ careerRecordsUI <- function(id){
                 "Hits",
                 "Shots",
                 "ShotsBlocked",
-                "TOI" = "MinutesPlayed"
+                "PDO"
               ),
             selected = "Goals",
             multiple = FALSE
@@ -132,7 +138,7 @@ careerRecordsUI <- function(id){
                 "Hits",
                 "Shots",
                 "ShotsBlocked",
-                "TOI" = "MinutesPlayed"
+                "PDO"
               ),
             selected = "Points",
             multiple = FALSE
@@ -154,7 +160,7 @@ careerRecordsUI <- function(id){
                 "Hits",
                 "Shots",
                 "ShotsBlocked",
-                "TOI" = "MinutesPlayed"
+                "PDO"
               ),
             selected = "Hits",
             multiple = FALSE
@@ -258,7 +264,6 @@ careerRecordsSERVER <- function(id){
       
       observeEvent(
         input$careerOrSeason|
-        input$league|
         input$playoffs,
         {
           shinyjs::disable(id = "playoffs")
@@ -271,20 +276,21 @@ careerRecordsSERVER <- function(id){
         ignoreInit = FALSE
       ) 
       
-      
-      
       skaterSeason <- reactive({
-        league <- if_else(input$league %% 2 != 0, 2, 1)
+        league <- input$league
         playoffs <- (input$playoffs %% 2 != 0) %>% as.numeric()
         
         data <- 
           historySkaterSeason %>% 
           filter(
-            LeagueId == league,
+            leagueID == league,
             isPlayoffs == playoffs
           ) %>% 
           select(
-            -isPlayoffs
+            -isPlayoffs, 
+            -MinutesPlayed,
+            -PPMinutes,
+            -PKMinutes
           ) %>%  
           left_join(
             teamInfo %>% 
@@ -300,40 +306,58 @@ careerRecordsSERVER <- function(id){
             by = c("newTeamID" = "teamID")
           ) %>% 
           left_join(
-            playerLoader(league - 1)$players %>% 
+            playerLoader(league)$players %>% 
               select(
                 name
               ) %>% 
               mutate(
                 currentlyActive = TRUE
               ),
-            by = c("Player.Name" = "name")
+            by = c("Name" = "name")
           ) %>% 
           mutate(
-            Player.Name = paste(Player.Name, if_else(!is.na(currentlyActive), "*", ""), sep = "")
+            Name = paste(Name, if_else(!is.na(currentlyActive), "*", ""), sep = "")
           ) 
         
           if(input$careerOrSeason == 1){
             data <- 
               data %>% 
-              group_by(Player.Name) %>% 
+              group_by(Name) %>% 
               summarize(
                 Team = paste(team, collapse = " & "),
+                # across(
+                #   contains(c("MinutesP", "PMinutes", "KMinutes")),
+                #   ~ ms(.x) %>% period_to_seconds() %>% mean(na.rm = TRUE) %>% seconds_to_period() %>% suppressWarnings()
+                # ),
                 across(
-                  GamesPlayed:FaceoffWins,
+                  GamesPlayed:Takeaways & !contains(c("MinutesP", "PMinutes", "KMinutes")),
                   sum,
+                  na.rm = TRUE
+                ),
+                across(
+                  GR:FFPctRel,
+                  mean,
                   na.rm = TRUE
                 )
               )
           } else {
             data <- 
               data %>% 
-              group_by(Season, Player.Name) %>% 
+              group_by(Season, Name) %>% 
               summarize(
                 Team = paste(team, collapse = " & "),
+                # across(
+                #   contains(c("MinutesP", "PMinutes", "KMinutes")),
+                #   ~ ms(.x) %>% period_to_seconds() %>% mean(na.rm = TRUE) %>% seconds_to_period() %>% suppressWarnings() 
+                # ),
                 across(
-                  GamesPlayed:FaceoffWins,
+                  GamesPlayed:Takeaways & !contains(c("MinutesP", "PMinutes", "KMinutes")),
                   sum,
+                  na.rm = TRUE
+                ),
+                across(
+                  GR:FFPctRel,
+                  mean,
                   na.rm = TRUE
                 )
               )
@@ -343,7 +367,7 @@ careerRecordsSERVER <- function(id){
       })
       
       goalieSeason <- reactive({
-        league <- if_else(input$league %% 2 != 0, 2, 1)
+        league <- (input$league %>% as.numeric()) + 1
         playoffs <- (input$playoffs %% 2 != 0) %>% as.numeric()
         
         data <- 
@@ -378,16 +402,16 @@ careerRecordsSERVER <- function(id){
               mutate(
                 currentlyActive = 1
               ),
-            by = c("Player.Name" = "name")
+            by = c("Name" = "name")
           ) %>% 
           mutate(
-            Player.Name = paste(Player.Name, if_else(!is.na(currentlyActive), "*", ""), sep = "")
+            Name = paste(Name, if_else(!is.na(currentlyActive), "*", ""), sep = "")
           ) 
         
         if(input$careerOrSeason == 1){
           data <- 
             data %>% 
-            group_by(Player.Name) %>% 
+            group_by(Name) %>% 
             summarize(
               Team = paste(team, collapse = " & "),
               across(
@@ -399,7 +423,7 @@ careerRecordsSERVER <- function(id){
         } else {
           data <- 
             data %>% 
-            group_by(Season, Player.Name) %>% 
+            group_by(Season, Name) %>% 
               summarize(
                 Team = paste(team, collapse = " & "),
                 across(
@@ -424,14 +448,14 @@ careerRecordsSERVER <- function(id){
           data <- 
             data %>% 
             select(
-              Player.Name,
+              Name,
               one_of(statistic)
             ) 
         } else {
           data <- 
             data %>% 
             select(
-              Player.Name,
+              Name,
               Team,
               Season,
               one_of(statistic)
@@ -441,7 +465,7 @@ careerRecordsSERVER <- function(id){
         data <- 
           data %>% 
           rename(
-            Player = Player.Name
+            Player = Name
           ) %>% 
           arrange(
             desc(.data[[statistic]])
@@ -515,29 +539,9 @@ careerRecordsSERVER <- function(id){
       ) 
       
       observeEvent(
-        input$league,
-        {
-          if(input$league %% 2 != 0){
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SHL Stats?"
-            )  
-          } else {
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SMJHL Stats?"
-            )
-          }
-          
-        }      
-      )
-      
-      observeEvent(
         input$careerOrSeason,
         {
-          if(input$league %% 2 != 0){
+          if(input$careerOrSeason %% 2 != 0){
             updateActionButton(
               session = getDefaultReactiveDomain(),
               inputId = "careerOrSeason",

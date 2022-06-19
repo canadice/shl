@@ -116,6 +116,7 @@ historySkaterSeason <-
     teamID != ""
   )
 
+
 historyGoalieSeason <- 
   read.csv2(
     paste(raw, "csv/history_goalies.csv", sep = ""),
@@ -128,6 +129,9 @@ historyGoalieSeason <-
     
     ## Removes records where the player has summed stats for multiple teams in a season
     TeamId != ""
+  ) %>% 
+  rename(
+    Name = Player.Name
   )
 
 print(paste("History done:", Sys.time()))
