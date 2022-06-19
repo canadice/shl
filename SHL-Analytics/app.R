@@ -92,7 +92,7 @@
   require(dashboardthemes)
 }
 
-version <- "v1.1.9"
+version <- "v1.2.0"
 
 
 ##----------------------------------------------------------------
@@ -241,9 +241,8 @@ customTheme <-
 ##----------------------------------------------------------------
 
 source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
-# Internal sourcing
+# # Internal sourcing
 # source("../scripts/API/apiSetup.R")
-
 
 fileSources <- c("app-documents")
 

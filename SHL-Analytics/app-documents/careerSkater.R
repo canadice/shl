@@ -45,10 +45,16 @@ careerUI <- function(id){
           ),
           br(),
           br(),
-          actionButton(
+          selectInput(
             inputId = ns("league"),
-            label = "SMJHL Stats?",
-            width = "100%"
+            label = "Select league",
+            width = "100%",
+            choices = 
+              c(
+                "SHL" = 0,
+                "SMJHL" = 1, 
+                "IIHF" = 2
+              )
           ),
           br(),
           br(),
@@ -243,25 +249,6 @@ careerCardSERVER <- function(id){
         }      
       ) 
       
-      observeEvent(
-        input$league,
-        {
-          if(input$league %% 2 != 0){
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SHL Stats?"
-            )  
-          } else {
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SMJHL Stats?"
-            )
-          }
-          
-        }      
-      ) 
       
       ### Finds the list of names from the data set, and the calculations are done on the server side
       observe({
@@ -296,7 +283,7 @@ careerCardSERVER <- function(id){
       ### Find and filters the data based on settings. 
       filteredData <- reactive({
         
-        league <- if_else(input$league %% 2 != 0, 2, 1)
+        league <- input$league
         
         historySkaterSeason %>% 
           filter(
@@ -769,17 +756,17 @@ careerCardSERVER <- function(id){
             ) %>% 
             arrange(
               Season
-            ) %>% 
-            mutate(
-              TOI := 
-                format(
-                  as.POSIXct(
-                    TOI, 
-                    origin = "1970-01-01"
-                  ), 
-                  "%M:%S"
-                )
-            )
+            ) #%>% 
+            # mutate(
+            #   TOI := 
+            #     format(
+            #       as.POSIXct(
+            #         TOI, 
+            #         origin = "1970-01-01"
+            #       ), 
+            #       "%M:%S"
+            #     )
+            # )
         },
         options = 
           careerOptionList,

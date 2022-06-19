@@ -1,7 +1,8 @@
 # Changelog
 
-<!-- ## v1.2.0 -->
-<!-- - Added first version of a box score scraper with instructions. -->
+## v1.2.0
+
+-   Fixed Career data for skaters.
 
 ## v1.1.9
 
