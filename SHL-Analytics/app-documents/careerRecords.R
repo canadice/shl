@@ -54,35 +54,40 @@ careerRecordsUI <- function(id){
           ),
           column(
             width = 4,
-            actionButton(
+            selectInput(
               inputId = ns("careerOrSeason"),
-              label = "Career Records?",
-              width = "100%"
+              label = "Select season or career records",
+              width = "100%",
+              choices = 
+                c(
+                  "Season" = 0,
+                  "Career" = 1
+                )
             )
           ),
           br(),
           br(),
           fluidRow(
-            column(
-              width = 6,
-              selectInput(
-                inputId = ns("scopeFrom"),
-                label = "From Season",
-                width = "100%",
-                choices = 1:max(historyGoalieSeason$Season),
-                selected = 1
-              )
-            ),
-            column(
-              width = 6,
-              selectInput(
-                inputId = ns("scopeTo"),
-                label = "To Season",
-                width = "100%",
-                choices = 1:max(historyGoalieSeason$Season),
-                selected = max(historyGoalieSeason$Season)
-              )
-            )
+          #   column(
+          #     width = 6,
+          #     selectInput(
+          #       inputId = ns("scopeFrom"),
+          #       label = "From Season",
+          #       width = "100%",
+          #       choices = 1:max(historyGoalieSeason$Season),
+          #       selected = 1
+          #     )
+          #   ),
+          #   column(
+          #     width = 6,
+          #     selectInput(
+          #       inputId = ns("scopeTo"),
+          #       label = "To Season",
+          #       width = "100%",
+          #       choices = 1:max(historyGoalieSeason$Season),
+          #       selected = max(historyGoalieSeason$Season)
+          #     )
+          #   )
           ),
           shinyjs::hidden(
             h4(
@@ -263,18 +268,34 @@ careerRecordsSERVER <- function(id){
     function(input, output, session){
       
       observeEvent(
-        input$careerOrSeason|
+        {
+          input$careerOrSeason
+          input$league
+          },
+        {
+          shinyjs::disable(id = "playoffs")
+          shinyjs::disable(id = "league")
+          shinyjs::disable(id = "careerOrSeason")
+          # shinyjs::disable(id = "scopeTo")
+          # shinyjs::disable(id = "scopeFrom")
+          shinyjs::show("processing")
+        },
+        ignoreInit = FALSE
+      ) 
+      
+      
+      observeEvent(
         input$playoffs,
         {
           shinyjs::disable(id = "playoffs")
           shinyjs::disable(id = "league")
           shinyjs::disable(id = "careerOrSeason")
-          shinyjs::disable(id = "scopeTo")
-          shinyjs::disable(id = "scopeFrom")
+          # shinyjs::disable(id = "scopeTo")
+          # shinyjs::disable(id = "scopeFrom")
           shinyjs::show("processing")
         },
         ignoreInit = FALSE
-      ) 
+      )
       
       skaterSeason <- reactive({
         league <- input$league
@@ -374,9 +395,9 @@ careerRecordsSERVER <- function(id){
           historyGoalieSeason %>% 
           filter(
             LeagueId == league,
-            isPlayoffs == playoffs,
-            Season >= input$scopeFrom,
-            Season >= input$scopeTo
+            isPlayoffs == playoffs#,
+            # Season >= input$scopeFrom,
+            # Season >= input$scopeTo
           ) %>% 
           select(
             -isPlayoffs
@@ -483,8 +504,8 @@ careerRecordsSERVER <- function(id){
           shinyjs::enable(id = "playoffs")
           shinyjs::enable(id = "league")
           shinyjs::enable(id = "careerOrSeason")
-          shinyjs::enable(id = "scopeTo")
-          shinyjs::enable(id = "scopeFrom")
+          # shinyjs::enable(id = "scopeTo")
+          # shinyjs::enable(id = "scopeFrom")
           shinyjs::hide("processing")
         }
         
@@ -535,26 +556,6 @@ careerRecordsSERVER <- function(id){
             )
           }
             
-        }      
-      ) 
-      
-      observeEvent(
-        input$careerOrSeason,
-        {
-          if(input$careerOrSeason %% 2 != 0){
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "careerOrSeason",
-              label = "Career Records?"
-            )  
-          } else {
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "careerOrSeason",
-              label = "Per Season Records?"
-            )
-          }
-          
         }      
       ) 
       
