@@ -45,10 +45,17 @@ careerGoalieUI <- function(id){
           ),
           br(),
           br(),
-          actionButton(
+          selectInput(
             inputId = ns("league"),
-            label = "SMJHL Stats?",
-            width = "100%"
+            label = "Select league",
+            width = "100%",
+            choices = 
+              c(
+                "SHL" = 0,
+                "SMJHL" = 1, 
+                "IIHF" = 2,
+                "WJC" = 3
+              )
           ),
           br(),
           br(),
@@ -118,7 +125,7 @@ careerGoalieUI <- function(id){
                     "Minutes",
                     "GoalsAgainst",
                     "ShotsAgainst",
-                    "SavePercentage",
+                    "SavePct",
                     "Assists"
                   ),
                 selected = "Wins",
@@ -140,10 +147,10 @@ careerGoalieUI <- function(id){
                     "Minutes",
                     "GoalsAgainst",
                     "ShotsAgainst",
-                    "SavePercentage",
+                    "SavePct",
                     "Assists"
                   ),
-                selected = "SavePercentage",
+                selected = "SavePct",
                 multiple = FALSE
               ),
               DTOutput(ns("bestSeasonsTwo"))
@@ -181,8 +188,10 @@ careerGoalieUI <- function(id){
       ),
       br(),
       em("Disclaimer: Some data may be wrong as historical data from the first seasons are hard to dig up."),
-      em("Starting from S53 FHM is used to simulate the games which changes the statistics that can be exported."),
+      em("Starting from S53, FHM6 is used to simulate the games which changes the statistics that can be exported."),
       em("S60 saw a change in the update scale to make lower TPE players more impactful."),
+      em("S65 restricted tactics to only team (no unit/individual tactical sliders allowed)."),
+      em("S65 saw the SHL and SMJHL move to FHM8 while the IIHF and WJC moved to FHM8 in S66."),
       br(),
       br()
     ) %>% 
@@ -197,6 +206,14 @@ careerGoalieSERVER <- function(id){
   moduleServer(
     id,
     function(input, output, session){
+      
+      # Opens the connection to the database
+      con <- 
+        dbConnect(
+          SQLite(), 
+          dbFile
+        )
+      
       
       careerOptionList <-
         list(
@@ -243,26 +260,6 @@ careerGoalieSERVER <- function(id){
         }      
       ) 
       
-      observeEvent(
-        input$league,
-        {
-          if(input$league %% 2 != 0){
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SHL Stats?"
-            )  
-          } else {
-            updateActionButton(
-              session = getDefaultReactiveDomain(),
-              inputId = "league",
-              label = "SMJHL Stats?"
-            )
-          }
-          
-        }      
-      ) 
-      
       ### Finds the list of names from the data set, and the calculations are done on the server side
       observe({
         updateSelectizeInput(
@@ -296,13 +293,15 @@ careerGoalieSERVER <- function(id){
       ### Find and filters the data based on settings. 
       filteredData <- reactive({
         
-        league <- if_else(input$league %% 2 != 0, 2, 1)
+        league <- input$league
+        name <- input$goalieName
         
-        historyGoalieSeason %>% 
+        tbl(con, "goalieHistory") %>% 
           filter(
-            Name == input$goalieName,
-            LeagueId == league
+            Name == name,
+            leagueID == league
           ) %>% 
+          collect() %>% 
           left_join(
             teamInfo %>% 
               select(
@@ -314,15 +313,7 @@ careerGoalieSERVER <- function(id){
                 secondary
               ),
             by = c("newTeamID" = "teamID")
-          ) %>% 
-          mutate(
-            SavePercentage = (1 - (GoalsAgainst/ShotsAgainst)) %>% round(3),
-            GoalsAgainstAverage = (GoalsAgainst / Minutes * 60) %>% round(3)
-          )
-          # ) %>% 
-          # mutate(
-          #   MinutesPlayed = MinutesPlayed / GamesPlayed
-          # )
+          ) 
       })
       
       ##---------------------------------------------------------------
@@ -735,7 +726,7 @@ careerGoalieSERVER <- function(id){
             desc(.data[[statistic]])
           ) 
         
-        if(str_detect(statistic, pattern = "GoalsAgainstAverage")){
+        if(str_detect(statistic, pattern = "GAA")){
           data <-
             data %>% 
             arrange(
@@ -789,8 +780,8 @@ careerGoalieSERVER <- function(id){
               OvertimeLosses,
               Minutes,
               Shutouts,
-              SavePercentage,
-              GoalsAgainstAverage,
+              SavePct,
+              GAA,
               GoalsAgainst,
               ShotsAgainst,
               Assists
@@ -806,8 +797,8 @@ careerGoalieSERVER <- function(id){
               GA = GoalsAgainst,
               SA = ShotsAgainst,
               A = Assists,
-              `SV%` = SavePercentage,
-              GAA = GoalsAgainstAverage
+              `SV%` = SavePct,
+              GAA = GAA
             ) %>%  
             filter(
               isPlayoffs == playoffs
@@ -841,8 +832,8 @@ careerGoalieSERVER <- function(id){
                 Wins,
                 Losses,
                 OvertimeLosses,
-                GoalsAgainstAverage,
-                SavePercentage
+                GAA,
+                SavePct
               ) %>% 
               filter(
                 isPlayoffs == playoffs
@@ -851,8 +842,8 @@ careerGoalieSERVER <- function(id){
                 -isPlayoffs
               ) %>% 
               rename(
-                GAA = GoalsAgainstAverage,
-                `SV%` = SavePercentage
+                GAA = GAA,
+                `SV%` = SavePct
               ) %>% 
               group_by(Season) %>% 
               summarize(

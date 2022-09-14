@@ -74,6 +74,11 @@
   require(googlesheets4)
   require(googledrive)
   
+  ## Loading database related packages
+  require(DBI)
+  require(dbplyr)
+  require(RSQLite)
+  
   # Hash creation for saving files to Google Drive
   require(digest)
   
@@ -92,7 +97,7 @@
   require(dashboardthemes)
 }
 
-version <- "v1.2.0"
+version <- "v2.0.0"
 
 
 ##----------------------------------------------------------------
@@ -240,9 +245,9 @@ customTheme <-
 ##          Loading the API functions and some data sets         -
 ##----------------------------------------------------------------
 
-source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
-# # Internal sourcing
-# source("../scripts/API/apiSetup.R")
+# source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
+# Internal sourcing
+source("../scripts/API/apiSetup.R")
 
 fileSources <- c("app-documents")
 

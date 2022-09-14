@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.0
+
+-   Updated the app to mostly make use of a database of the information
+    instead of using csv and/or Google Sheets.
+
 ## v1.2.0
 
 -   Fixed Career data for skaters.

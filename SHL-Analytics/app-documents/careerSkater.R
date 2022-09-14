@@ -53,7 +53,8 @@ careerUI <- function(id){
               c(
                 "SHL" = 0,
                 "SMJHL" = 1, 
-                "IIHF" = 2
+                "IIHF" = 2,
+                "WJC" = 3
               )
           ),
           br(),
@@ -187,8 +188,10 @@ careerUI <- function(id){
       ),
       br(),
       em("Disclaimer: Some data may be wrong as historical data from the first seasons are hard to dig up."),
-      em("Starting from S53 FHM is used to simulate the games which changes the statistics that can be exported."),
+      em("Starting from S53, FHM6 is used to simulate the games which changes the statistics that can be exported."),
       em("S60 saw a change in the update scale to make lower TPE players more impactful."),
+      em("S65 restricted tactics to only team (no unit/individual tactical sliders allowed)."),
+      em("S65 saw the SHL and SMJHL move to FHM8 while the IIHF and WJC moved to FHM8 in S66."),
       br(),
       br()
     ) %>% 
@@ -203,6 +206,13 @@ careerCardSERVER <- function(id){
   moduleServer(
     id,
     function(input, output, session){
+      
+      # Opens the connection to the database
+      con <- 
+        dbConnect(
+          SQLite(), 
+          dbFile
+        )
       
       careerOptionList <-
         list(
@@ -284,12 +294,14 @@ careerCardSERVER <- function(id){
       filteredData <- reactive({
         
         league <- input$league
+        name <- input$skaterName
         
-        historySkaterSeason %>% 
+        tbl(con, "skaterHistory") %>% 
           filter(
-            Name == input$skaterName,
+            Name == name,
             leagueID == league
           ) %>% 
+          collect() %>% 
           left_join(
             teamInfo %>% 
               select(
@@ -302,10 +314,6 @@ careerCardSERVER <- function(id){
               ),
             by = c("newTeamID" = "teamID")
           )
-          # ) %>% 
-          # mutate(
-          #   MinutesPlayed = MinutesPlayed / GamesPlayed
-          # )
       })
       
       ##---------------------------------------------------------------
