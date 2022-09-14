@@ -4,10 +4,16 @@
 ##                     Created: 2021-04-07                     ##
 #################################################################
 
-### Packages that are used
+
+##----------------------------------------------------------------
+##                        Loading packages                       -
+##----------------------------------------------------------------
 
 options(digits.secs = 3)
+## Changes when scientific notation is used to never
+options(scipen=999)
 
+start <- Sys.time()
 print(paste("Start:", Sys.time()))
 
 ## tools packages
@@ -45,6 +51,11 @@ require(ggpubr, quietly = TRUE)
 require(png, quietly = TRUE)
 require(grid, quietly = TRUE)
 
+## Loading database related packages
+require(DBI)
+require(dbplyr)
+require(RSQLite)
+
 # Packages for image recognition
 # require(tesseract, quietly = TRUE)
 
@@ -64,14 +75,15 @@ require(googlesheets4, quietly = TRUE)
 
 print(paste("Loading packages done:", Sys.time()))
 
-## Changes when scientific notation is used to never
-options(scipen=999)
+
+##----------------------------------------------------------------
+##                    Sets up the data loading                   -
+##----------------------------------------------------------------
 
 ## GitHub raw url
 raw <- "https://raw.githubusercontent.com/canadice/shl/main/"
 
-### Loading data sets
-## Current forum scrape data from Google Sheets that is automatically written every day
+## Removes the need to authenticate loading from public Google Sheets
 googlesheets4::gs4_deauth()
 
 ## Loads the Forum Data from the shlrtools Github
@@ -80,62 +92,41 @@ scraperUrl <- url("https://github.com/canadice/shlrtools/blob/main/data/forumDat
 load(scraperUrl)
 
 print(paste("Forum Data done:", Sys.time()))
-# ## Removed reading from the Google Sheet and instead takes the data from a Github Action process
-# forumData <- 
-#   googlesheets4::read_sheet(
-#     ss = "https://docs.google.com/spreadsheets/d/1X4OUzgO_GYkXkF50GrIpRIEYeY54xgEbPoswgWYTuy8/edit?usp=sharing",
-#     sheet = "Daily Scrape"
-#   )
-# ## Removed reading from csv and instead take the Google Sheet that is updated outside of the GitHub
-# forumData <- 
-#   read.csv2(
-#     paste(
-#       raw, 
-#       "csv/SHL_Forum_Scrape_Results.csv", 
-#       sep = ""),
-#     sep = ";",
-#     dec = ",",
-#     fileEncoding = "UTF-8"  
-#     )
+
+## Downloads a local file for the database
+dbFile <- tempfile(fileext = ".db")
+
+dbUrl <- ("https://github.com/canadice/shl/blob/main/database/SHL_Database.db?raw=true")
+
+download.file(dbUrl, destfile = dbFile, mode = "wb")
+
+con <- 
+  dbConnect(
+    SQLite(), 
+    dbFile
+  )
 
 ## Loading career data
 historySkaterSeason <- 
-  # read.csv2(
-  #   paste(raw, "csv/history_skaters.csv", sep = ""),
-  #   sep = ",",
-  #   dec = ".",
-  #   fileEncoding = "UTF-8") %>% 
-  
-  ### Uses the internal history data from the shlrtools package
-  shlrtools::historySkaterSeason %>% 
+  tbl(con, "skaterHistory") %>%
   filter(
     Name != "CPU Player",
-    !(str_detect(Name, pattern = "Computer")),
-    
-    ## Removes records where the player has summed stats for multiple teams in a season
-    teamID != ""
-  )
-
-
-historyGoalieSeason <- 
-  read.csv2(
-    paste(raw, "csv/history_goalies.csv", sep = ""),
-    sep = ",",
-    dec = ".",
-    fileEncoding = "UTF-8") %>% 
-  filter(
-    Player.Name != "CPU Player",
-    !(str_detect(Player.Name, pattern = "Computer")),
-    
-    ## Removes records where the player has summed stats for multiple teams in a season
-    TeamId != ""
+    !(Name %like% "%Computer%")
   ) %>% 
-  rename(
-    Name = Player.Name
-  )
+  collect() 
+  
+historyGoalieSeason <- 
+  tbl(con, "goalieHistory") %>%
+  filter(
+    Name != "CPU Player",
+    Name != "CPU",
+    !(Name %like% "%Computer%")
+  ) %>% 
+  collect() 
 
 print(paste("History done:", Sys.time()))
 
+## Reads draft position data
 draftData <- 
   read_sheet(
     ss = "https://docs.google.com/spreadsheets/d/1i6yWbsI3MO036E_4y95xqZFolsUn3oT5Sq6Jju51CSQ/edit#gid=0",
@@ -143,12 +134,6 @@ draftData <-
   )
 
 print(paste("Draft Data done:", Sys.time()))
-# # Don't need this data as the transfers are run into the forum scraper
-# iihfTransfer <- 
-#   read_sheet(
-#     ss = "https://docs.google.com/spreadsheets/d/1shZphSBULx7G8hYDtoUqTW6gy445_DDA6NIHqFrayLs/edit#gid=0",
-#     sheet = "Transfers"
-#   )
 
 ## Reads Achievement Data
 achievementData <- 
@@ -161,8 +146,9 @@ achievementData <-
 print(paste("Achievements done:", Sys.time()))
 
 ## Loading team information
-teamInfo <- 
-  teamInfo %>% 
+teamData <-
+  tbl(con, "teamInfo") %>%
+  collect() %>% 
   addTeamLogo()
 
 print(paste("Team Information + logos done:", Sys.time()))
@@ -312,3 +298,6 @@ forumAttributes <-
 
 print(paste("Audit Data done:", Sys.time()))
 
+print(paste("Total loading time: ", Sys.time() - start))
+
+dbDisconnect(con)
