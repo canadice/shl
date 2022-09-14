@@ -245,9 +245,9 @@ customTheme <-
 ##          Loading the API functions and some data sets         -
 ##----------------------------------------------------------------
 
-# source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
+source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
 # Internal sourcing
-source("../scripts/API/apiSetup.R")
+# source("../scripts/API/apiSetup.R")
 
 fileSources <- c("app-documents")
 
