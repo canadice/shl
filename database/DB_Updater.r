@@ -31,250 +31,267 @@ teamData <-
 
 dbWriteTable(con, "teamInfo", teamData, overwrite = TRUE)
 
-dbExecute(con, "UPDATE teamInfo SET abbr = 'NA' WHERE team = 'North America'")
+# dbExecute(con, "UPDATE teamInfo SET abbr = 'NA' WHERE team = 'North America'")
 
-#################################################################
-##                       Input user data                       ##
-#################################################################
 
-userData <- 
-  forumData %>% 
-  select(
-    user = USER,
-    userPage = USERLINK,
-    joined = Joined,
-    lastVisit = Last.Visit,
-    timeOnline = Online.For,
-    bank = Bank.Balance,
-    posts = Posts,
-    threads = Threads,
-    reputation = Reputation
-  ) %>% 
-  unique() %>% 
-  group_by(user) %>% 
-  slice_head()
+##################################################################
+##                        Player History                        ##
+##################################################################
 
-copy_to(myDB, userData)
-#################################################################
-##                      Input player data                      ##
-#################################################################
-# playerData <- 
+skaterHistory <-
+  tbl(con, "skaterHistory") %>%
+  collect()
+
+table(skaterHistory$leagueID, skaterHistory$Season)
+
+historyUpdate <- function(leagueId, season){
+  skaterHistory <-
+    tbl(con, "skaterHistory") %>%
+    collect()
   
-
-
-
-
-playerData <- 
-  forumData %>% 
-  select(
-    ## The thread ID of the player page is used as a playerID
-    playerID = LINK,          
-    currentTeam = teamID,
-    user = USER,
-    name = NAME,
-    nickname = NICKNAME,
-    fhmName = clean_name,
-    draftClass = CLASS,
-    position = POSITION,
-    activeStatus = Active,
-    currentTPE = TPE,
-    shoots = Handedness,
-    jerseyNr = Jersey.Nr.,
-    recruitedBy = Recruited.By,
-    playerRender = Player.Render,
-    birthplace = Birthplace
-  ) %>% 
-  mutate(
-    playerID = 
-      playerID %>% 
-      str_split(pattern = "=", simplify = TRUE) %>% 
-      .[,2] %>% 
-      as.numeric(),
-    retired = 0
-  )
-
-# createCommand <- 
-#   sprintf(
-#     "create table %s(%s, primary key(%s), %s)", 
-#     "playerData",
-#     paste(names(playerData), collapse = ", "),
-#     names(playerData)[1],
-#     "FOREIGN KEY (user) REFERENCES userData(user), FOREIGN KEY (currentTeam) REFERENCES teamData(teamID)"
-#   )
-# 
-# dbExecute(con, createCommand)
-# 
-# dbWriteTable(
-#   con, 
-#   "playerData", 
-#   value = 
-#     playerData,
-#   append = TRUE,
-#   row.names = FALSE
-# )
-
-##################################################################
-##                       Input draft data                       ##
-##################################################################
-shlDraftData <- 
-  draftData %>%
-  left_join(
-    teams %>% 
-      select(
-        abbr,
-        teamID,
-        Inaugural.Season
-      ) ,
-    by = c("Team" = "abbr")
-  ) %>% 
-  group_by(
-    Season,
-    Drafted,
-    Player
-  ) %>% 
-  filter(
-    Season >= Inaugural.Season 
-  ) %>% 
-  filter(
-    Inaugural.Season == max(Inaugural.Season)
-  ) %>% 
-  ungroup() %>% 
-  left_join(
-    playerData %>% 
-      select(
-        name, 
-        playerID,
-        draftClass
-      ),
-    by = c("Player" = "name")
-  ) %>% 
-  mutate(
-    draftClass = 
-      str_extract_all(
-        draftClass,
-        pattern = "[0-9]+", 
-        simplify = TRUE
-      ) %>% as.numeric()
-  ) %>% 
-  mutate(
-    playerID = 
-      case_when(
-        Season < draftClass ~ NA_real_,
-        TRUE ~ playerID
-      )
-  ) %>% 
-  mutate(
-    playerID = 
-      case_when(
-        is.na(playerID) ~ paste0(Season, Drafted, teamID, Player %>% as.factor() %>% as.numeric()) %>% as.numeric(),
-        TRUE ~ playerID
-      )
-  ) %>% 
-  select(
-    playerID,
-    player = Player,
-    teamID,
-    season = Season,
-    pick = Drafted
-  ) 
+  if(skaterHistory %>% filter(leagueID == leagueId & Season == season) %>% nrow() != 0){
+    stop("The current season for the league is already present in the data")
+  }
   
-# createCommand <- 
-#   sprintf(
-#     "create table %s(%s, primary key(%s), %s)", 
-#     "shlDraft",
-#     paste(names(shlDraftData), collapse = ", "),
-#     names(shlDraftData)[1],
-#     "FOREIGN KEY (playerID) REFERENCES players(playerID), FOREIGN KEY (teamID) REFERENCES teamData(teamID)"
-#   )
-# 
-# dbExecute(con, createCommand)
-# 
-# dbWriteTable(
-#   con, 
-#   "shlDraft", 
-#   value = 
-#     shlDraftData,
-#   append = TRUE,
-#   row.names = FALSE
-# )
+  data <-
+    indStatsLoader(leagueId, season, type = "regular") %>%
+    lapply(
+      X = .,
+      FUN = function(x){
+        do.call(what = data.frame, args = x) %>%
+          ## Adds indication that stats are regular season
+          mutate(
+            type = 0
+          ) %>%
+          relocate(
+            type,
+            .after = season
+          )
+      }
+    ) %>%
+    append(
+      indStatsLoader(leagueId, season, type = "playoffs") %>%
+        lapply(
+          X = .,
+          FUN = function(x){
+            do.call(what = data.frame, args = x) %>%
+              ## Adds indication that stats are playoffs
+              mutate(
+                type = 1
+              ) %>%
+              relocate(
+                type,
+                .after = season
+              )
+          }
+        )
+    ) %>%
+    do.call(what = plyr::rbind.fill, args = .) %>%
+    # mutate(
+    #   id = id
+    # ) %>%
+    dplyr::rename(
+      fhmID = id
+    ) %>%
+    left_join(
+      teamInfo %>%
+        select(
+          franchiseID,
+          leagueID,
+          newTeamID = teamID,
+          abbr
+        ),
+      by = c("team" = "abbr", "league" = "leagueID")
+    ) %>%
+    
+    ### Removes duplicated rows where the team abbreviation has been used for older teams
+    group_by(name, type) %>%
+    filter(
+      newTeamID == max(newTeamID)
+    ) %>%
+    
+    ### Selects data that is to be kept
+    dplyr::select(
+      franchiseID,
+      skaterID = fhmID,
+      Name = name,
+      leagueID = league,
+      -team,
+      newTeamID,
+      Season = season,
+      isPlayoffs = type,
+      GamesPlayed = gamesPlayed,
+      Goals = goals,
+      Assists = assists,
+      Points = points,
+      PlusMinus = plusMinus,
+      PenaltyMinutes = pim,
+      Hits = hits,
+      Shots = shotsOnGoal,
+      ShotsBlocked = shotsBlocked,
+      MinutesPlayed = timeOnIce,
+      PPGoals = ppGoals,
+      PPAssists = ppAssists,
+      PPPoints = ppPoints,
+      PPMinutes = ppTimeOnIce,
+      PKGoals = shGoals,
+      PKAssists = shAssists,
+      PKPoints = shPoints,
+      PKMinutes = shTimeOnIce,
+      FightsWon = fightWins,
+      FightsLost = fightLosses,
+      Giveaways = giveaways,
+      Takeaways = takeaways,
+      GR = gameRating,
+      OGR = offensiveGameRating,
+      DGR = defensiveGameRating,
+      contains("advancedStats"),
+      -(minutes:savePct)
+    ) %>%
+    filter(
+      !is.na(Goals)
+    ) %>%
+    dplyr::rename_with(
+      stringr::str_remove,
+      contains("advancedStats"),
+      pattern = "advancedStats."
+    )
+  
+  return(data)
+}
 
+temp <- historyUpdate(leagueId = 3, season = 66)
 
+if(any(table(temp$Name, temp$isPlayoffs)>1)){
+  # DO NOTHING
+} else {
+  dbAppendTable(con, "skaterHistory", temp)  
+}
+
+# dbWriteTable(con, "skaterHistory", historySkaterSeason, overwrite = TRUE)
 
 
 ##################################################################
-##                       Input draft data                       ##
+##                        Goalie History                        ##
 ##################################################################
-iihfData <- 
-  forumData %>% 
-  select(
-    ## The thread ID of the player page is used as a playerID
-    playerID = LINK,          
-    IIHF.Nation,
-    Original,
-    transferred = Transfer.Season
-  ) %>% 
-  mutate(
-    playerID = 
-      playerID %>% 
-      str_split(pattern = "=", simplify = TRUE) %>% 
-      .[,2] %>% 
-      as.numeric()
-  ) %>% 
-  left_join(
-    teams %>% 
-      filter(
-        league == "IIHF"
-      ) %>% 
-      select(
-        team,
-        teamID
-      ),
-    by = c("IIHF.Nation" = "team")
-  ) %>% 
-  rename(
-    iihfID = teamID
-  ) %>% 
-  left_join(
-    teams %>% 
-      filter(
-        league == "IIHF"
-      ) %>%  
-      select(
-        team,
-        teamID
-      ),
-    by = c("Original" = "team")
-  ) %>% 
-  rename(
-    originalID = teamID
-  ) %>% 
-  select(
-    playerID,
-    iihfID,
-    originalID,
-    transferred
-  )
+goalieHistory <-
+  tbl(con, "goalieHistory") %>%
+  collect() 
 
-createCommand <- 
-  sprintf(
-    "create table %s(%s, primary key(%s), %s)", 
-    "iihfData",
-    paste(names(iihfData), collapse = ", "),
-    names(iihfData)[1],
-    "FOREIGN KEY (playerID) REFERENCES players(playerID), FOREIGN KEY (iihfID) REFERENCES teamData(teamID), FOREIGN KEY (originalID) REFERENCES teamData(teamID)"
-  )
+table(goalieHistory$leagueID, goalieHistory$Season)
 
-dbExecute(con, createCommand)
+historyUpdate <- function(leagueId, season){
+  goalieHistory <-
+    tbl(con, "goalieHistory") %>%
+    collect()
+  
+  if(goalieHistory %>% filter(leagueID == leagueId & Season == season) %>% nrow() != 0){
+    stop("The current season for the league is already present in the data")
+  }
+  
+  data <-
+    indStatsLoader(leagueId, season, type = "regular") %>%
+    lapply(
+      X = .,
+      FUN = function(x){
+        do.call(what = data.frame, args = x) %>%
+          ## Adds indication that stats are regular season
+          mutate(
+            type = 0
+          ) %>%
+          relocate(
+            type,
+            .after = season
+          )
+      }
+    ) %>%
+    append(
+      indStatsLoader(leagueId, season, type = "playoffs") %>%
+        lapply(
+          X = .,
+          FUN = function(x){
+            do.call(what = data.frame, args = x) %>%
+              ## Adds indication that stats are playoffs
+              mutate(
+                type = 1
+              ) %>%
+              relocate(
+                type,
+                .after = season
+              )
+          }
+        )
+    ) %>%
+    do.call(what = plyr::rbind.fill, args = .) %>%
+    # mutate(
+    #   id = id
+    # ) %>%
+    dplyr::rename(
+      fhmID = id
+    ) %>%
+    left_join(
+      teamInfo %>%
+        select(
+          franchiseID,
+          leagueID,
+          newTeamID = teamID,
+          abbr
+        ),
+      by = c("team" = "abbr", "league" = "leagueID")
+    ) %>%
+    
+    ### Removes duplicated rows where the team abbreviation has been used for older teams
+    group_by(name, type) %>%
+    filter(
+      newTeamID == max(newTeamID)
+    ) %>%
+    
+    filter(
+      position == "G"
+    ) %>% 
+    dplyr::select(
+      where(
+        function(x) !all(is.na(x))
+      )
+    ) %>% 
+    dplyr::select(
+      franchiseID,
+      goalieID = fhmID,
+      Name = name,
+      leagueID = league,
+      newTeamID,
+      Season = season,
+      isPlayoffs = type,
+      GamesPlayed = gamesPlayed,
+      Wins = wins,
+      Losses = losses,
+      OvertimeLosses = ot,
+      Minutes = minutes,
+      Shutouts = shutouts,
+      GoalsAgainst = goalsAgainst,
+      ShotsAgainst = shotsAgainst,
+      GameRating = gameRating,
+      GAA = gaa,
+      SavePct = savePct
+    )
+    
+  return(data)
+}
 
-dbWriteTable(
-  con, 
-  "iihfData", 
-  value = 
-    iihfData,
-  append = TRUE,
-  row.names = FALSE
-)
+for(i in 0:4){
+  for(j in 54:66){
+    print(paste(i,j))
+    
+    temp <- historyUpdate(leagueId = i, season = j)
+    
+    if(any(table(temp$Name, temp$isPlayoffs)>1)){
+      # DO NOTHING
+    } else {
+      dbAppendTable(con, "goalieHistory", temp)  
+    }
+  }
+}
 
+# dbWriteTable(con, "goalieHistory", goalieHistory, overwrite = TRUE)
 
-
-dbDisconnect(myDB$con)
+dbDisconnect(con)
