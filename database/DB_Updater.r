@@ -292,6 +292,8 @@ for(i in 0:4){
   }
 }
 
+# dbExecute(con, "UPDATE goalieHistory SET leagueID = '2' WHERE leagueID = '3' AND Season < '53'")
+
 # dbWriteTable(con, "goalieHistory", goalieHistory, overwrite = TRUE)
 
 dbDisconnect(con)
