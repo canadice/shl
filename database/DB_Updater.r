@@ -17,42 +17,21 @@ require(stringr)
 
 source("scripts/API/apiSetup.R")
 
-### Creating the DB strucutre
-myDB <- 
-  src_sqlite(
-    "database/analyticsDB.sqlite", 
-    create = TRUE
-  )
+con <- dbConnect(SQLite(), "database/SHL_Database.db")
 
-myDB
-
-
-# con <- dbConnect(SQLite(), "database/shl.db")
-# 
-# teams <- read.csv2(file = "csv/team_information.csv")
-
+dbListTables(con)
 
 #################################################################
 ##                       Input team data                       ##
 #################################################################
 
-teamData <- 
-  teams %>% 
-  select(
-    teamID,
-    fhmID,
-    franchiseID,
-    leagueID,
-    name = team,
-    abbr,
-    primaryCol = primary,
-    secondaryCol = secondary,
-    alt1Col = alt1,
-    alt2Col = alt2,
-    inaugural = Inaugural.Season
-  )
+teamData <-
+  tbl(con, "teamInfo") %>%
+  collect()
 
-copy_to(myDB, teamData)
+dbWriteTable(con, "teamInfo", teamData, overwrite = TRUE)
+
+dbExecute(con, "UPDATE teamInfo SET abbr = 'NA' WHERE team = 'North America'")
 
 #################################################################
 ##                       Input user data                       ##
