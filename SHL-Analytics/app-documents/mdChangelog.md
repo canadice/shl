@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+-   Adding a season scheduling tool for the SMJHL.
+
 ## v2.0.0
 
 -   Updated the app to mostly make use of a database of the information

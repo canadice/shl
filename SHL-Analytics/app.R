@@ -35,6 +35,8 @@
   require(tibble)
   require(fuzzyjoin)
   require(purrr)
+  require(Matrix)
+  
   
   ## Visualizations
   require(ggplot2)
@@ -95,9 +97,12 @@
   require(shinyjs)
   require(shinydashboard)
   require(dashboardthemes)
+  
+  ## For point and click dragging
+  require(sortable)
 }
 
-version <- "v2.0.0"
+version <- "v2.1.0"
 
 
 ##----------------------------------------------------------------
@@ -439,9 +444,14 @@ ui <-
                     "Tools",
                     icon = icon("tools"),
                     menuSubItem(
-                        "Scheduling Tool",
+                        "Sim Scheduling Tool",
                         icon = icon("calendar"),
                         tabName = "toolSchedule"
+                    ),
+                    menuSubItem(
+                      "League Scheduling Tool",
+                      icon = icon("calendar"),
+                      tabName = "toolLeagueSchedule"
                     ),
                     menuSubItem(
                         "Regression Tool",
@@ -454,13 +464,6 @@ ui <-
                         tabName = "toolDraftLottery"
                     )
                 ),
-                # menuItem(
-                #     "Boxscore Tool",
-                #     icon = icon("dice"),
-                #     tabName = "toolBoxscore",
-                    # badgeLabel = "new",
-                    # badgeColor = "orange"
-                # ),
                 ##################################################################
                 ##                        Link to Github                        ##
                 ##################################################################
@@ -551,6 +554,10 @@ ui <-
                     mdsUI(id = "simUI")
                 ),
                 tabItem(
+                  "toolLeagueSchedule",
+                  leagueScheduleUI(id = "leagueSchedule")
+                ),
+                tabItem(
                     "careerSkater",
                     titlePanel(
                         h1("Skater Career Card", align = "center")
@@ -599,13 +606,6 @@ ui <-
                     ),
                     draftLotteryUI(id = "draftLotteryUI")
                 ),
-                # tabItem(
-                #     "toolBoxscore",
-                #     titlePanel(
-                #         h1("Boxscores")
-                #     ),
-                #     boxscoreUI(id = "boxscoreUI")  
-                # ),
                 tabItem(
                     "changelog",
                     changelogUI(id = "changelog")
@@ -642,6 +642,8 @@ server <- function(input, output, session) {
     
     careerRecordsSERVER(id = "careerRecordsUI")
     
+    leagueScheduleSERVER(id = "leagueSchedule")
+    
     iihfSERVER(id = "iihfUI") 
     
     ### Only run the module once the menu is clicked to fasten start time
@@ -658,10 +660,6 @@ server <- function(input, output, session) {
             loadedModuleIIHF(TRUE)
             
             rankingIIHFSERVER(id = "rankingIIHFUI")
-            
-        } else if(input$tabs == "toolBoxscore"){
-            
-            boxscoreSERVER(id = "boxscoreUI")
             
         } else if(input$tabs == "trackerTeam" & !loadedModuleTeam()){
             
