@@ -170,6 +170,11 @@ if(any(table(temp$Name, temp$isPlayoffs)>1)){
 
 # dbWriteTable(con, "skaterHistory", historySkaterSeason, overwrite = TRUE)
 
+## Fixing spelling errors on player names
+
+dbExecute(con, "UPDATE skaterHistory 
+          SET Name = 'Asclepius Perseus Flitterwind' 
+          WHERE Name = 'Asclepius Pereus Flitterw'")
 
 ##################################################################
 ##                        Goalie History                        ##
