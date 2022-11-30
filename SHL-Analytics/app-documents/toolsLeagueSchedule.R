@@ -117,15 +117,15 @@ leagueScheduleUI <- function(id){
           )
         )
       )
-    ),
-    br(),
-    fluidRow(
-      column(
-        width = 12,
-        verbatimTextOutput(
-          ns("Results")
-        )
-      )
+    # ),
+    # br(),
+    # fluidRow(
+    #   column(
+    #     width = 12,
+    #     verbatimTextOutput(
+    #       ns("Results")
+    #     )
+    #   )
     )
   )
 }
