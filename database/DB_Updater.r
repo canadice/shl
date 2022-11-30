@@ -160,7 +160,7 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-temp <- historyUpdate(leagueId = 3, season = 66)
+temp <- historyUpdate(leagueId = 3, season = 67)
 
 if(any(table(temp$Name, temp$isPlayoffs)>1)){
   # DO NOTHING
@@ -278,8 +278,8 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-for(i in 0:4){
-  for(j in 54:66){
+for(i in 0:3){
+  for(j in 67){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
