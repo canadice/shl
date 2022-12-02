@@ -173,8 +173,8 @@ if(any(table(temp$Name, temp$isPlayoffs)>1)){
 ## Fixing spelling errors on player names
 
 dbExecute(con, "UPDATE skaterHistory 
-          SET Name = 'Asclepius Perseus Flitterwind' 
-          WHERE Name = 'Asclepius Pereus Flitterw'")
+          SET Name = 'Jonas Larsson' 
+          WHERE Name = 'Jonas Larsen'")
 
 ##################################################################
 ##                        Goalie History                        ##
