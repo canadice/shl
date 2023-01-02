@@ -170,7 +170,7 @@ print(paste("IIHF Ranking History done:", Sys.time()))
 ############################################################################
 ############################################################################
 
-## Reads attribute values from SHL Index
+## Reads attribute values from SHL and SMJHL Index
 indexAttributes <- 
   playerLoader(0) %>% 
   do.call(what = rbind.fill, args = .) %>% 
@@ -203,100 +203,41 @@ indexAttributes <-
   arrange(
     team, position, name
   ) %>% 
-  mutate(
-    name = 
-      name %>% 
-      tolower %>% 
-      stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-      str_remove_all(pattern = "[[:punct:]]") 
+  dplyr::mutate(
+    Blocker = blocker,
+    Glove = glove,
+    Passing = case_when(
+      is.na(passing) ~ goaliePassing,
+      TRUE ~ passing
+    ),
+    Puckhandling = case_when(
+      is.na(puckhandling) ~ goaliePuckhandling,
+      TRUE ~ puckhandling
+    ),
+    Poke.Check = pokeCheck,
+    Positioning = case_when(
+      is.na(positioning) ~ goaliePositioning,
+      TRUE ~ positioning
+    ),
+    Rebound = rebound,
+    Recovery = recovery,
+    Low.Shots = lowShots,
+    Reflexes = reflexes,
+    Skating = skating,
+    X.Aggression = aggression,
+    Mental.Toughness = mentalToughness,
+    X.Determination = determination,
+    X.Team.Player = teamPlayer,
+    X.Leadership = leadership,
+    Goalie.Stamina = goalieStamina,
+    X.Professionalism = professionalism,
+    Aggression = aggression,
+    Bravery = bravery,
+    X.Temperament = temperament
   )
 
+colnames(indexAttributes)[c(3:4,7:11,13:23)] <- colnames(forumData)[58:75]
 
-## Reads attribute values from Updater Spreadsheet
-
-forumAttributes <- 
-  read_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1dB6tn6fXEy6T-9KGHagoqr5g9WS8JUcBkCuc65-ZQGo/edit#gid=519975432",
-    sheet = "Ratings"
-  ) %>% 
-  filter(
-    !is.na(Name)
-  ) %>% 
-  select(
-    -Issue
-  )
-
-forumGoalies <- 
-  forumAttributes %>% 
-  filter(
-    Position == "Goalie"
-  ) %>% 
-  select(
-    where(
-      ~ sum(is.na(.x)) != length(.x)
-    )
-  )
-
-colnames(forumGoalies) <- 
-  c("Team", "name", "User", "IIHF", "Season", "position", "TPE", "team", 
-    "blocker", "glove", "goaliePassing", "pokeCheck", "goaliePositioning", "rebound", "recovery", 
-    "goaliePuckhandling", "lowShots", "reflexes", "skating", "aggression", "mentalToughness",
-    "determination", "teamPlayer", "leadership", "goalieStamina", "professionalism", "Current Season")
-
-forumPlayers <- 
-  forumAttributes %>% 
-  filter(
-    Position != "Goalie"
-  ) %>% 
-  select(
-    where(
-      ~ sum(is.na(.x)) != length(.x)
-    )
-  )
-
-colnames(forumPlayers) <- 
-  c("Team", "name", "User", "IIHF", "Season", "position", "TPE", "team",
-    "screening", "gettingOpen", "passing", "puckHandling", "shootingAccuracy", "shootingRange", "offensiveRead", 
-    "NA", "checking", "hitting", "positioning", "stickChecking", "shotBlocking", "faceoffs", "defensiveRead",
-    "NA2", "NA3", "acceleration", "agility", "balance", "speed", "stamina", "strength", "fighting", "aggression", "bravery")
-
-forumAttributes <- 
-  forumGoalies %>% 
-  full_join(
-    forumPlayers,
-    by = c("Team", "name", "User", "IIHF", "Season", "position", "TPE", "team", "aggression")
-  ) %>% 
-  mutate(
-    temperament = 
-      case_when(
-        position != "Goalie" ~ 15,
-        TRUE ~ NaN
-      ),
-    determination = 15,
-    teamPlayer = 15,
-    leadership = 15,
-    professionalism = 15,
-    aggression = 
-      case_when(
-        position != "Goalie" ~ aggression,
-        TRUE ~ 8
-      )
-  ) %>% 
-  mutate(
-    name = 
-      name %>% 
-      tolower %>% 
-      stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-      str_remove_all(pattern = "[[:punct:]]") 
-  )
-
-forumAttributes <- 
-  forumAttributes[, 
-                  colnames(indexAttributes)[
-                    !str_detect(colnames(indexAttributes), "TPE")]
-  ]
-
-print(paste("Audit Data done:", Sys.time()))
 
 print(paste("Total loading time: ", Sys.time() - start))
 
