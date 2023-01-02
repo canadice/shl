@@ -62,10 +62,30 @@ auditSERVER <- function(id){
     id,
     function(input, output, session){
 
+      forumPlayers <- 
+        forumData %>% 
+        mutate(
+          name = 
+            NAME %>% 
+            tolower %>% 
+            stringi::stri_trans_general(id = "Latin-ASCII") %>% 
+            str_remove_all(pattern = "[[:punct:]]") 
+        )
+      
+      indexPlayers <- 
+        indexAttributes %>% 
+        mutate(
+          name = 
+            name %>% 
+            tolower %>% 
+            stringi::stri_trans_general(id = "Latin-ASCII") %>% 
+            str_remove_all(pattern = "[[:punct:]]") 
+        )
+      
       forumMissing <- 
-        forumAttributes$name[!((forumAttributes$name) %in% (indexAttributes$name))] %>% sort()
+        forumPlayers$name[!((forumPlayers$name) %in% (indexPlayers$name))] %>% sort()
       indexMissing <- 
-        indexAttributes$name[!((indexAttributes$name) %in% (forumAttributes$name))] %>% sort()
+        indexPlayers$name[!((indexPlayers$name) %in% (forumPlayers$name))] %>% sort()
       
       matches <- 
         stringdistmatrix(
@@ -161,7 +181,7 @@ auditSERVER <- function(id){
         
       output$comparison <- renderDT({
         comparedf(
-          forumAttributes %>% 
+          forumPlayers %>% 
             arrange(name) %>% 
             mutate(
               across(
@@ -170,37 +190,44 @@ auditSERVER <- function(id){
               )
             ) %>% 
             select(-team),
-          indexAttributes %>% 
+          indexPlayers %>% 
             arrange(name) %>% 
             select(-team),
           by = "name"
         ) %>% 
           summary() %>% 
           .$diffs.table %>% 
-          rename_with(
-            ~ str_replace(.x, pattern = ".x", replacement = " from Forum")
+          filter(
+            !(values.x %>% is.na() | values.y %>% is.na()) 
           ) %>% 
           rename_with(
-            ~ str_replace(.x, pattern = ".y", replacement = " from Index")
+            ~ str_replace(.x, pattern = "\\.x", replacement = " from Player Page")
+          ) %>% 
+          rename_with(
+            ~ str_replace(.x, pattern = "\\.y", replacement = " from Index")
           ) %>% 
           select(
             !contains("row") &
             !`var from Index`
           ) %>% 
           rename(
-            Attribute = `var from Forum`,
+            Attribute = `var from Player Page`,
             Name = name
           ) %>% 
           left_join(
-            forumAttributes %>% 
+            forumPlayers %>% 
               select(
                 name,
-                team
+                team,
+                league
               ),
             by = c("Name"="name")
           ) %>% 
-          rename(Team = team) %>% 
-          arrange(Team, Name)
+          rename(
+            Team = team,
+            League = league
+          ) %>% 
+          arrange(League, Team, Name)
       },
       escape = FALSE, 
       extensions = c('Buttons', 'Scroller'),
