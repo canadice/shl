@@ -7,6 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
+options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://github.com/canadice/shlrtools"))
+
 ### Packages that are used
 {
   ## (Hopefully) installs and loads the shlrtools package
