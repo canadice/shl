@@ -135,7 +135,7 @@ regressionSERVER <- function(id){
               AGE < 15 ~ 0.15,
               AGE < 16 ~ 0.18,
               AGE < 17 ~ 0.20,
-              AGE < 18 ~ 0.22,
+              AGE < 19 ~ 0.22,
               AGE < 23 ~ 0.25,
               TRUE ~ 0.3
               
