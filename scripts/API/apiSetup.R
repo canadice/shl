@@ -204,8 +204,6 @@ indexAttributes <-
     team, position, name
   ) %>% 
   dplyr::mutate(
-    Blocker = blocker,
-    Glove = glove,
     Passing = case_when(
       is.na(passing) ~ goaliePassing,
       TRUE ~ passing
@@ -214,11 +212,12 @@ indexAttributes <-
       is.na(puckhandling) ~ goaliePuckhandling,
       TRUE ~ puckhandling
     ),
-    Poke.Check = pokeCheck,
     Positioning = case_when(
       is.na(positioning) ~ goaliePositioning,
       TRUE ~ positioning
-    ),
+    )
+  ) %>% 
+  dplyr::rename(
     Rebound = rebound,
     Recovery = recovery,
     Low.Shots = lowShots,
@@ -233,10 +232,29 @@ indexAttributes <-
     X.Professionalism = professionalism,
     Aggression = aggression,
     Bravery = bravery,
-    X.Temperament = temperament
+    X.Temperament = temperament,
+    Poke.Check = pokeCheck,
+    Blocker = blocker,
+    Glove = glove,
+    Screening = screening,
+    Getting.Open = gettingOpen,
+    Shooting.Accuracy = shootingAccuracy,
+    Shooting.Range = shootingRange,
+    Offensive.Read = offensiveRead,
+    Checking = checking,
+    Hitting = hitting,
+    Stickchecking = stickchecking,
+    Shot.Blocking = shotBlocking,
+    Faceoffs = faceoffs,
+    Defensive.Read = defensiveRead,
+    Acceleration = acceleration,
+    Agility = agility,
+    Balance = balance,
+    Speed = speed,
+    Stamina = stamina,
+    Strength = strength,
+    Fighting = fighting
   )
-
-colnames(indexAttributes)[c(3:4,7:11,13:23)] <- colnames(forumData)[58:75]
 
 
 print(paste("Total loading time: ", Sys.time() - start))
