@@ -17,6 +17,16 @@ auditUI <- function(id){
   
   tagList(
     fluidRow(
+      column(
+        width = 12,
+        radioButtons(
+          inputId = ns("league"),
+          label = "Select the league",
+          choices = c("SHL", "SMJHL")
+        )
+      )
+    ),
+    fluidRow(
       tabBox(
         width = NULL,
         tabPanel(
@@ -62,44 +72,69 @@ auditSERVER <- function(id){
     id,
     function(input, output, session){
 
-      forumPlayers <- 
+      
+      forumPlayers <- reactive({
         forumData %>% 
-        mutate(
-          name = 
-            NAME %>% 
-            tolower %>% 
-            stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-            str_remove_all(pattern = "[[:punct:]]") 
-        )
-      
-      indexPlayers <- 
+          filter(
+            league == input$league
+          ) %>% 
+          mutate(
+            name = 
+              NAME %>% 
+              tolower %>% 
+              stringi::stri_trans_general(id = "Latin-ASCII") %>% 
+              str_remove_all(pattern = "[[:punct:]]") 
+          )
+      })
+        
+      indexPlayers <- reactive({
         indexAttributes %>% 
-        mutate(
-          name = 
-            name %>% 
-            tolower %>% 
-            stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-            str_remove_all(pattern = "[[:punct:]]") 
-        )
+          filter(
+            team %in% 
+              (teamInfo %>% 
+                 filter(
+                   league == input$league
+                 ) %>% 
+                 select(
+                   abbr
+                 ) %>% 
+                 unlist()
+              )
+          ) %>% 
+          mutate(
+            name = 
+              name %>% 
+              tolower %>% 
+              stringi::stri_trans_general(id = "Latin-ASCII") %>% 
+              str_remove_all(pattern = "[[:punct:]]") 
+          )
+      })
+        
       
-      forumMissing <- 
-        forumPlayers$name[!((forumPlayers$name) %in% (indexPlayers$name))] %>% sort()
-      indexMissing <- 
-        indexPlayers$name[!((indexPlayers$name) %in% (forumPlayers$name))] %>% sort()
+      forumMissing <- reactive({
+        forumPlayers()$name[!((forumPlayers()$name) %in% (indexPlayers()$name))] %>% sort()
+      })
+        
+      indexMissing <- reactive({
+        indexPlayers()$name[!((indexPlayers()$name) %in% (forumPlayers()$name))] %>% sort()
+      })
+        
       
-      matches <- 
+      matches <- reactive({
         stringdistmatrix(
-          forumMissing,
-          indexMissing
+          forumMissing(),
+          indexMissing()
         )
+      })
+        
       
       output$forumMissing <- renderDT({
         data.frame(
-          forum = forumMissing,
+          forum = forumMissing(),
           index = 
-            indexMissing[
+            indexMissing()[
               apply(
-                matches, 
+                matches(), 
                 MARGIN = 1, 
                 FUN = function(x){
                   (x == min(x)) %>% which() %>% min()
@@ -108,7 +143,7 @@ auditSERVER <- function(id){
             ],
           distance = 
             apply(
-              matches, 
+              matches(), 
               MARGIN = 1, 
               FUN = function(x){
                 x[(x == min(x)) %>% which() %>% min()]
@@ -138,11 +173,11 @@ auditSERVER <- function(id){
         
       output$indexMissing <- renderDT({
         data.frame(
-          index = indexMissing,
+          index = indexMissing(),
           forum = 
-            forumMissing[
+            forumMissing()[
               apply(
-                matches, 
+                matches(), 
                 MARGIN = 2, 
                 FUN = function(x){
                   (x == min(x)) %>% which() %>% min()
@@ -151,7 +186,7 @@ auditSERVER <- function(id){
             ],
           distance = 
             apply(
-              matches, 
+              matches(), 
               MARGIN = 2, 
               FUN = function(x){
                 x[(x == min(x)) %>% which() %>% min()]
@@ -181,7 +216,7 @@ auditSERVER <- function(id){
         
       output$comparison <- renderDT({
         comparedf(
-          forumPlayers %>% 
+          forumPlayers() %>% 
             arrange(name) %>% 
             mutate(
               across(
@@ -190,7 +225,7 @@ auditSERVER <- function(id){
               )
             ) %>% 
             select(-team),
-          indexPlayers %>% 
+          indexPlayers() %>% 
             arrange(name) %>% 
             select(-team),
           by = "name"
@@ -215,7 +250,7 @@ auditSERVER <- function(id){
             Name = name
           ) %>% 
           left_join(
-            forumPlayers %>% 
+            forumPlayers() %>% 
               select(
                 name,
                 team,
