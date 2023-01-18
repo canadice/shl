@@ -83,7 +83,7 @@ auditSERVER <- function(id){
               NAME %>% 
               tolower %>% 
               stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-              str_remove_all(pattern = "[[:punct:]]") 
+              str_remove_all(pattern = "[[:punct:]]")
           )
       })
         
@@ -106,8 +106,10 @@ auditSERVER <- function(id){
               name %>% 
               tolower %>% 
               stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-              str_remove_all(pattern = "[[:punct:]]") 
-          )
+              str_remove_all(pattern = "[[:punct:]]"),
+            abbr = team
+          ) %>% 
+          select(-team)
       })
         
       
@@ -222,13 +224,15 @@ auditSERVER <- function(id){
               across(
                 where(is.numeric),
                 ~ as.integer(.x)
-              )
-            ) %>% 
-            select(-team),
+              ),
+              id = paste(name, abbr)
+            ),
           indexPlayers() %>% 
             arrange(name) %>% 
-            select(-team),
-          by = "name"
+            mutate(
+              id = paste(name, abbr)
+            ),
+          by = c("id")
         ) %>% 
           summary() %>% 
           .$diffs.table %>% 
@@ -246,22 +250,30 @@ auditSERVER <- function(id){
             !`var from Index`
           ) %>% 
           rename(
-            Attribute = `var from Player Page`,
-            Name = name
-          ) %>% 
+            Attribute = `var from Player Page`
+          ) %>%
           left_join(
-            forumPlayers() %>% 
+            forumPlayers() %>%
               select(
                 name,
+                abbr,
                 team,
                 league
+              ) %>% 
+              mutate(
+                id = paste(name, abbr)
               ),
-            by = c("Name"="name")
+            by = c("id")
+          ) %>%
+          select(
+            -abbr,
+            -id
           ) %>% 
           rename(
+            Name = name,
             Team = team,
             League = league
-          ) %>% 
+          ) %>%
           arrange(League, Team, Name)
       },
       escape = FALSE, 
