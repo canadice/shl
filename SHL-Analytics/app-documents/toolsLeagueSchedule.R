@@ -284,11 +284,13 @@ leagueScheduleSERVER <- function(id){
           shinyjs::disable("intraConference")
           shinyjs::disable("interConference")
           
-          values$seed <- runif(1, min = 0, max = 1000) %>% floor()
-          # values$seed <- sample(c(245, 795, 192, 309), size = 1)
+          # values$seed <- runif(1, min = 0, max = 1000) %>% floor()
+          values$seed <- sample(c(309), size = 1)
           # values$seed <- 698
           
           set.seed(values$seed)
+          
+          print(values$seed)
           
           values$dataMatchups <- 
             values$matchups %>% as.matrix() %>% as.data.frame() %>% rownames_to_column() %>% pivot_longer(cols = -1) %>% 
@@ -485,76 +487,76 @@ leagueScheduleSERVER <- function(id){
                 n != value
               )
             
-            progress$set(value = i, detail = "Pre-season")
+            # progress$set(value = i, detail = "Pre-season")
             
             ### CREATING PRE-SEASON SCHEDULE
-            pre_season <-
-              data.frame(
-                round = rep(-6, 7),
-                `team away` = c(input$division1, input$division2),
-                `team home` = c(input$division3, input$division4)
-              ) %>% 
-              add_row(
-                data.frame(
-                  round = rep(-5, 7),
-                  `team away` = c(input$division2, input$division3),
-                  `team home` = c(input$division1, input$division4)  
-                )
-              ) %>% 
-              add_row(
-                data.frame(
-                  round = rep(-4, 7),
-                  `team away` = c(input$division3, input$division4),
-                  `team home` = c(input$division2, input$division1)  
-                )
-              ) %>% 
-              mutate(
-                date = rep(c(values$startDay - 24, values$startDay - 21, values$startDay - 18), each = 7)
-              ) %>% 
-              add_row(
-                data.frame(
-                  round = rep(-3, 7),
-                  `team away` = c(input$division4, input$division3),
-                  `team home` = c(input$division2, input$division1)
-                ) %>% 
-                  add_row(
-                    data.frame(
-                      round = rep(-2, 7),
-                      `team away` = c(input$division3, input$division2),
-                      `team home` = c(input$division4, input$division1)  
-                    )
-                  ) %>% 
-                  add_row(
-                    data.frame(
-                      round = rep(-1, 7),
-                      `team away` = c(input$division1, input$division4),
-                      `team home` = c(input$division2, input$division3)  
-                    )
-                  ) %>% 
-                  mutate(
-                    date = c(values$startDay - 15, values$startDay - 12, values$startDay - 9) %>% rep(each = 7)
-                  ) 
-              ) %>% 
-              add_row(
-                data.frame(
-                  round = rep(0, 7),
-                  `team away` = c(input$division1 %>% sample(), input$division4 %>% sample()),
-                  `team home` = c(input$division2 %>% sample(), input$division3 %>% sample()) 
-                ) %>% 
-                  mutate(
-                    date = rep(values$startDay - 6, 7)
-                  )
-              ) %>% 
-              rename(
-                `team away` = team.away,
-                `team home` = team.home
-              )
+            # pre_season <-
+            #   data.frame(
+            #     round = rep(-6, 7),
+            #     `team away` = c(input$division1, input$division2),
+            #     `team home` = c(input$division3, input$division4)
+            #   ) %>% 
+            #   add_row(
+            #     data.frame(
+            #       round = rep(-5, 7),
+            #       `team away` = c(input$division2, input$division3),
+            #       `team home` = c(input$division1, input$division4)  
+            #     )
+            #   ) %>% 
+            #   add_row(
+            #     data.frame(
+            #       round = rep(-4, 7),
+            #       `team away` = c(input$division3, input$division4),
+            #       `team home` = c(input$division2, input$division1)  
+            #     )
+            #   ) %>% 
+            #   mutate(
+            #     date = rep(c(values$startDay - 24, values$startDay - 21, values$startDay - 18), each = 7)
+            #   ) %>% 
+            #   add_row(
+            #     data.frame(
+            #       round = rep(-3, 7),
+            #       `team away` = c(input$division4, input$division3),
+            #       `team home` = c(input$division2, input$division1)
+            #     ) %>% 
+            #       add_row(
+            #         data.frame(
+            #           round = rep(-2, 7),
+            #           `team away` = c(input$division3, input$division2),
+            #           `team home` = c(input$division4, input$division1)  
+            #         )
+            #       ) %>% 
+            #       add_row(
+            #         data.frame(
+            #           round = rep(-1, 7),
+            #           `team away` = c(input$division1, input$division4),
+            #           `team home` = c(input$division2, input$division3)  
+            #         )
+            #       ) %>% 
+            #       mutate(
+            #         date = c(values$startDay - 15, values$startDay - 12, values$startDay - 9) %>% rep(each = 7)
+            #       ) 
+            #   ) %>% 
+            #   add_row(
+            #     data.frame(
+            #       round = rep(0, 7),
+            #       `team away` = c(input$division1 %>% sample(), input$division4 %>% sample()),
+            #       `team home` = c(input$division2 %>% sample(), input$division3 %>% sample()) 
+            #     ) %>% 
+            #       mutate(
+            #         date = rep(values$startDay - 6, 7)
+            #       )
+            #   ) %>% 
+            #   rename(
+            #     `team away` = team.away,
+            #     `team home` = team.home
+            #   )
             
             values$schedule <-
               values$schedule %>%
-              add_row(
-                pre_season
-              ) %>% 
+              # add_row(
+              #   pre_season
+              # ) %>% 
               mutate(
                 date =
                   case_when(
@@ -564,15 +566,19 @@ leagueScheduleSERVER <- function(id){
                   ),
                 YEAR = lubridate::year(date),
                 MONTH = lubridate::month(date),
-                DATE = lubridate::day(date),
-                TYPE = if_else(date >= values$startDay, "Reg", "Pre")
+                DAY = lubridate::day(date),
+                TYPE = if_else(date >= values$startDay, "Regular", "PreSeason")
               ) %>%
-              arrange(
-                date
+              rename(
+                `TEAM HOME` = `team home`,
+                `TEAM AWAY` = `team away`
               ) %>% 
+              # arrange(
+              #   date
+              # ) %>% 
               select(
-                -round
-              )
+                YEAR, MONTH, DAY, `TEAM HOME`, `TEAM AWAY`, TYPE
+              ) 
             
             shinyjs::show("scheduleResults")
             
@@ -590,10 +596,10 @@ leagueScheduleSERVER <- function(id){
       
       output$downloadData <- downloadHandler(
         filename = function() {
-          paste("scheduleSMJHL.csv", sep = "")
+          paste("schedule_SMJHL_", min(values$schedule$YEAR), ".csv", sep = "")
         },
         content = function(file) {
-          write.csv(values$schedule, file, row.names = FALSE)
+          write.csv(values$schedule, file, row.names = FALSE, quote = FALSE)
         }
       )
       
