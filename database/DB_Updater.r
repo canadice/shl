@@ -160,7 +160,7 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-temp <- historyUpdate(leagueId = 3, season = 67)
+temp <- historyUpdate(leagueId = 3, season = 68)
 
 if(any(table(temp$Name, temp$isPlayoffs)>1)){
   # DO NOTHING
@@ -173,8 +173,8 @@ if(any(table(temp$Name, temp$isPlayoffs)>1)){
 ## Fixing spelling errors on player names
 
 dbExecute(con, "UPDATE skaterHistory 
-          SET Name = 'Jonas Larsson' 
-          WHERE Name = 'Jonas Larsen'")
+          SET Name = 'Eko van Otter' 
+          WHERE Name = 'Eko Van Otter'")
 
 ##################################################################
 ##                        Goalie History                        ##
@@ -284,7 +284,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 67){
+  for(j in 68){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
