@@ -29,6 +29,7 @@ teamData <-
   tbl(con, "teamInfo") %>%
   collect()
 
+
 dbWriteTable(con, "teamInfo", teamData, overwrite = TRUE)
 
 # dbExecute(con, "UPDATE teamInfo SET abbr = 'NA' WHERE team = 'North America'")
