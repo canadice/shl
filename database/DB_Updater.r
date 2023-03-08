@@ -174,8 +174,8 @@ if(any(table(temp$Name, temp$isPlayoffs)>1)){
 ## Fixing spelling errors on player names
 
 dbExecute(con, "UPDATE skaterHistory 
-          SET Name = 'Eko van Otter' 
-          WHERE Name = 'Eko Van Otter'")
+          SET franchiseID = 16 
+          WHERE newTeamID = 23")
 
 ##################################################################
 ##                        Goalie History                        ##
