@@ -96,6 +96,8 @@ historyUpdate <- function(leagueId, season){
     ) %>%
     left_join(
       teamInfo %>%
+        # group_by(franchiseID) %>% 
+        # filter(Inaugural.Season == max(Inaugural.Season)) %>% 
         select(
           franchiseID,
           leagueID,
@@ -161,7 +163,7 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-temp <- historyUpdate(leagueId = 3, season = 68)
+temp <- historyUpdate(leagueId = 3, season = 69)
 
 if(any(table(temp$Name, temp$isPlayoffs)>1)){
   # DO NOTHING
@@ -237,6 +239,8 @@ historyUpdate <- function(leagueId, season){
     ) %>%
     left_join(
       teamInfo %>%
+        # group_by(franchiseID) %>% 
+        # filter(Inaugural.Season == max(Inaugural.Season)) %>% 
         select(
           franchiseID,
           leagueID,
@@ -285,7 +289,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 68){
+  for(j in 69){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
