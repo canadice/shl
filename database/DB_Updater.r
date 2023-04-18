@@ -29,6 +29,21 @@ teamData <-
   tbl(con, "teamInfo") %>%
   collect()
 
+teamData <- 
+  teamData %>% 
+  add_case(
+    franchiseID = 111,
+    teamID = 116,
+    fhmID = 8,
+    team = "Independent Russia",
+    Inaugural.Season = 70,
+    leagueID = 2,
+    league = "IIHF",
+    abbr = "RUS",
+    primary = "#0083d6",
+    secondary = "#ffffff"
+      )
+
 
 dbWriteTable(con, "teamInfo", teamData, overwrite = TRUE)
 
