@@ -131,7 +131,7 @@ rankingIIHFSERVER <- function(id){
           scale_color_manual(
             "Federation",
             values = 
-              teamInfo %>% 
+              teamData %>% 
               filter(
                 league == "IIHF",
                 team != "Unassigned"
@@ -246,7 +246,9 @@ rankingIIHFSERVER <- function(id){
             Wins = "3"
           ) %>% 
           mutate(
-            `IIHF RR Points` = 2.5*(Wins*3+`OTW/SOW`*2+`OTL/SOL`*1)
+            `IIHF RR Points` = 2.5*(Wins*3+`OTW/SOW`*2+`OTL/SOL`*1),
+            ## Fixes to allow for Austria's points to move to France
+            Team = if_else(Team == "Team Austria", "Team France", Team)
           )
         
         medalRound <- 
@@ -297,7 +299,9 @@ rankingIIHFSERVER <- function(id){
               `Medal Round Wins` == 2 ~ 1,
               TRUE ~ 0
             ),
-            `IIHF Medal Points` = min(`Medal Round Wins` * 9, 18) + 12*Gold
+            `IIHF Medal Points` = min(`Medal Round Wins` * 9, 18) + 12*Gold,
+            ## Fixes to allow for Austria's points to move to France
+            Team = if_else(Team == "Team Austria", "Team France", Team)
           )
         
         standings <- 
@@ -405,7 +409,7 @@ rankingIIHFSERVER <- function(id){
             Group
           ) %>% 
           left_join(
-            teamInfo %>% 
+            teamData %>% 
               filter(
                 league == "IIHF"
               ) %>% 
