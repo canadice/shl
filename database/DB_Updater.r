@@ -178,13 +178,20 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-temp <- historyUpdate(leagueId = 3, season = 69)
-
-if(any(table(temp$Name, temp$isPlayoffs)>1)){
-  # DO NOTHING
-} else {
-  dbAppendTable(con, "skaterHistory", temp)  
+for(i in 0:3){
+  for(j in 70){
+    print(paste(i,j))
+    
+    temp <- historyUpdate(leagueId = i, season = j)
+    
+    if(any(table(temp$Name, temp$isPlayoffs)>1)){
+      # DO NOTHING
+    } else {
+      dbAppendTable(con, "skaterHistory", temp)  
+    }
+  }
 }
+
 
 # dbWriteTable(con, "skaterHistory", historySkaterSeason, overwrite = TRUE)
 
@@ -304,7 +311,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 69){
+  for(j in 70){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
