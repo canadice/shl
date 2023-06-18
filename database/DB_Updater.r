@@ -110,7 +110,7 @@ historyUpdate <- function(leagueId, season){
       fhmID = id
     ) %>%
     left_join(
-      teamInfo %>%
+      teamData %>%
         # group_by(franchiseID) %>% 
         # filter(Inaugural.Season == max(Inaugural.Season)) %>% 
         select(
@@ -260,7 +260,7 @@ historyUpdate <- function(leagueId, season){
       fhmID = id
     ) %>%
     left_join(
-      teamInfo %>%
+      teamData %>%
         # group_by(franchiseID) %>% 
         # filter(Inaugural.Season == max(Inaugural.Season)) %>% 
         select(
