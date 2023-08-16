@@ -176,12 +176,12 @@ posTrackerSERVER <- function(id){
             USER,
             USERLINK,
             TPE,
-            Active,
-            abbr,
-            league,
+            ACTIVE,
+            ABBR,
+            LEAGUE
           ) %>%
           rename(
-            Team = abbr
+            TEAM = ABBR
           ) %>%
           rename_with(
             .cols =

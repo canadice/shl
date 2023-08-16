@@ -28,7 +28,7 @@ iihfUI <- function(id){
           ),
           selectizeInput(
             inputId = ns("iihfNation"),
-            label = "Select a IIHF Nation",
+            label = "Select a IIHF Federation",
             choices = NULL,
             selected = NULL,
             multiple = FALSE,
@@ -131,7 +131,7 @@ iihfSERVER <- function(id){
         updateSelectizeInput(
           session = getDefaultReactiveDomain(),
           inputId = "iihfNation",
-          choices = forumData$IIHF.Nation %>% 
+          choices = forumData$`IIHF NATION` %>% 
             unique() %>% 
             sort(),
           selected = "Unassigned",
@@ -191,26 +191,25 @@ iihfSERVER <- function(id){
             USER,
             USERLINK,
             TPE,
-            Active,
-            abbr,
-            league,
-            IIHF.Nation,
-            Original,
-            `Transfer Season`
+            ACTIVE,
+            ABBR,
+            LEAGUE,
+            `IIHF NATION`,
+            ORIGINAL,
+            `TRANSFER SEASON`
           ) %>%
           filter(
-            IIHF.Nation == (input$iihfNation)
+            `IIHF NATION` == (input$iihfNation)
           ) %>%
           rename(
-            team = abbr
+            TEAM = ABBR,
+            `IIHF Federation` = `IIHF NATION`
           ) %>%
           rename_with(
             .cols =
               c(
                 -TPE,
-                -IIHF.Nation,
-                -Original,
-                -`Transfer Season`
+                -`IIHF Federation`
               ),
             stringr::str_to_title
           ) %>%
@@ -246,7 +245,7 @@ iihfSERVER <- function(id){
               )
           ) %>% 
           relocate(
-            IIHF.Nation:`Transfer Season`,
+            `IIHF Federation`:`Transfer Season`,
             .after = PositionGroup
           ) %>% 
           arrange(

@@ -117,15 +117,15 @@ leagueScheduleUI <- function(id){
           )
         )
       )
-    # ),
-    # br(),
-    # fluidRow(
-    #   column(
-    #     width = 12,
-    #     verbatimTextOutput(
-    #       ns("Results")
-    #     )
-    #   )
+      # ),
+      # br(),
+      # fluidRow(
+      #   column(
+      #     width = 12,
+      #     verbatimTextOutput(
+      #       ns("Results")
+      #     )
+      #   )
     )
   )
 }
@@ -235,7 +235,7 @@ leagueScheduleSERVER <- function(id){
           intraCon1 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 1) %>% sum(), ncol = (values$teamID$conference == 1) %>% sum())
           intraCon2 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 2) %>% sum(), ncol = (values$teamID$conference == 2) %>% sum())
           interCon <- matrix(input$interConference/2, nrow = (values$teamID$conference == 1) %>% sum(), ncol = (values$teamID$conference == 2) %>% sum())
-
+          
           values$matchups <- bdiag(list(intraCon1, intraCon2))
           if((values$teamID$conference == 1) %>% sum() > 0 & (values$teamID$conference == 2) %>% sum() > 0){
             values$matchups[1:((values$teamID$conference == 1) %>% sum()), ((values$teamID$conference == 1) %>% sum()+1):((values$teamID$conference == 1) %>% sum()+(values$teamID$conference == 2) %>% sum())] <-
@@ -243,10 +243,10 @@ leagueScheduleSERVER <- function(id){
               interCon
           }
           diag(values$matchups) <- 0
-
+          
           if(length(input$Teams) == 0){
             values$games <- NA
-
+            
             k <- 1
             for(i in 1:nrow(values$matchups)){
               for(j in 1:ncol(values$matchups)){
@@ -255,12 +255,12 @@ leagueScheduleSERVER <- function(id){
                 } else {
                   values$games[k:(k+values$matchups[i,j]-1)] <-
                     paste(i, " @ ", j, " (",1:values$matchups[i,j], ")", sep = "")
-
+                  
                   k <- k + values$matchups[i,j]
                 }
               }
             }
-
+            
           }
         },
         ignoreInit = TRUE)
@@ -268,7 +268,7 @@ leagueScheduleSERVER <- function(id){
       output$Results <- renderPrint({
         print(values %>% reactiveValuesToList())
       })
-
+      
       observeEvent(input$createSchedule,{
         if(ncol(values$matchups) != 14){
           modalDialog(
@@ -620,4 +620,3 @@ leagueScheduleSERVER <- function(id){
     }
   )
 }
-

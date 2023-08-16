@@ -91,6 +91,10 @@ scraperUrl <- url("https://github.com/canadice/shlrtools/blob/main/data/forumDat
 
 load(scraperUrl)
 
+# forumData <- 
+#   forumData %>% 
+#   rename_with(toupper)
+
 print(paste("Forum Data done:", Sys.time()))
 
 ## Downloads a local file for the database

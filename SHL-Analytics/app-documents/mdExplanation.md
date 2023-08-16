@@ -38,10 +38,15 @@ distance between two points, as seen in figure below. Hope you remember
 your high school geography because the distance is calculated as the
 hypotenuse of the side lengths of the right angle triangle that is
 formed from the points. The distance in figure is thereby calculated as
-$\\sqrt{1^2 + 1^2} = \\sqrt{2} \\approx 1.41$.
+$\sqrt{1^2 + 1^2} = \sqrt{2} \approx 1.41$.
 
-![Euclidean distance between two
-points](D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/euclidean-1.png)
+<figure>
+<img
+src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/euclidean-1.png"
+alt="Euclidean distance between two points" />
+<figcaption aria-hidden="true">Euclidean distance between two
+points</figcaption>
+</figure>
 
 This measure assumes that it is possible to place values between the
 integers (whole numbers), which is not the case if the variable is
@@ -63,8 +68,13 @@ your destination. The distance calculation would then be the sum of all
 the lengths between the two points, in the case of the figure below:
 1 + 1 = 2.
 
-![Euclidean distance between two
-points](D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/manhattan-1.png)
+<figure>
+<img
+src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/manhattan-1.png"
+alt="Euclidean distance between two points" />
+<figcaption aria-hidden="true">Euclidean distance between two
+points</figcaption>
+</figure>
 
 We can also calculate the distance as the sum of the individual
 differences for each dimension, in this case the difference in *x* from
@@ -101,7 +111,7 @@ be done with the following example data:
 <th style="text-align: left;">screening</th>
 <th style="text-align: left;">gettingOpen</th>
 <th style="text-align: left;">passing</th>
-<th style="text-align: left;">puckHandling</th>
+<th style="text-align: left;">puckhandling</th>
 <th style="text-align: left;">shootingAccuracy</th>
 <th style="text-align: left;">shootingRange</th>
 <th style="text-align: left;">offensiveRead</th>
@@ -163,6 +173,14 @@ calculation is based on the same player.
 
 <table>
 <caption>Distance matrix based on 5 players</caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 14%" />
+<col style="width: 15%" />
+<col style="width: 20%" />
+<col style="width: 15%" />
+<col style="width: 12%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>

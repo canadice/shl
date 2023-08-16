@@ -93,19 +93,19 @@ regressionSERVER <- function(id){
           USERLINK,
           CLASS,
           TPE,
-          team,
-          primary,
-          secondary
+          TEAM,
+          PRIMARY,
+          SECONDARY
         ) %>% 
         arrange(
-          team
+          TEAM
         ) %>% 
         left_join(
           user,
           by = "USER"
         ) %>% 
         mutate(
-          Retired = if_else(n > 1, "Yes", "No"),
+          RETIRED = if_else(n > 1, "Yes", "No"),
           NAME = paste0("<a href='",LINK,"' target='_blank'>",NAME,"</a>"),
           USER = paste0("<a href='",USERLINK,"' target='_blank'>",USER,"</a>"),
           AGE = currentSeason+2 - (str_extract(CLASS, pattern = "[0-9]+") %>% as.numeric())
@@ -170,13 +170,13 @@ regressionSERVER <- function(id){
             User = USER,
             Class = CLASS,
             `Regression Group` = REGRESSIONGROUP,
-            Team = team,
+            Team = TEAM,
             `Current Claimed TPE` = TPE,
             # `TPE Lost` = LOSTTPE,
             # `Remaining TPE` = REMAININGTPE,
-            Retired,
-            primary,
-            secondary
+            Retired = RETIRED,
+            primary = PRIMARY,
+            secondary = SECONDARY
           ) %>% 
           datatable(
             escape = FALSE, 

@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.0
+
+-   Updates to the scraper requires edits to most tools.
+-   Fixed use of images.
+
 ## v2.1.0
 
 -   Adding a season scheduling tool for the SMJHL.

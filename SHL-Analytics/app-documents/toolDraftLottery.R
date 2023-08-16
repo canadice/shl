@@ -16,7 +16,7 @@ draftLotteryUI <- function(id){
   ns <- NS(id)
   
   draftTeams <- 
-    teamInfo %>% 
+    teamData %>% 
     filter(!is.na(fhmID) & leagueID < 2) %>% 
     arrange(
       leagueID,
@@ -336,10 +336,10 @@ draftLotterySERVER <- function(id){
           
           teams <- (picks %>% str_split(" via ") %>% unlist())
             
-          data1 <- teamInfo %>% 
+          data1 <- teamData %>% 
             filter(team == teams[1])
           
-          data2 <- teamInfo %>% 
+          data2 <- teamData %>% 
             filter(team == teams[2])
           
           tempImage <- 
@@ -350,7 +350,7 @@ draftLotterySERVER <- function(id){
               ), geometry = "x150+10+10", tile = "2x1") %>% image_annotate("via", location = "+145+120", size = 20)
           
         } else {
-          data <- teamInfo %>% 
+          data <- teamData %>% 
             filter(team == picks)
           
           tempImage <- 

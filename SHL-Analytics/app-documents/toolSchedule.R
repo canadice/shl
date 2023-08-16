@@ -23,6 +23,15 @@ scheduleUI <- function(id){
             buttonLabel = "Select a file",
             placeholder = "No file uploaded"
           ),
+          radioButtons(
+            inputId = ns("delimiter"),
+            label = "What is the column delimiter?",
+            choices = 
+              c(
+                "Comma" = ",",
+                "Semi-colon" = ";"
+              )
+          ),
           actionButton(
             inputId = ns("generate"),
             label = "Generate the schedule",
@@ -69,11 +78,11 @@ scheduleUI <- function(id){
             label = "Select the type of game to schedule.",
             choices = 
               c(
-                "Pre-Season",
-                "Regular Season",
-                "Post-Season"
+                "Pre-Season" = "PreSeason",
+                "Regular Season" = "Regular",
+                "Post-Season" = "Post"
               ),
-            selected = "Regular Season"
+            selected = "Regular"
           )
         )
       ),
@@ -120,31 +129,54 @@ scheduleSERVER <- function(id){
             seasonLength <- input$seasonLength %>% isolate()
             gameType <- input$gameType %>% isolate()
             leagueID <- input$leagueID %>% isolate() %>% as.numeric()
+            delimiter <- input$delimiter %>% isolate()
             
             calendar <- 
-              (startDate:(startDate + days(seasonLength-1))) %>% 
+              (startDate:(startDate + days(seasonLength * 2))) %>% 
               as_date() %>% 
               as_tibble() %>% 
               rename(
                 simDate = value
               ) %>% 
               mutate(
-                simDay = 1:(n()),
-                sundays = (simDate %>% wday(week_start = 1) == 7) %>% as.numeric(),
-                nrSundays = cumsum(sundays),
-                simDateNoSun = simDate + days(nrSundays)
+                weekdays = startDate:(startDate + days(seasonLength * 2)) %>% 
+                  as_date() %>% 
+                  wday(week_start = 1) %in% 1:5 %>% 
+                  as.numeric()
               ) %>% 
-              select(simDay, simDateNoSun) %>% 
-              rename(simDate = simDateNoSun)
+              filter(
+                weekdays == 1
+              ) %>% 
+              mutate(
+                simDay = 1:(n())
+              ) %>% 
+              filter(
+                simDay <= seasonLength
+              ) %>% 
+              select(simDay, simDate) 
             
             temp <- 
               read.csv(
                 file$datapath,
-                sep = ";"
+                sep = delimiter
               ) %>% 
-              filter(
-                Type == (gameType)
+              mutate(
+                Date = paste(.[,1], .[,2], .[,3], sep = "-")
+              ) %>% 
+              rename(
+                Home = 4,
+                Away = 5,
+                Type = 6
               ) 
+            
+            temp <- 
+              temp %>%
+              dplyr::filter(
+                Type == gameType
+              ) %>%
+              select(
+                -(1:3)
+              )
             
             if(nrow(temp) == 0){
               "The uploaded schedule does not contain any games of this type." %>% 
@@ -200,7 +232,7 @@ scheduleSERVER <- function(id){
                   over <- games$totalGames[i] > (gamesPerDay - gameDiff)
                 }
               }
-                
+              
               
               games <- 
                 games %>% 
@@ -223,14 +255,14 @@ scheduleSERVER <- function(id){
               temp <- 
                 temp %>% 
                 left_join(
-                  teamInfo %>% 
-                    select(leagueID, fhmID, abbr),
-                  by = c("League.Id" = "leagueID", "Home" = "fhmID")
+                  teamData %>% 
+                    select(leagueID, team, abbr),
+                  by = c("League.Id" = "leagueID", "Home" = "team")
                 ) %>% 
                 left_join(
-                  teamInfo %>% 
-                    select(leagueID, fhmID, abbr),
-                  by = c("League.Id" = "leagueID", "Away" = "fhmID"),
+                  teamData %>% 
+                    select(leagueID, team, abbr),
+                  by = c("League.Id" = "leagueID", "Away" = "team"),
                   suffix = c(" Home", " Away")
                 ) %>% 
                 left_join(

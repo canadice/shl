@@ -11,6 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Changelog
 
+## v2.2.0
+- Updates to the scraper requires edits to most tools.
+
 ## v2.1.0 
 - Adding a season scheduling tool for the SMJHL.
 

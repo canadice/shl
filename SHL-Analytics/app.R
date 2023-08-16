@@ -104,7 +104,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(sortable)
 }
 
-version <- "v2.1.0"
+version <- "v2.2.0"
 
 
 ##----------------------------------------------------------------

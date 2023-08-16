@@ -103,33 +103,34 @@ draftClassSERVER <- function(id){
             USER,
             USERLINK,
             TPE,
-            Bank.Balance,
-            Active,
-            Posts,
-            Online.For,
-            abbr,
-            primary,
-            secondary,
-            IIHF.Nation
+            `BANK BALANCE`,
+            ACTIVE,
+            POSTS,
+            `ONLINE FOR`,
+            ABBR,
+            PRIMARY,
+            SECONDARY,
+            `IIHF NATION`
           ) %>% 
           mutate(
-            primary = if_else(is.na(primary), "#ffffff", primary),
-            secondary = if_else(is.na(secondary), "#000000", secondary)
+            PRIMARY = if_else(is.na(PRIMARY), "#ffffff", PRIMARY),
+            SECONDARY = if_else(is.na(SECONDARY), "#000000", SECONDARY)
           ) %>% 
           rename(
-            team = abbr,
-            Bank = Bank.Balance
+            TEAM = ABBR,
+            BANK = `BANK BALANCE`,
+            `IIHF Federation` = `IIHF NATION`
           ) %>% 
           rename_with(
-            .cols = c(-TPE, -IIHF.Nation),
+            .cols = c(-TPE, -`IIHF Federation`),
             stringr::str_to_title
           ) %>% 
           arrange(-TPE) %>% 
           mutate(
             Rank = row.names(.),
-            OnlineNum = Online.for,
-            Online.for = 
-              Online.for %>% 
+            OnlineNum = `Online For`,
+            `Online For` = 
+              `Online For` %>% 
               seconds_to_period() %>% 
               as.character()
           ) %>% 
@@ -146,10 +147,6 @@ draftClassSERVER <- function(id){
           relocate(
             c(Primary, Secondary, Rank),
             .before = Name
-          ) %>% 
-          rename(
-            `Online for`= Online.for,
-            `IIHF Nation` = IIHF.Nation
           ) %>% 
           mutate(
             PositionGroup =
@@ -238,8 +235,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$primary)), 
-                sort(unique(forumData$primary))
+                sort(unique(forumData$PRIMARY)), 
+                sort(unique(forumData$PRIMARY))
               )
           ) %>% 
           formatStyle(
@@ -247,8 +244,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$secondary)), 
-                sort(unique(forumData$secondary))
+                sort(unique(forumData$SECONDARY)), 
+                sort(unique(forumData$SECONDARY))
               )
           ) %>% 
           formatCurrency(
@@ -328,8 +325,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$primary)), 
-                sort(unique(forumData$primary))
+                sort(unique(forumData$PRIMARY)), 
+                sort(unique(forumData$PRIMARY))
               )
           ) %>% 
           formatStyle(
@@ -337,8 +334,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$secondary)), 
-                sort(unique(forumData$secondary))
+                sort(unique(forumData$SECONDARY)), 
+                sort(unique(forumData$SECONDARY))
               )
           ) %>% 
           formatCurrency(
@@ -418,8 +415,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$primary)), 
-                sort(unique(forumData$primary))
+                sort(unique(forumData$PRIMARY)), 
+                sort(unique(forumData$PRIMARY))
               )
           ) %>% 
           formatStyle(
@@ -427,8 +424,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$secondary)), 
-                sort(unique(forumData$secondary))
+                sort(unique(forumData$SECONDARY)), 
+                sort(unique(forumData$SECONDARY))
               )
           ) %>% 
           formatCurrency(
@@ -508,8 +505,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$primary)), 
-                sort(unique(forumData$primary))
+                sort(unique(forumData$PRIMARY)), 
+                sort(unique(forumData$PRIMARY))
               )
           ) %>% 
           formatStyle(
@@ -517,8 +514,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$secondary)), 
-                sort(unique(forumData$secondary))
+                sort(unique(forumData$SECONDARY)), 
+                sort(unique(forumData$SECONDARY))
               )
           ) %>% 
           formatCurrency(

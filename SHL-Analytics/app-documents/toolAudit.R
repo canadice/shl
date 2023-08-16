@@ -31,6 +31,9 @@ auditUI <- function(id){
         width = NULL,
         tabPanel(
           "Discrepancies",
+          uiOutput(
+            ns("count")
+          ),
           DTOutput(
             ns("comparison")
           )
@@ -76,7 +79,7 @@ auditSERVER <- function(id){
       forumPlayers <- reactive({
         forumData %>% 
           filter(
-            league == input$league
+            LEAGUE == input$league
           ) %>% 
           mutate(
             name = 
@@ -120,7 +123,67 @@ auditSERVER <- function(id){
       indexMissing <- reactive({
         indexPlayers()$name[!((indexPlayers()$name) %in% (forumPlayers()$name))] %>% sort()
       })
-        
+      
+      discrepancy <- reactive({
+        comparedf(
+          forumPlayers() %>% 
+            arrange(name) %>% 
+            mutate(
+              across(
+                where(is.numeric),
+                ~ as.integer(.x)
+              ),
+              id = paste(name, abbr)
+            ),
+          indexPlayers() %>% 
+            arrange(name) %>% 
+            mutate(
+              id = paste(name, abbr)
+            ),
+          by = c("id")
+        ) %>% 
+          summary() %>% 
+          .$diffs.table %>% 
+          filter(
+            !(values.x %>% is.na() | values.y %>% is.na()) 
+          ) %>% 
+          rename_with(
+            ~ str_replace(.x, pattern = "\\.x", replacement = " from Player Page")
+          ) %>% 
+          rename_with(
+            ~ str_replace(.x, pattern = "\\.y", replacement = " from Index")
+          ) %>% 
+          select(
+            !contains("row") &
+              !`var from Index`
+          ) %>% 
+          rename(
+            Attribute = `var from Player Page`
+          ) %>%
+          left_join(
+            forumPlayers() %>%
+              select(
+                name,
+                abbr,
+                team,
+                league
+              ) %>% 
+              mutate(
+                id = paste(name, abbr)
+              ),
+            by = c("id")
+          ) %>%
+          select(
+            -abbr,
+            -id
+          ) %>% 
+          rename(
+            Name = name,
+            Team = team,
+            League = league
+          ) %>%
+          arrange(League, Team, Name)
+      })
       
       matches <- reactive({
         stringdistmatrix(
@@ -129,6 +192,22 @@ auditSERVER <- function(id){
         )
       })
         
+      output$count <- renderUI({
+        p("The number of errors found are:", discrepancy() %>% nrow(), ".", 
+          "The number of errors with differences larger than 1 are:", 
+          discrepancy() %>% 
+            mutate(
+              difference = unlist(`values from Player Page`) - unlist(`values from Index`)
+            ) %>% 
+            summarize(
+              n = sum(abs(difference) > 1)
+            ) %>% 
+            select(n) %>% 
+            unlist() %>% 
+            unname(),
+          ".", "Anything above 10 discrepancies of differences larger than 1 indicates erorrs other than scouting errors."
+          )
+      })
       
       output$forumMissing <- renderDT({
         data.frame(
@@ -215,66 +294,11 @@ auditSERVER <- function(id){
           dom = 't'
         )
       ) 
+      
+      
         
       output$comparison <- renderDT({
-        comparedf(
-          forumPlayers() %>% 
-            arrange(name) %>% 
-            mutate(
-              across(
-                where(is.numeric),
-                ~ as.integer(.x)
-              ),
-              id = paste(name, abbr)
-            ),
-          indexPlayers() %>% 
-            arrange(name) %>% 
-            mutate(
-              id = paste(name, abbr)
-            ),
-          by = c("id")
-        ) %>% 
-          summary() %>% 
-          .$diffs.table %>% 
-          filter(
-            !(values.x %>% is.na() | values.y %>% is.na()) 
-          ) %>% 
-          rename_with(
-            ~ str_replace(.x, pattern = "\\.x", replacement = " from Player Page")
-          ) %>% 
-          rename_with(
-            ~ str_replace(.x, pattern = "\\.y", replacement = " from Index")
-          ) %>% 
-          select(
-            !contains("row") &
-            !`var from Index`
-          ) %>% 
-          rename(
-            Attribute = `var from Player Page`
-          ) %>%
-          left_join(
-            forumPlayers() %>%
-              select(
-                name,
-                abbr,
-                team,
-                league
-              ) %>% 
-              mutate(
-                id = paste(name, abbr)
-              ),
-            by = c("id")
-          ) %>%
-          select(
-            -abbr,
-            -id
-          ) %>% 
-          rename(
-            Name = name,
-            Team = team,
-            League = league
-          ) %>%
-          arrange(League, Team, Name)
+        discrepancy()
       },
       escape = FALSE, 
       extensions = c('Buttons', 'Scroller'),

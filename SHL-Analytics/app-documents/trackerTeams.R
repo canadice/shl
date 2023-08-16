@@ -245,12 +245,12 @@ teamSERVER <- function(id){
           activeData() %>% 
             filter(
               Team == input$selectedTeam |
-                Shl.team == input$selectedTeam
+                `Shl Team` == input$selectedTeam
             ) %>% 
-            teamData()
+            activeTeamData()
           
           ### Updates the team colors to the selected team
-          teamInfo %>% 
+          teamData %>% 
             filter(
               team == input$selectedTeam
             ) %>% 
@@ -270,8 +270,8 @@ teamSERVER <- function(id){
       SHLData <- 
         forumData %>% 
         mutate(
-          Roster = if_else(leagueID == 0, TRUE, FALSE),
-          Prospect = if_else(leagueID != 0, TRUE, FALSE)
+          Roster = if_else(LEAGUEID == 0, TRUE, FALSE),
+          Prospect = if_else(LEAGUEID != 0, TRUE, FALSE)
         ) %>% 
         mutate(
           PositionGroup =
@@ -324,10 +324,10 @@ teamSERVER <- function(id){
       
       SMJHLData <- 
         forumData %>% 
-        filter(leagueID == 1) %>% 
+        filter(LEAGUEID == 1) %>% 
         mutate(
           Roster = TRUE,
-          Prospect = if_else(!is.na(SHL.Team), TRUE, FALSE)
+          Prospect = if_else(!is.na(`SHL TEAM`), TRUE, FALSE)
         ) %>% 
         mutate(
           PositionGroup =
@@ -425,10 +425,10 @@ teamSERVER <- function(id){
       ##---------------------------------------------------------------
       
       output$dataTableRoster <- DT::renderDT({
-        if(teamData() %>% is.null()){
+        if(activeTeamData() %>% is.null()){
           NULL
         } else{
-          teamData() %>% 
+          activeTeamData() %>% 
             filter(
               Team == input$selectedTeam
             ) %>% 
@@ -466,10 +466,10 @@ teamSERVER <- function(id){
       )
       
       output$dataTableProspect <- DT::renderDT({
-        if(teamData() %>% is.null()){
+        if(activeTeamData() %>% is.null()){
           NULL
         } else{
-          teamData() %>% 
+          activeTeamData() %>% 
             select(
               Name,
               Class,
@@ -517,11 +517,11 @@ teamSERVER <- function(id){
               image_write(tempfile(fileext = "png"), format = "png")
           } else {
             visData <- 
-              teamInfo %>% 
-              filter(
+              teamData %>% 
+              dplyr::filter(
                 team == input$selectedTeam
               ) %>% 
-              filter(
+              dplyr::filter(
                 Inaugural.Season == max(Inaugural.Season)
               )
             
@@ -550,7 +550,7 @@ teamSERVER <- function(id){
       output$teamTPECharts <- renderPlotly({
         
         data <- 
-          teamData() %>% 
+          activeTeamData() %>% 
           filter(
             Roster | Prospect
           ) %>% 
@@ -637,7 +637,7 @@ teamSERVER <- function(id){
       
       activeLeague <- reactiveVal(NULL)
       
-      teamData <- reactiveVal(NULL)
+      activeTeamData <- reactiveVal(NULL)
       
       teamColor <- reactiveVal(NULL)
       
