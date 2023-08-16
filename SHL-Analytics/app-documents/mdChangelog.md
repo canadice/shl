@@ -3,7 +3,7 @@
 ## v2.2.0
 
 -   Updates to the scraper requires edits to most tools.
--   Fixed use of images.
+-   Fixed use of images in Team Tracker and Draft Lottery.
 
 ## v2.1.0
 
