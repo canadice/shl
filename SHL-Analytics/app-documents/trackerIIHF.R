@@ -152,7 +152,7 @@ iihfSERVER <- function(id){
               image_write(tempfile(fileext = "png"), format = "png")
           } else {
             visData <- 
-              teamInfo %>% 
+              teamData %>% 
               filter(
                 team == input$iihfNation
               )  
@@ -195,8 +195,8 @@ iihfSERVER <- function(id){
             ABBR,
             LEAGUE,
             `IIHF NATION`,
-            ORIGINAL,
-            `TRANSFER SEASON`
+            Original,
+            `Transfer Season`
           ) %>%
           filter(
             `IIHF NATION` == (input$iihfNation)
