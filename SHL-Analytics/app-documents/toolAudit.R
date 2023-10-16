@@ -22,7 +22,7 @@ auditUI <- function(id){
         radioButtons(
           inputId = ns("league"),
           label = "Select the league",
-          choices = c("SHL", "SMJHL")
+          choices = c("SHL" = 0, "SMJHL" = 1)
         )
       )
     ),
@@ -79,7 +79,7 @@ auditSERVER <- function(id){
       forumPlayers <- reactive({
         forumData %>% 
           filter(
-            LEAGUE == input$league
+            leagueID == input$league
           ) %>% 
           mutate(
             name = 
@@ -96,7 +96,7 @@ auditSERVER <- function(id){
             team %in% 
               (teamInfo %>% 
                  filter(
-                   league == input$league
+                   leagueID == input$league
                  ) %>% 
                  select(
                    abbr
@@ -166,7 +166,7 @@ auditSERVER <- function(id){
                 name,
                 abbr,
                 team,
-                league
+                leagueID
               ) %>% 
               mutate(
                 id = paste(name, abbr)
@@ -180,7 +180,7 @@ auditSERVER <- function(id){
           rename(
             Name = name,
             Team = team,
-            League = league
+            League = leagueID
           ) %>%
           arrange(League, Team, Name)
       })

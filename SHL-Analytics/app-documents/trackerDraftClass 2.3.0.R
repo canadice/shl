@@ -105,11 +105,10 @@ draftClassSERVER <- function(id){
             TPE,
             `BANK BALANCE`,
             ACTIVE,
-            POSTS,
             `ONLINE FOR`,
-            ABBR,
-            PRIMARY,
-            SECONDARY,
+            ABBR = abbr,
+            PRIMARY = primary,
+            SECONDARY = secondary,
             `IIHF NATION`
           ) %>% 
           mutate(
@@ -132,6 +131,7 @@ draftClassSERVER <- function(id){
             `Online For` = 
               `Online For` %>% 
               seconds_to_period() %>% 
+              round(digits = 0) %>% 
               as.character()
           ) %>% 
           mutate(
@@ -176,6 +176,34 @@ draftClassSERVER <- function(id){
         "  });",
         "})")
       
+      columnDefinitions <- 
+        list(
+          ## Sets ordering variable for Online 
+          list(
+            targets = 10,
+            orderData = 13
+          ),
+          list(
+            targets = 4,
+            orderData = 14,
+            width = '100px'
+          ),
+          list(
+            targets = 6,
+            orderData = 15,
+            width = '70px'
+          ),
+          list(
+            targets = 7,
+            width = '80px' 
+          ),
+          list(
+            targets = c(1:3, 13:15), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
+            visible = FALSE
+          )
+        )
+      
+      
       ## Outputs a datatable of all the players
       output$dataTableAll <- DT::renderDT({
         currentData() %>% 
@@ -195,31 +223,7 @@ draftClassSERVER <- function(id){
                 scrollCollapse = TRUE,
                 ## Sets width of columns
                 autoWidth = TRUE,
-                columnDefs = 
-                  list(
-                    list(
-                      targets = 11,
-                      orderData = 14
-                      ),
-                    list(
-                      targets = 4,
-                      orderData = 15,
-                      width = '100px'
-                    ),
-                    list(
-                      targets = 6,
-                      orderData = 16,
-                      width = '70px'
-                    ),
-                    list(
-                      targets = 8,
-                      width = '80px' 
-                    ),
-                    list(
-                      targets = c(1:3, 14:16), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
-                      visible = FALSE
-                    )
-                  ),
+                columnDefs = columnDefinitions,
                 ## Removes pages in the table
                 paging = FALSE,
                 ## Adds scrollable horizontal
@@ -235,8 +239,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$PRIMARY)), 
-                sort(unique(forumData$PRIMARY))
+                sort(unique(forumData$primary)), 
+                sort(unique(forumData$primary))
               )
           ) %>% 
           formatStyle(
@@ -244,21 +248,14 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$SECONDARY)), 
-                sort(unique(forumData$SECONDARY))
+                sort(unique(forumData$secondary)), 
+                sort(unique(forumData$secondary))
               )
           ) %>% 
           formatCurrency(
             "Bank",
             currency = "$",
             interval = 3,
-            mark = " ",
-            digits = 0
-          ) %>% 
-          formatCurrency(
-            "Posts",
-            currency = "",
-            interval = 3, 
             mark = " ",
             digits = 0
           )
@@ -285,31 +282,7 @@ draftClassSERVER <- function(id){
                 scrollCollapse = TRUE,
                 ## Sets width of columns
                 autoWidth = TRUE,
-                columnDefs = 
-                  list(
-                    list(
-                      targets = 11,
-                      orderData = 14
-                    ),
-                    list(
-                      targets = 4,
-                      orderData = 15,
-                      width = '100px'
-                    ),
-                    list(
-                      targets = 6,
-                      orderData = 16,
-                      width = '70px'
-                    ),
-                    list(
-                      targets = 8,
-                      width = '80px' 
-                    ),
-                    list(
-                      targets = c(1:3, 14:16), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
-                      visible = FALSE
-                    )
-                  ),
+                columnDefs = columnDefinitions,
                 ## Removes pages in the table
                 paging = FALSE,
                 ## Adds scrollable horizontal
@@ -325,8 +298,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$PRIMARY)), 
-                sort(unique(forumData$PRIMARY))
+                sort(unique(forumData$primary)), 
+                sort(unique(forumData$primary))
               )
           ) %>% 
           formatStyle(
@@ -334,8 +307,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$SECONDARY)), 
-                sort(unique(forumData$SECONDARY))
+                sort(unique(forumData$secondary)), 
+                sort(unique(forumData$secondary))
               )
           ) %>% 
           formatCurrency(
@@ -344,14 +317,8 @@ draftClassSERVER <- function(id){
             interval = 3,
             mark = " ",
             digits = 0
-          ) %>% 
-          formatCurrency(
-            "Posts",
-            currency = "",
-            interval = 3, 
-            mark = " ",
-            digits = 0
-          )
+          ) 
+        
         
       }
       ) 
@@ -375,31 +342,7 @@ draftClassSERVER <- function(id){
                 scrollCollapse = TRUE,
                 ## Sets width of columns
                 autoWidth = TRUE,
-                columnDefs = 
-                  list(
-                    list(
-                      targets = 11,
-                      orderData = 14
-                    ),
-                    list(
-                      targets = 4,
-                      orderData = 15,
-                      width = '100px'
-                    ),
-                    list(
-                      targets = 6,
-                      orderData = 16,
-                      width = '70px'
-                    ),
-                    list(
-                      targets = 8,
-                      width = '80px' 
-                    ),
-                    list(
-                      targets = c(1:3, 14:16), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
-                      visible = FALSE
-                    )
-                  ),
+                columnDefs = columnDefinitions,
                 ## Removes pages in the table
                 paging = FALSE,
                 ## Adds scrollable horizontal
@@ -415,8 +358,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$PRIMARY)), 
-                sort(unique(forumData$PRIMARY))
+                sort(unique(forumData$primary)), 
+                sort(unique(forumData$primary))
               )
           ) %>% 
           formatStyle(
@@ -424,8 +367,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$SECONDARY)), 
-                sort(unique(forumData$SECONDARY))
+                sort(unique(forumData$secondary)), 
+                sort(unique(forumData$secondary))
               )
           ) %>% 
           formatCurrency(
@@ -434,14 +377,8 @@ draftClassSERVER <- function(id){
             interval = 3,
             mark = " ",
             digits = 0
-          ) %>% 
-          formatCurrency(
-            "Posts",
-            currency = "",
-            interval = 3, 
-            mark = " ",
-            digits = 0
           )
+        
         
       }
       ) 
@@ -465,31 +402,7 @@ draftClassSERVER <- function(id){
                 scrollCollapse = TRUE,
                 ## Sets width of columns
                 autoWidth = TRUE,
-                columnDefs = 
-                  list(
-                    list(
-                      targets = 11,
-                      orderData = 14
-                    ),
-                    list(
-                      targets = 4,
-                      orderData = 15,
-                      width = '100px'
-                    ),
-                    list(
-                      targets = 6,
-                      orderData = 16,
-                      width = '70px'
-                    ),
-                    list(
-                      targets = 8,
-                      width = '80px' 
-                    ),
-                    list(
-                      targets = c(1:3, 14:16), #The js object updates ranking based on the selected column, otherwise 0:2 to show TPE RANk only
-                      visible = FALSE
-                    )
-                  ),
+                columnDefs = columnDefinitions,
                 ## Removes pages in the table
                 paging = FALSE,
                 ## Adds scrollable horizontal
@@ -505,8 +418,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Primary",
             backgroundColor = 
               styleEqual(
-                sort(unique(forumData$PRIMARY)), 
-                sort(unique(forumData$PRIMARY))
+                sort(unique(forumData$primary)), 
+                sort(unique(forumData$primary))
               )
           ) %>% 
           formatStyle(
@@ -514,8 +427,8 @@ draftClassSERVER <- function(id){
             valueColumns = "Secondary",
             color = 
               styleEqual(
-                sort(unique(forumData$SECONDARY)), 
-                sort(unique(forumData$SECONDARY))
+                sort(unique(forumData$secondary)), 
+                sort(unique(forumData$secondary))
               )
           ) %>% 
           formatCurrency(
@@ -524,14 +437,8 @@ draftClassSERVER <- function(id){
             interval = 3,
             mark = " ",
             digits = 0
-          ) %>% 
-          formatCurrency(
-            "Posts",
-            currency = "",
-            interval = 3, 
-            mark = " ",
-            digits = 0
-          )
+          ) 
+        
         
       }
       ) 

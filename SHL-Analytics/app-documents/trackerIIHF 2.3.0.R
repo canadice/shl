@@ -111,16 +111,16 @@ iihfSERVER <- function(id){
             list(
               list(
                 targets = 0,
-                orderData = 8,
+                orderData = 9,
                 width = '100px'
               ),
               list(
                 targets = 3,
-                orderData = 9,
+                orderData = 10,
                 width = '70px'
               ),
               list(
-                targets = c(8:9),
+                targets = c(7:11),
                 visible = FALSE
               )
             )
@@ -192,17 +192,14 @@ iihfSERVER <- function(id){
             USERLINK,
             TPE,
             ACTIVE,
-            ABBR,
-            LEAGUE,
-            `IIHF NATION`,
-            Original,
-            `Transfer Season`
+            TEAM = abbr,
+            LEAGUE = leagueID,
+            `IIHF NATION`
           ) %>%
           filter(
             `IIHF NATION` == (input$iihfNation)
           ) %>%
           rename(
-            TEAM = ABBR,
             `IIHF Federation` = `IIHF NATION`
           ) %>%
           rename_with(
@@ -242,11 +239,8 @@ iihfSERVER <- function(id){
                     "D",
                     "G"
                   )
-              )
-          ) %>% 
-          relocate(
-            `IIHF Federation`:`Transfer Season`,
-            .after = PositionGroup
+              ),
+            League = if_else(League == 0, "SHL", "SMJHL")
           ) %>% 
           arrange(
             Active,
@@ -257,8 +251,7 @@ iihfSERVER <- function(id){
       
       ## Outputs a datatable of all the players
       output$dataTableAll <- DT::renderDT({
-        currentData() %>% 
-          select(-PositionGroup)
+        currentData() 
       },
       class = 'compact cell-border stripe',
       rownames = FALSE,
@@ -269,8 +262,7 @@ iihfSERVER <- function(id){
       
       output$dataTableG <- DT::renderDT({
         currentData() %>% 
-          filter(PositionGroup == "G") %>% 
-          select(-PositionGroup, -IIHF.Nation, -Original, -`Transfer Season`)
+          filter(PositionGroup == "G")
       },
       class = 'compact cell-border stripe',
       rownames = FALSE,
@@ -281,8 +273,7 @@ iihfSERVER <- function(id){
       
       output$dataTableD <- DT::renderDT({
         currentData() %>% 
-          filter(PositionGroup == "D") %>% 
-          select(-PositionGroup, -IIHF.Nation, -Original, -`Transfer Season`)
+          filter(PositionGroup == "D")
       },
       class = 'compact cell-border stripe',
       rownames = FALSE,
@@ -293,8 +284,7 @@ iihfSERVER <- function(id){
       
       output$dataTableF <- DT::renderDT({
         currentData() %>% 
-          filter(PositionGroup == "F") %>% 
-          select(-PositionGroup, -IIHF.Nation, -Original, -`Transfer Season`)
+          filter(PositionGroup == "F")
       },
       class = 'compact cell-border stripe',
       rownames = FALSE,
@@ -304,8 +294,6 @@ iihfSERVER <- function(id){
       )
       
       output$distrTPE <- renderPlot({
-        
-        
         
         ggplot(data) + aes(x = x, y = y) + 
           geom_violin(

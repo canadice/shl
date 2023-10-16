@@ -177,11 +177,8 @@ posTrackerSERVER <- function(id){
             USERLINK,
             TPE,
             ACTIVE,
-            ABBR,
-            LEAGUE
-          ) %>%
-          rename(
-            TEAM = ABBR
+            TEAM = abbr,
+            LEAGUE = leagueID
           ) %>%
           rename_with(
             .cols =
@@ -189,7 +186,11 @@ posTrackerSERVER <- function(id){
                 -TPE
               ),
             stringr::str_to_title
-          ) 
+          ) %>% 
+          mutate(
+            League = if_else(League == 0, "SHL", "SMJHL")
+          )
+        
         
         if(input$activity != "All"){
           temp <- 
@@ -286,8 +287,9 @@ posTrackerSERVER <- function(id){
               ),
             slotsSMJHL = 
               case_when(
-                Position == "Forward" ~ 12 * nSMJHL,
-                Position == "Defense" ~ 8 * nSMJHL,
+                ## Changed to only use three lines
+                Position == "Forward" ~ 9 * nSMJHL,
+                Position == "Defense" ~ 6 * nSMJHL,
                 TRUE ~ 2 * nSMJHL,
               )
           ) %>% 
@@ -305,11 +307,14 @@ posTrackerSERVER <- function(id){
             fillSHL = SHL / slotsSHL,
             fillSMJHL = SMJHL / slotsSMJHL
           ) %>% 
-          rename(
+          select(
+            Position,
             `Currently in SHL` = SHL,
-            `Currently in SMJHL` = SMJHL,
             `Total Slots in SHL` = slotsSHL,
-            `Total Slots in SMJHL` = slotsSMJHL 
+            `Currently in SMJHL` = SMJHL,
+            `Total Slots in SMJHL` = slotsSMJHL,
+            fillSHL,
+            fillSMJHL
           )
         
         table <- 
