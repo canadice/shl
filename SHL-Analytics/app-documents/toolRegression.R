@@ -93,12 +93,12 @@ regressionSERVER <- function(id){
           USERLINK,
           CLASS,
           TPE,
-          TEAM,
-          PRIMARY,
-          SECONDARY
+          team,
+          primary,
+          secondary
         ) %>% 
         arrange(
-          TEAM
+          team
         ) %>% 
         left_join(
           user,
@@ -170,13 +170,13 @@ regressionSERVER <- function(id){
             User = USER,
             Class = CLASS,
             `Regression Group` = REGRESSIONGROUP,
-            Team = TEAM,
+            Team = team,
             `Current Claimed TPE` = TPE,
             # `TPE Lost` = LOSTTPE,
             # `Remaining TPE` = REMAININGTPE,
             Retired = RETIRED,
-            primary = PRIMARY,
-            secondary = SECONDARY
+            primary,
+            secondary
           ) %>% 
           datatable(
             escape = FALSE, 
