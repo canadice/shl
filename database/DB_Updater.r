@@ -179,7 +179,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 73){
+  for(j in 74){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
@@ -311,7 +311,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in c(73)){
+  for(j in c(74)){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
@@ -327,5 +327,8 @@ for(i in 0:3){
 # dbExecute(con, "UPDATE goalieHistory SET leagueID = '2' WHERE leagueID = '3' AND Season < '53'")
 
 # dbWriteTable(con, "goalieHistory", goalieHistory, overwrite = TRUE)
+
+# write.csv(skaterHistory, file = "SHL SKATER CAREER.csv", row.names = FALSE)
+# write.csv(goalieHistory, file = "SHL GOALIE CAREER.csv", row.names = FALSE)
 
 dbDisconnect(con)
