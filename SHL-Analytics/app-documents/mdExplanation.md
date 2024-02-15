@@ -60,7 +60,10 @@ but if you’ve ever been in Manhattan, you would notice that there are
 some rather large buildings in the way. You must walk along the Street
 to another corner before walking along the Avenue to your destination.
 
-![](D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/unnamed-chunk-1-1.png)
+<!-- ```{r, message=FALSE} -->
+<!-- ggmap(get_stamenmap(bbox = c(-73.971,40.7530,-73.965,40.759), zoom = 15, messaging = FALSE)) + -->
+<!--   theme_bw() -->
+<!-- ``` -->
 
 This practical example shows how the *Manhattan* distance is calculated,
 by calculating the number of corners between your current position and
@@ -310,7 +313,7 @@ real world, without providing any coordinates or similar to the method.
 
 Five cities and their direct distance to one another
 
-<img src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/unnamed-chunk-4-1.png" alt="Map of the United States"  />
+<img src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/unnamed-chunk-3-1.png" alt="Map of the United States"  />
 <p class="caption">
 Map of the United States
 </p>
@@ -331,4 +334,4 @@ difficulty in determining what distinguishes players in one area of the
 plot from other areas, but the visual representation still shows how
 similar players in the league are to one another.
 
-<img src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />

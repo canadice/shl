@@ -91,6 +91,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(DT)
   require(knitr)
   require(ggmap)
+  require(osmdata)
   require(kableExtra)
   require(janitor)
   require(usmap)
@@ -104,7 +105,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(sortable)
 }
 
-version <- "v2.2.1"
+version <- "v2.3.0"
 
 
 ##----------------------------------------------------------------
@@ -364,7 +365,7 @@ ui <-
                     ),
                     menuSubItem(
                       "Team Tracker", 
-                      tabName = "trackerTeam"
+                      href = "https://portal.simulationhockey.com/teams"
                     )
                 ),
                 

@@ -69,12 +69,12 @@ ggplot(data) + aes(x, y) + geom_point(size = 3) +
 
 This measure assumes that it is possible to place values between the integers (whole numbers), which is not the case if the variable is discrete. We must then restrict that the distance between two points follows the whole numbers. A practical example of this issue is if you would want to calculate the distance you would need to walk between two streets and avenues in Manhattan, for instance the corner of the 50th Street and 3rd Avenue, and 51th Street and 2nd Avenue. The Euclidean distance assumes that you are able to walk between the corners directly, but if you've ever been in Manhattan, you would notice that there are some rather large buildings in the way. You must walk along the Street to another corner before walking along the Avenue to your destination.
 
-```{r, message=FALSE}
+<!-- ```{r, message=FALSE} -->
 
-ggmap(get_stamenmap(bbox = c(-73.971,40.7530,-73.965,40.759), zoom = 16, messaging = FALSE)) +
-  theme_bw()
+<!-- ggmap(get_stamenmap(bbox = c(-73.971,40.7530,-73.965,40.759), zoom = 15, messaging = FALSE)) + -->
+<!--   theme_bw() -->
 
-```
+<!-- ``` -->
 
 This practical example shows how the *Manhattan* distance is calculated, by calculating the number of corners between your current position and your destination. The distance calculation would then be the sum of all the lengths between the two points, in the case of the figure below: $1 + 1 = 2$.
 

@@ -1,9 +1,20 @@
 # Changelog
 
+## v2.3.0
+
+-   Scraper is now using SHL Portal API, so additional changes to tools
+    need to be made.
+    -   Draft Class Tracker now links to Player Portal, **Activity
+        status is still tracked here.**
+    -   Position Tracker changed to reflect only three lines in the
+        SMJHL
+    -   Team Tracker links to Player Portal Team Tracker.
+    -   IIHF Tracker is updated to Portal IIHF Federation assignments.
+    -   Fixed Russia’s move to Independent Russia in IIHF Rankings.
+
 ## v2.2.0
 
 -   Updates to the scraper requires edits to most tools.
--   Fixed use of images in Team Tracker and Draft Lottery.
 
 ## v2.1.0
 
