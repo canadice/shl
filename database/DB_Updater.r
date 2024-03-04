@@ -324,7 +324,7 @@ for(i in 0:3){
   }
 }
 
-# dbExecute(con, "UPDATE goalieHistory SET leagueID = '2' WHERE leagueID = '3' AND Season < '53'")
+# dbExecute(con, 'UPDATE goalieHistory SET Name = "Olli O\'Koivu" WHERE Name = "Kyle Wahlgren"')
 
 # dbWriteTable(con, "goalieHistory", goalieHistory, overwrite = TRUE)
 
