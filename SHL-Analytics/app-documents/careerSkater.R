@@ -83,8 +83,8 @@ careerUI <- function(id){
               )
             )
           )
-        ),
-        uiOutput(ns("draftBox"))
+        )#,
+        # uiOutput(ns("draftBox"))
       ),
       
       column(
@@ -155,18 +155,18 @@ careerUI <- function(id){
               ),
               DTOutput(ns("bestSeasonsTwo"))
             )
-          ),
+          )#,
           
           ##################################################################
           ##                    Trophies and Awards                       ##
           ##################################################################
           
-          tabPanel(
-            title = "Trophies & Awards",
-            uiOutput(ns("trophyBox")),
-            uiOutput(ns("allstarBox")),
-            uiOutput(ns("awardBox"))
-          )
+          # tabPanel(
+          #   title = "Trophies & Awards",
+          #   uiOutput(ns("trophyBox")),
+          #   uiOutput(ns("allstarBox")),
+          #   uiOutput(ns("awardBox"))
+          # )
         )
       )
     ),
@@ -274,21 +274,21 @@ careerCardSERVER <- function(id){
         )  
       })    
       
-      ### Finds draft information of selected skater
-      filteredDraftData <- reactive({
-        draftData %>% 
-          filter(
-            `Player Name` == input$skaterName
-          )
-      })
+      # ### Finds draft information of selected skater
+      # filteredDraftData <- reactive({
+      #   draftData %>% 
+      #     filter(
+      #       `Player Name` == input$skaterName
+      #     )
+      # })
       
-      ### Finds achievement information of selected skater
-      filteredAchievementData <- reactive({
-        achievementData %>% 
-          filter(
-            Player == input$skaterName
-          )
-      })
+      # ### Finds achievement information of selected skater
+      # filteredAchievementData <- reactive({
+      #   achievementData %>% 
+      #     filter(
+      #       Player == input$skaterName
+      #     )
+      # })
       
       ### Find and filters the data based on settings. 
       filteredData <- reactive({
@@ -316,194 +316,194 @@ careerCardSERVER <- function(id){
           )
       })
       
-      ##---------------------------------------------------------------
-      ##                  Draft and Achievement boxes                 -
-      ##---------------------------------------------------------------
-
-      output$draftBox <- renderUI({
-        if(filteredDraftData() %>% nrow() == 0){
-          infoBox(
-            title = tags$b(""),
-            color = "orange",
-            width = NULL,
-            icon = tags$i(class = "fas fa-vote-yea", style="font-size: 36px; color: white"),
-            fill = TRUE,
-            value = 
-              tags$p("Draft information is missing for this skater.",
-                style = "font-size: 75%;"
-              )
-          )
-        } else {
-          draftPosition <- filteredDraftData()$Drafted %>% head(1)
-          
-          if(draftPosition == 1000){
-            draftPosition <- "as a GM"
-          } else {
-            draftPosition <- paste("number", draftPosition, sep = " ")
-          }
-          
-          infoBox(
-            title = 
-              tags$b(
-                paste(
-                  "Selected", draftPosition)
-                ),
-            color = "orange",
-            width = NULL,
-            icon = tags$i(class = "fas fa-vote-yea", style="font-size: 36px; color: white"),
-            fill = TRUE,
-            value = 
-              tags$p(
-                paste(
-                  "in season", filteredDraftData()$Season %>% unlist(), 
-                  "by", filteredDraftData()$Team %>% unlist(),
-                  collapse = " "),
-                style = "font-size: 75%;"
-              )
-          )
-        }
-      })
-      
-      output$allstarBox <- renderUI({
-        
-        firstTeam <- sum(filteredAchievementData()$X1AS, na.rm = TRUE)
-        
-        secondTeam <- sum(filteredAchievementData()$X2AS, na.rm = TRUE)
-        
-        thirdTeam <- sum(filteredAchievementData()$X3AS, na.rm = TRUE)
-        
-        rookieTeam <- sum(filteredAchievementData()$RAS, na.rm = TRUE)
-        
-        allstarTeam <- sum(filteredAchievementData()$AS, na.rm = TRUE)
-        
-        if(any(firstTeam > 0, secondTeam > 0, thirdTeam > 0)){
-          valueBox(
-            subtitle = tags$b("All-Star Teams"),
-            color = "orange",
-            width = NULL,
-            icon = icon("star"),
-            value = 
-              tags$p(
-                paste(
-                  "First Team All-Star:", firstTeam, br(),
-                  "Second Team All-Star:", secondTeam, br(),
-                  "Third Team All-Star:", thirdTeam, br(),
-                  "Rookie All-Star:", rookieTeam, 
-                  collapse = " ") %>% 
-                  HTML(),
-                style = "font-size: 50%;"
-              )
-          )
-        } else {
-          valueBox(
-            subtitle = tags$b("All-Star Teams"),
-            color = "orange",
-            width = NULL,
-            icon = icon("star"),
-            value = 
-              tags$p(
-                paste(
-                  "All-Star Team:", allstarTeam, br(),
-                  "Rookie All-Star:", rookieTeam, 
-                  collapse = " ") %>% 
-                  HTML(),
-                style = "font-size: 50%;"
-              )
-          )  
-        }
-      })
-      
-      output$awardBox <- renderUI({
-        
-        wins <- 
-          filteredAchievementData() %>% 
-          select(
-            Bojo.Biscuit:Sarmad.Khan
-          ) %>% 
-          mutate(
-            across(
-              .fn = sum,
-              na.rm = TRUE
-            )
-          ) %>% 
-          unique()
-        
-        if (nrow(wins) > 0) {
-          wins <- 
-            wins %>% 
-            select(
-              where(
-                function(x) x > 0
-              )
-            )
-        }
-        
-        nominations <- 
-          sum(
-            filteredAchievementData() %>% 
-              select(
-                Bojo.Biscuit:Sarmad.Khan
-              ) == 0, 
-            na.rm = TRUE)
-        
-        if(any(wins > 0, nominations > 0)){
-          valueBox(
-            subtitle = tags$b("League Awards"),
-            color = "orange",
-            width = NULL,
-            icon = icon("award"),
-            value = 
-              tags$p(
-                paste(
-                  paste0(
-                    paste(
-                      colnames(wins) %>% 
-                        str_replace(pattern = "\\.", replacement = " "),
-                      wins,
-                      sep = ": "
-                    ),
-                  collapse = "<br/>"
-                ),
-                paste("Nominations: ", nominations, sep = ""),
-                sep = "<br/>") %>%
-                HTML(),
-                style = "font-size: 50%;"
-              )
-          )
-        }
-      })
-      
-      output$trophyBox <- renderUI({
-        
-        championships <- 
-          filteredAchievementData() %>% 
-          select(
-            Season,
-            CC
-          ) %>% 
-          filter(
-            CC == 1
-          )
-        
-        if(nrow(championships) > 0){
-          valueBox(
-            subtitle = tags$b("Challenge Cups"),
-            color = "orange",
-            width = NULL,
-            icon = icon("trophy"),
-            value = 
-              tags$p(
-                paste0(
-                  championships$Season %>% 
-                    str_replace_all(pattern = "S", replacement = "Season "),
-                  collapse = "<br/>"
-                ) %>% 
-                  HTML(),
-                style = "font-size: 75%;"
-              )
-          )  
-        }
-      })
+      # ##---------------------------------------------------------------
+      # ##                  Draft and Achievement boxes                 -
+      # ##---------------------------------------------------------------
+      # 
+      # output$draftBox <- renderUI({
+      #   if(filteredDraftData() %>% nrow() == 0){
+      #     infoBox(
+      #       title = tags$b(""),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = tags$i(class = "fas fa-vote-yea", style="font-size: 36px; color: white"),
+      #       fill = TRUE,
+      #       value = 
+      #         tags$p("Draft information is missing for this skater.",
+      #           style = "font-size: 75%;"
+      #         )
+      #     )
+      #   } else {
+      #     draftPosition <- filteredDraftData()$Drafted %>% head(1)
+      #     
+      #     if(draftPosition == 1000){
+      #       draftPosition <- "as a GM"
+      #     } else {
+      #       draftPosition <- paste("number", draftPosition, sep = " ")
+      #     }
+      #     
+      #     infoBox(
+      #       title = 
+      #         tags$b(
+      #           paste(
+      #             "Selected", draftPosition)
+      #           ),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = tags$i(class = "fas fa-vote-yea", style="font-size: 36px; color: white"),
+      #       fill = TRUE,
+      #       value = 
+      #         tags$p(
+      #           paste(
+      #             "in season", filteredDraftData()$Season %>% unlist(), 
+      #             "by", filteredDraftData()$Team %>% unlist(),
+      #             collapse = " "),
+      #           style = "font-size: 75%;"
+      #         )
+      #     )
+      #   }
+      # })
+      # 
+      # output$allstarBox <- renderUI({
+      #   
+      #   firstTeam <- sum(filteredAchievementData()$X1AS, na.rm = TRUE)
+      #   
+      #   secondTeam <- sum(filteredAchievementData()$X2AS, na.rm = TRUE)
+      #   
+      #   thirdTeam <- sum(filteredAchievementData()$X3AS, na.rm = TRUE)
+      #   
+      #   rookieTeam <- sum(filteredAchievementData()$RAS, na.rm = TRUE)
+      #   
+      #   allstarTeam <- sum(filteredAchievementData()$AS, na.rm = TRUE)
+      #   
+      #   if(any(firstTeam > 0, secondTeam > 0, thirdTeam > 0)){
+      #     valueBox(
+      #       subtitle = tags$b("All-Star Teams"),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = icon("star"),
+      #       value = 
+      #         tags$p(
+      #           paste(
+      #             "First Team All-Star:", firstTeam, br(),
+      #             "Second Team All-Star:", secondTeam, br(),
+      #             "Third Team All-Star:", thirdTeam, br(),
+      #             "Rookie All-Star:", rookieTeam, 
+      #             collapse = " ") %>% 
+      #             HTML(),
+      #           style = "font-size: 50%;"
+      #         )
+      #     )
+      #   } else {
+      #     valueBox(
+      #       subtitle = tags$b("All-Star Teams"),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = icon("star"),
+      #       value = 
+      #         tags$p(
+      #           paste(
+      #             "All-Star Team:", allstarTeam, br(),
+      #             "Rookie All-Star:", rookieTeam, 
+      #             collapse = " ") %>% 
+      #             HTML(),
+      #           style = "font-size: 50%;"
+      #         )
+      #     )  
+      #   }
+      # })
+      # 
+      # output$awardBox <- renderUI({
+      #   
+      #   wins <- 
+      #     filteredAchievementData() %>% 
+      #     select(
+      #       Bojo.Biscuit:Sarmad.Khan
+      #     ) %>% 
+      #     mutate(
+      #       across(
+      #         .fn = sum,
+      #         na.rm = TRUE
+      #       )
+      #     ) %>% 
+      #     unique()
+      #   
+      #   if (nrow(wins) > 0) {
+      #     wins <- 
+      #       wins %>% 
+      #       select(
+      #         where(
+      #           function(x) x > 0
+      #         )
+      #       )
+      #   }
+      #   
+      #   nominations <- 
+      #     sum(
+      #       filteredAchievementData() %>% 
+      #         select(
+      #           Bojo.Biscuit:Sarmad.Khan
+      #         ) == 0, 
+      #       na.rm = TRUE)
+      #   
+      #   if(any(wins > 0, nominations > 0)){
+      #     valueBox(
+      #       subtitle = tags$b("League Awards"),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = icon("award"),
+      #       value = 
+      #         tags$p(
+      #           paste(
+      #             paste0(
+      #               paste(
+      #                 colnames(wins) %>% 
+      #                   str_replace(pattern = "\\.", replacement = " "),
+      #                 wins,
+      #                 sep = ": "
+      #               ),
+      #             collapse = "<br/>"
+      #           ),
+      #           paste("Nominations: ", nominations, sep = ""),
+      #           sep = "<br/>") %>%
+      #           HTML(),
+      #           style = "font-size: 50%;"
+      #         )
+      #     )
+      #   }
+      # })
+      # 
+      # output$trophyBox <- renderUI({
+      #   
+      #   championships <- 
+      #     filteredAchievementData() %>% 
+      #     select(
+      #       Season,
+      #       CC
+      #     ) %>% 
+      #     filter(
+      #       CC == 1
+      #     )
+      #   
+      #   if(nrow(championships) > 0){
+      #     valueBox(
+      #       subtitle = tags$b("Challenge Cups"),
+      #       color = "orange",
+      #       width = NULL,
+      #       icon = icon("trophy"),
+      #       value = 
+      #         tags$p(
+      #           paste0(
+      #             championships$Season %>% 
+      #               str_replace_all(pattern = "S", replacement = "Season "),
+      #             collapse = "<br/>"
+      #           ) %>% 
+      #             HTML(),
+      #           style = "font-size: 75%;"
+      #         )
+      #     )  
+      #   }
+      # })
             
       ##----------------------------------------------------------------
       ##                          Career Stats                         -
