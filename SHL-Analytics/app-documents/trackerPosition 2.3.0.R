@@ -262,6 +262,8 @@ posTrackerSERVER <- function(id){
         nSHL <- (teamLoader(leagueID = 0) %>% nrow())
         nSMJHL <- (teamLoader(leagueID = 1) %>% nrow())
         
+        nSMJHL <- if_else(nSMJHL < 16, 16, nSMJHL)
+        
         temp <- 
           currentData() %>% 
           group_by(Class, Position) %>% 
