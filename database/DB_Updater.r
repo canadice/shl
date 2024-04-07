@@ -29,19 +29,28 @@ teamData <-
   tbl(con, "teamInfo") %>%
   collect()
 
+teamData %>% 
+  filter(leagueID == 1, !is.na(fhmID)) %>% 
+  summarize(
+    max(franchiseID),
+    max(teamID)
+  )
+
+
 teamData <- 
   teamData %>% 
   add_case(
-    franchiseID = 111,
-    teamID = 116,
-    fhmID = 8,
-    team = "Independent Russia",
-    Inaugural.Season = 70,
-    leagueID = 2,
-    league = "IIHF",
-    abbr = "RUS",
-    primary = "#0083d6",
-    secondary = "#ffffff"
+    franchiseID = 66,
+    teamID = 77,
+    fhmID = 19,
+    team = "San Diego Tidal",
+    Inaugural.Season = 76,
+    leagueID = 1,
+    league = "SMJHL",
+    abbr = "SDT",
+    primary = "#F0661D",
+    secondary = "#25B6B3",
+    alt1 = "#0D1927"
       )
 
 
@@ -310,7 +319,7 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-for(i in 0:3){
+for(i in 2:3){
   for(j in c(75)){
     print(paste(i,j))
     
