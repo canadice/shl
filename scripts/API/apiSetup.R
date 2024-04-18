@@ -130,29 +130,12 @@ historyGoalieSeason <-
 
 print(paste("History done:", Sys.time()))
 
-# ## Reads draft position data
-# draftData <- 
-#   read_sheet(
-#     ss = "https://docs.google.com/spreadsheets/d/1i6yWbsI3MO036E_4y95xqZFolsUn3oT5Sq6Jju51CSQ/edit#gid=0",
-#     sheet = "SHL"
-#   )
-# 
-# print(paste("Draft Data done:", Sys.time()))
-
-# ## Reads Achievement Data
-# achievementData <- 
-#   read.csv(
-#     paste(raw, "csv/history_achievements.csv", sep = ""),
-#     sep = ",",
-#     dec = ".",
-#     fileEncoding = "UTF-8")
-# 
-# print(paste("Achievements done:", Sys.time()))
-
 ## Loading team information
 teamData <-
   tbl(con, "teamInfo") %>%
   collect()
+
+print(paste("Team data done:", Sys.time()))
 
 ## Loads IIHF History
 historyIIHF <- 
