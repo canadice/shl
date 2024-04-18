@@ -211,7 +211,9 @@ careerDataSERVER <- function(id){
           # lengthMenu = c(10, 25, 50, 100),
           dom = 'Bfrtip',
           bInfo = FALSE,
-          buttons = c('copy', 'csv', 'excel')#,
+          buttons = list( 
+            list(extend = 'csv',   filename =  paste("skaterCareerData", input$league, input$season, sep = "-")),
+            list(extend = 'excel', filename =  paste("skaterCareerData", input$league, input$season, sep = "-")))#,
           # ## Defines which columns the table shows by default
           # columnDefs = list(
           #   list(
@@ -261,7 +263,9 @@ careerDataSERVER <- function(id){
           # lengthMenu = c(10, 25, 50, 100),
           dom = 'Bfrtip',
           bInfo = FALSE,
-          buttons = c('copy', 'csv', 'excel')#,
+          buttons = list( 
+            list(extend = 'csv',   filename =  paste("goalieCareerData", input$league, input$season, sep = "-")),
+            list(extend = 'excel', filename =  paste("goalieCareerData", input$league, input$season, sep = "-")))#,
           # ## Defines which columns the table shows by default
           # columnDefs = list(
           #   list(
