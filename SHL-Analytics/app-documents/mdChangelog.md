@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.4.0
+
+-   Removed SVG logos for all teams to reduce loading time to around 5
+    seconds.
+-   Removed stat card visualization as the functionality was broken.
+-   Removed draft and awards stats from career data as that is now
+    present on the portal.
+-   Added career data page that can be downloaded season by season.
+-   Added page that shows current IIHF transfer limits with formatted
+    outputs.
+
 ## v2.3.0
 
 -   Scraper is now using SHL Portal API, so additional changes to tools

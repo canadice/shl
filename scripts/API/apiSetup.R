@@ -152,10 +152,7 @@ print(paste("History done:", Sys.time()))
 ## Loading team information
 teamData <-
   tbl(con, "teamInfo") %>%
-  collect() %>% 
-  addTeamLogo()
-
-print(paste("Team Information + logos done:", Sys.time()))
+  collect()
 
 ## Loads IIHF History
 historyIIHF <- 

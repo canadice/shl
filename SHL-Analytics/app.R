@@ -105,7 +105,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(sortable)
 }
 
-version <- "v2.3.0"
+version <- "v2.4.0"
 
 
 ##----------------------------------------------------------------
@@ -253,9 +253,9 @@ customTheme <-
 ##          Loading the API functions and some data sets         -
 ##----------------------------------------------------------------
 
-source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
+# source("https://raw.githubusercontent.com/canadice/shl/main/scripts/API/apiSetup.R")
 # Internal sourcing
-# source("../scripts/API/apiSetup.R")
+source("../scripts/API/apiSetup.R")
 
 fileSources <- c("app-documents")
 
@@ -384,6 +384,10 @@ ui <-
                     menuSubItem(
                         "IIHF Rankings",
                         tabName = "rankingIIHF"
+                    ),
+                    menuSubItem(
+                      "IIHF Transfer Limits",
+                      tabName = "limitsIIHF"
                     )
                 ),
                 
@@ -399,12 +403,12 @@ ui <-
                         "Player Attributes",
                         tabName = "visAttributes"
                     ),
-                    ###### Position Tracker
-                    menuSubItem(
-                        "Stat Cards",
-                        tabName = "visStatCards"
-                    ),
-                    ###### IIHF Eligibility Tracker
+                    # ###### Stat Cards
+                    # menuSubItem(
+                    #     "Stat Cards",
+                    #     tabName = "visStatCards"
+                    # ),
+                    ###### Player Similarities
                     menuSubItem(
                         "Player Similarities",
                         tabName = "visSimilarity"
@@ -425,6 +429,10 @@ ui <-
                     menuSubItem(
                         "Goalie Career",
                         tabName = "careerGoalie"
+                    ),
+                    menuSubItem(
+                      "Career Data",
+                      tabName = "careerData"
                     ),
                     menuSubItem(
                         "League Records",
@@ -536,19 +544,26 @@ ui <-
                     rankingIIHFUI(id = "rankingIIHFUI")
                 ),
                 tabItem(
+                  "limitsIIHF",
+                  titlePanel(
+                    h1("IIHF Transfer Limits", align = "center")
+                  ),
+                  limitsIIHFUI(id = "limitsIIHF")
+                ),
+                tabItem(
                     "visAttributes",
                     titlePanel(
                         h1("Visualization of Player Attributes", align = "center")
                     ),
                     radarUI(id = "radarUI")
                 ),
-                tabItem(
-                    "visStatCards",
-                    titlePanel(
-                        h1("Stat Card", align = "center")
-                    ),
-                    playerCardUI(id = "pCardUI")
-                ),
+                # tabItem(
+                #     "visStatCards",
+                #     titlePanel(
+                #         h1("Stat Card", align = "center")
+                #     ),
+                #     playerCardUI(id = "pCardUI")
+                # ),
                 tabItem(
                     "visSimilarity",
                     titlePanel(
@@ -573,6 +588,13 @@ ui <-
                         h1("Goalie Career Card", align = "center")
                     ),
                     careerGoalieUI(id = "careerGoalieUI")
+                ),
+                tabItem(
+                  "careerData",
+                  titlePanel(
+                    h1("Career Data", align = "center")
+                  ),
+                  careerDataUI(id = "careerData")
                 ),
                 tabItem(
                     "careerRecords",
@@ -649,6 +671,10 @@ server <- function(input, output, session) {
     
     iihfSERVER(id = "iihfUI") 
     
+    careerDataSERVER(id = "careerData")
+    
+    limitsIIHFSERVER(id = "limitsIIHF")
+    
     ### Only run the module once the menu is clicked to fasten start time
     observeEvent(input$tabs,{
         ## Checks which menu tab has been selected and whether the module has already been loaded
@@ -712,7 +738,7 @@ server <- function(input, output, session) {
           
           auditSERVER(id = "toolAudit")
           
-        }
+        } 
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
     
     ### Sets the url for each tab
