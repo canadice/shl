@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.1
+
+-   Added Tank Standings Tracker
+
 ## 2.4.0
 
 -   Removed SVG logos for all teams to reduce loading time to around 5

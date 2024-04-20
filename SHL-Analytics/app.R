@@ -458,9 +458,7 @@ ui <-
                 menuItem(
                   "Audit Tool", 
                   icon = icon("clipboard-check"),
-                  tabName = "toolAudit",
-                  badgeLabel = "new",
-                  badgeColor = "orange"
+                  tabName = "toolAudit"
                 ),
                 
                 menuItem(
