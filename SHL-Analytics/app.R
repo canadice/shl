@@ -38,6 +38,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(fuzzyjoin)
   require(purrr)
   require(Matrix)
+  require(data.table)
   
   
   ## Visualizations
@@ -103,10 +104,16 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   
   ## For point and click dragging
   require(sortable)
+  
+  ## For futures and promises
+  require(promises)
+  require(future)
 }
 
-version <- "v2.4.0"
+version <- "v2.4.1"
 
+## Sets up that evaluating futures is done in parallell
+plan(multisession)
 
 ##----------------------------------------------------------------
 ##                Loading fonts for visualizations               -
@@ -363,6 +370,11 @@ ui <-
                         "Position Tracker",
                         tabName = "trackerPosition"
                     ),
+                    ###### Tank Standings Tracker
+                    menuSubItem(
+                      "Tank Standings Tracker",
+                      tabName = "trackerTankStandings"
+                    ),
                     menuSubItem(
                       "Team Tracker", 
                       href = "https://portal.simulationhockey.com/teams"
@@ -537,6 +549,13 @@ ui <-
                     teamUI(id = "teamUI")
                 ),
                 tabItem(
+                  "trackerTankStandings",
+                  titlePanel(
+                    h1("Tank Standings Tracker", align = "center")
+                  ),
+                  tankStandingsUI(id = "tankStandings")
+                ),
+                tabItem(
                     "rankingIIHF",
                     titlePanel(
                         h1("IIHF Rankings", align = "center")
@@ -674,6 +693,8 @@ server <- function(input, output, session) {
     careerDataSERVER(id = "careerData")
     
     limitsIIHFSERVER(id = "limitsIIHF")
+    
+    tankStandingsServer(id = "tankStandings")
     
     ### Only run the module once the menu is clicked to fasten start time
     observeEvent(input$tabs,{
