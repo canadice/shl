@@ -25,17 +25,17 @@ tankStandingsServer <- function(id) {
               awayPoints = 
                 case_when(
                   awayScore > homeScore ~ 2,
-                  awayScore > homeScore & (overtime == 1 | shootout == 1) ~ 1,
+                  awayScore < homeScore & (overtime == 1 | shootout == 1) ~ 1,
                   TRUE ~ 0),
               homePoints = 
                 case_when(
                   awayScore < homeScore ~ 2,
-                  awayScore < homeScore & (overtime == 1 | shootout == 1) ~ 1,
+                  awayScore > homeScore & (overtime == 1 | shootout == 1) ~ 1,
                   TRUE ~ 0),
               awayROW =
-                if_else(awayPoints == 2 & !(overtime == 1 | shootout == 1), 1, 0),
+                if_else(awayPoints == 2 & !(shootout == 1), 1, 0),
               homeROW =
-                if_else(homePoints == 2 & !(overtime == 1 | shootout == 1), 1, 0)
+                if_else(homePoints == 2 & !(shootout == 1), 1, 0)
             ) 
           
           
@@ -76,6 +76,7 @@ tankStandingsServer <- function(id) {
             ungroup() %>% 
             mutate(
               maxPotPts = points + (66 - gp)*2,
+              maxROW = ROW + (66-gp),
               gDiff = gf - ga
             ) %>% 
             left_join(
@@ -91,7 +92,8 @@ tankStandingsServer <- function(id) {
             mutate(
               wcRank = case_when(divRank < 4 ~ 99, TRUE ~ frank(data.frame(-points, -ROW, -gDiff))) %>% rank(),
               playoffTeam = if_else(divRank < 4 | wcRank < 3, TRUE, FALSE),
-              eliminated = if_else(maxPotPts >= min(points[playoffTeam]), FALSE, TRUE)
+              minROW = ROW[points == min(points[playoffTeam])] %>% unique() %>% sort() %>% .[1],
+              eliminated = if_else(maxPotPts >= min(points[playoffTeam]) & maxROW >= minROW, FALSE, TRUE)
             ) %>% 
             ungroup()
           
@@ -142,7 +144,7 @@ tankStandingsServer <- function(id) {
           )
         
         
-        for(i in schedule$date){
+        for(i in schedule$date %>% unique()){
           eliminatedAt <- 
             point_calculator(
               data = schedule, 
