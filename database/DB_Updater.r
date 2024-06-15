@@ -187,8 +187,8 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-for(i in 0:3){
-  for(j in 75){
+for(i in 2:3){
+  for(j in 76){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
@@ -319,8 +319,8 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-for(i in 2:3){
-  for(j in c(75)){
+for(i in 0:1){
+  for(j in c(76)){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
