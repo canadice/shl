@@ -319,7 +319,7 @@ historyUpdate <- function(leagueId, season){
   return(data)
 }
 
-for(i in 0:1){
+for(i in 2:3){
   for(j in c(76)){
     print(paste(i,j))
     
@@ -333,7 +333,10 @@ for(i in 0:1){
   }
 }
 
-# dbExecute(con, 'UPDATE goalieHistory SET Name = "Olli O\'Koivu" WHERE Name = "Kyle Wahlgren"')
+
+
+dbExecute(con, 'UPDATE goalieHistory SET Name = "Olli O\'Koivu" WHERE Name = "Kyle Wahlgren"')
+dbExecute(con, 'UPDATE skaterHistory SET Name = "Cob O\'Corn" WHERE Name = "Cob OCorn"')
 
 # dbWriteTable(con, "goalieHistory", goalieHistory, overwrite = TRUE)
 
