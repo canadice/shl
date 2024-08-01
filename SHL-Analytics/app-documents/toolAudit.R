@@ -128,17 +128,40 @@ auditSERVER <- function(id){
         comparedf(
           forumPlayers() %>% 
             arrange(name) %>% 
+            select(
+              name,
+              abbr,
+              screening:goaltenderStamina
+            ) %>% 
             mutate(
               across(
                 where(is.numeric),
                 ~ as.integer(.x)
               ),
               id = paste(name, abbr)
-            ),
+            ) %>% 
+            rename_with(
+              ~ str_to_lower(.x) %>% 
+                str_replace_all(pattern = "x\\.|\\.", replacement = "")
+            ) %>% 
+            rename(goaliestamina = goaltenderstamina,
+                   ),
           indexPlayers() %>% 
             arrange(name) %>% 
+            select(
+              name,
+              abbr,
+              Screening:Positioning
+            ) %>% 
             mutate(
               id = paste(name, abbr)
+            ) %>% 
+            select(
+              !(c(passing, puckhandling, positioning) | contains("goalieP"))
+            ) %>% 
+            rename_with(
+              ~ str_to_lower(.x) %>% 
+                str_replace_all(pattern = "x\\.|\\.", replacement = "")
             ),
           by = c("id")
         ) %>% 

@@ -246,7 +246,7 @@ tankStandingsServer <- function(id) {
                 ) %>%
                 rename_with(
                   str_to_upper
-                )
+                ) 
               }, 
             onRejected = NULL)
       }, 
