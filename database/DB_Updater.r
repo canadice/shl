@@ -46,6 +46,8 @@ teamData <-
     alt1 = "#D4780D"
       )
 
+teamData$fhmID[teamData$team == "Regina Elk"] <- NA
+
 
 dbWriteTable(con, "teamInfo", teamData, overwrite = TRUE)
 
