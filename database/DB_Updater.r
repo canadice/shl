@@ -29,28 +29,21 @@ teamData <-
   tbl(con, "teamInfo") %>%
   collect()
 
-teamData %>% 
-  filter(leagueID == 1, !is.na(fhmID)) %>% 
-  summarize(
-    max(franchiseID),
-    max(teamID)
-  )
-
-
 teamData <- 
   teamData %>% 
+  unique() %>% 
   add_case(
-    franchiseID = 66,
-    teamID = 77,
-    fhmID = 19,
-    team = "San Diego Tidal",
-    Inaugural.Season = 76,
+    franchiseID = 64,
+    teamID = 78,
+    fhmID = 16,
+    team = "Thunder Bay Walleye",
+    Inaugural.Season = 78,
     leagueID = 1,
     league = "SMJHL",
-    abbr = "SDT",
-    primary = "#F0661D",
-    secondary = "#25B6B3",
-    alt1 = "#0D1927"
+    abbr = "TBW",
+    primary = "#2F0038",
+    secondary = "#FBBC19",
+    alt1 = "#D4780D"
       )
 
 
