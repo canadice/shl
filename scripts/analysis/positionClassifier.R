@@ -49,82 +49,84 @@ data <-
   ###  Import the player statistics data set
   
   read.csv(
-    "csv/history_skaters.csv", 
+    "csv/history_skaters_j.csv", 
     sep = ",", 
     header = TRUE
   ) %>% 
   
   mutate(
-    FHMID = as.numeric(FHMID)
+    PlayerId = as.numeric(PlayerId)
   ) %>%   
   
   ### Filter over the SHL as the Junior and IIHF might be more fluid in positions
   ### Also filters the player ID 1000028 which probably is a CPU player as they have 
   ### unreasonable high games played (300+ in one season)
-  
-  filter(
-    LeagueId == 1,
-    FHMID != 1000028
-  ) %>% 
+  # 
+  # filter(
+  #   LeagueId == 1,
+  #   FHMID != 1000028
+  # ) %>% 
   
   ###  Aggregating over player ID and season
   
   group_by(
-    FHMID,
+    PlayerId,
     ## Group by season because of varying positions during a career
-    Season
+    SeasonID
   ) %>% 
   
   summarize(
     across(
-      GamesPlayed:FaceoffWins, 
+      GP:FOW, 
       sum
-    )
+    ),
+    pos = unique(pos)
   ) %>% 
   
   ### Creating a relative statistic per game
   
   mutate(
     across(
-      Goals:FaceoffWins,
-      function(x) x/GamesPlayed
+      G:FOW,
+      function(x) x/GP
     )
   ) %>% 
+  ungroup() %>% 
   
-  ###  Importing and joining the true positions                       
+  # ###  Importing and joining the true positions                       
+  # 
+  # left_join(
+  #   read.csv(
+  #     "csv/history_true_position.csv",
+  #     sep = ",",
+  #     header = TRUE
+  #     ),
+  #   by = c("FHMID" = "FHMIDS")
+  # ) %>% 
+  # 
+  # rename(
+  #   pos = Posistion.Real
+  # ) %>% 
   
-  left_join(
-    read.csv(
-      "csv/history_true_position.csv",
-      sep = ",",
-      header = TRUE
-      ),
-    by = c("FHMID" = "FHMIDS")
-  ) %>% 
-  
-  rename(
-    truePosition = Posistion.Real
-  ) %>% 
-  
-  ### Filtering out the seasons where FHM was used, and the data available has changed
-  
-  filter(
-    Season < 53
-  ) %>% 
-  
+  # ### Filtering out the seasons where FHM was used, and the data available has changed
+  # 
+  # filter(
+  #   Season < 53
+  # ) %>% 
+  # 
   ### Changing some true labels because of swapped positions during their career
+  # 
+  # mutate(
+  #   pos = 
+  #     case_when(
+  #       Name == "Anastasia O'Koivu" & Season < 52 ~ "D",
+  #       Name == "GOD McZehrl" & Season < 50 ~ "D",
+  #       TRUE ~ pos
+  #     )
+  # ) %>% 
   
-  mutate(
-    truePosition = 
-      case_when(
-        Name == "Anastasia O'Koivu" & Season < 52 ~ "D",
-        Name == "GOD McZehrl" & Season < 50 ~ "D",
-        TRUE ~ truePosition
-      )
-  ) %>% 
-  
-  mutate(
-    truePosition = truePosition %>% factor()
+  dplyr::mutate(
+    pos = pos %>% factor()
   )
 
 ##-------------------------------------------------------------------
@@ -134,17 +136,13 @@ data <-
 trainData <- 
   data %>% 
   filter(
-    !is.na(truePosition)
+    !pos == ""
   )
 
 testData <-
   data %>% 
   filter(
-    is.na(truePosition),
-    ## Adds on a filter to remove the observations that have NA values
-    ## These come from season 1-4 where some data extraction was done via box scores
-    !is.na(PenaltyMajors),
-    !is.na(FaceoffWins)
+    pos == ""
   )
 
 ##----------------------------------------------------------------
@@ -154,9 +152,9 @@ testData <-
 position_formula <- 
   as.formula(
     paste(
-      "truePosition",
+      "pos",
       paste(
-        colnames(data)[3:37],
+        colnames(data)[3:40],
         collapse = " + "
       ),
       sep = " ~ "
@@ -181,7 +179,15 @@ model <-
       )
   )
 
-rpart.plot(model)
+rpart.plot(model, cex = 0.5)
+
+table(trainData$pos, predict(model, type = "class"))
+
+testData$predictedPos <- predict(model, newdata = testData, type = "class")
+
+testData %>% 
+  select(PlayerId, SeasonID, predictedPos) %>% 
+  write.csv(row.names = FALSE, file = "Predicted SMJHL positions.csv")
 
 model$cptable
 
@@ -191,8 +197,8 @@ model$cptable
 
 ### Converts the y to numeric
 
-trainData$truePosition <- 
-  trainData$truePosition %>% 
+trainData$pos <- 
+  trainData$pos %>% 
   as.numeric() %>% 
   as.character()
 
@@ -200,12 +206,12 @@ trainData$truePosition <-
 
 xTrain <- 
   as.matrix(
-    trainData[, 3:37]
+    trainData[, 3:40]
   ) 
 
 xTest <- 
   as.matrix(
-    testData[,3:37]
+    testData[,3:40]
   )
   
 ### Normalizes all input variables for training and test sets
@@ -229,7 +235,7 @@ xTestScaled <-
 
 yTrain <-
   to_categorical(
-    trainData[, colnames(trainData) == "truePosition"] %>% as.matrix(),
+    trainData[, colnames(trainData) == "pos"] %>% as.matrix(),
     num_classes = NULL
   )[,2:3]
 

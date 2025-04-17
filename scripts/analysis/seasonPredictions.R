@@ -6,7 +6,7 @@ require(stringr)
 
 seasonPrediction <- 
   googlesheets4::read_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1BFHlZL4DAbgmqo6v7aDcEFqkgsUowDqahdTgigddO7M/edit#gid=1001905492"
+    ss = "https://docs.google.com/spreadsheets/d/18qd7gnJYqRSxYQz2rDphOs4tc1b0CM5-uujqQ9QCBB0/edit?usp=sharing"
   )
 
 visPredictions <- function(data){
@@ -19,7 +19,7 @@ visPredictions <- function(data){
     theme_bw() + 
     scale_y_continuous(
       expand = expansion(add = 1),
-      breaks = seq(0, 150, 50)
+      breaks = seq(0, 300, 100)
     ) + 
     theme(
       panel.spacing.y = unit(1, "lines"),
@@ -42,7 +42,8 @@ visPredictions <- function(data){
   print(p)
 }
 
-seasonPrediction %>% 
+pac <- 
+  seasonPrediction %>% 
   select(
     contains("Pacific")
   ) %>% 
@@ -56,7 +57,8 @@ seasonPrediction %>%
   visPredictions()
 
 
-seasonPrediction %>% 
+cen <- 
+  seasonPrediction %>% 
   select(
     contains("Central")
   ) %>% 
@@ -69,7 +71,8 @@ seasonPrediction %>%
   ) %>% 
   visPredictions()
 
-seasonPrediction %>% 
+ne <- 
+  seasonPrediction %>% 
   select(
     contains("North East")
   ) %>% 
@@ -82,7 +85,8 @@ seasonPrediction %>%
   ) %>% 
   visPredictions()
 
-seasonPrediction %>% 
+atl <- 
+  seasonPrediction %>% 
   select(
     contains("Atlantic")
   ) %>% 
@@ -95,3 +99,4 @@ seasonPrediction %>%
   ) %>% 
   visPredictions()
 
+cowplot::plot_grid(pac, cen, ne, atl, ncol = 2)

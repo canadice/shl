@@ -15,7 +15,7 @@ source("scripts/API/apiSetup.R")
   theme_set(theme)
 }
 
-url <- "https://simulationhockey.com/showthread.php?tid=120950"
+url <- "https://simulationhockey.com/showthread.php?tid=138043"
 
 mockDrafts <- 
   url %>% 
@@ -23,7 +23,7 @@ mockDrafts <-
     .,
     paste(
       .,
-      paste("&page=", 2:11, sep = ""),
+      paste("&page=", 2:25, sep = ""),
       sep = ""
     )
   )
@@ -31,11 +31,11 @@ mockDrafts <-
 draftees <- 
   forumData %>% 
   filter(
-    CLASS == "S63"
+    CLASS == "S79"
   )
 
 combiner <- function(x){
-  cleanData <- character(20)
+  cleanData <- character(32)
   
   j <- 1
   
@@ -56,11 +56,12 @@ combiner <- function(x){
     }
   }
   
-  return(cleanData[1:20])
+  return(cleanData[1:32])
 }
 
 parser <- function(x){
-  x %>% 
+  data <- 
+    x %>% 
     rvest::html_nodes("div#two") %>% 
     rvest::html_nodes(".post_body") %>% 
     rvest::html_text() %>% 
@@ -72,29 +73,35 @@ parser <- function(x){
             string = x,
             pattern = 
               paste(
-                paste0(1:24, "\\.", collapse = "|"), 
-                paste0(draftees$NAME, collapse = "|"),
-                paste0(draftees$clean_name, collapse = "|"),
+                paste0(1:32, "\\.", collapse = "|"), 
+                paste0(draftees$NAME %>% str_replace_all(pattern = "\\|", replacement = "\\\\|"), collapse = "|"),
+                paste0(draftees$CLEAN_NAME, collapse = "|"),
                 sep = "|"
               ),
             simplify = TRUE
-          )
+          ) %>% 
+            stri_remove_empty_na()
         }
-    ) %>% 
-    .[
-      lapply(
-        X = .,
-        FUN = function(x){
-          ncol(x) > 10
-        }
-      ) %>% 
-        unlist()
-    ] %>% 
+    )
+  
+  containMocks <- lapply(
+    X = data,
+    FUN = function(x){
+      length(x) > 10
+    }
+  ) %>% 
+    unlist() %>% which()
+  
+  data[containMocks] %>% 
     lapply(
       X = .,
       FUN = combiner
-    ) %>% 
-    do.call(what = rbind, args = .)
+    ) %>%
+    do.call(what = rbind, args = .) %>% 
+    as_tibble() %>% 
+    mutate(
+      user = x %>% html_elements(".profile-username a") %>% html_text() %>% .[containMocks]
+    )
 }
 
 data <- 
@@ -107,9 +114,10 @@ data <-
     FUN = parser
   ) %>% 
   do.call(what = rbind, args = .) %>% 
-  as.data.frame()
+  as.data.frame() %>% 
+  unique()
 
-colnames(data) <- 1:20
+colnames(data) <- 1:32
   
 tables <- 
   apply(
@@ -123,52 +131,101 @@ pickFreq <-
     Pick = rep(names(tables), sapply(tables, nrow)) %>% as.numeric(),
     Obs = do.call(rbind,tables)
   ) %>% 
-  rename(
+  dplyr::rename(
     Name = Obs.x
   ) %>% 
   mutate(
     Name = if_else(Name == "", "EMPTY", Name %>% as.character())
   )
 
+popular <- 
+  pickFreq %>% 
+  filter(!( Pick %>% is.na())) %>% 
+  group_by(Pick) %>% 
+  filter(Obs.Freq == max(Obs.Freq))
 
-ggplot(pickFreq) + 
+paste(popular$Pick, ". ", popular$Name, " (", (popular$Obs.Freq*100) %>% round(1), "%)", sep = "")  %>% 
+  paste(collapse = "\n") %>% cat()
+
+
+ggplot(pickFreq %>% filter(! (Pick %>% is.na()))) + 
   aes(
     x = Name,
     y = Obs.Freq) + 
   geom_bar(stat = "identity", position = "stack") + 
-  facet_wrap(vars(Pick), scales = "free_x") + 
+  facet_wrap(vars(Pick), scales = "free_x", ncol = 8) + 
   labs(x = "Player", y = "Top 3\nPlayers\n\nPercentage\nof\nMocks") +
   theme(axis.text.x = element_text(angle = 20, hjust = 0.8)) + 
   scale_y_continuous(labels = scales::percent)
-  
 
-myplots <- lapply(split(pickFreq,pickFreq$Pick), function(x){
-  x$Name <- factor(x$Name, levels=x$Name[order(-x$Obs.Freq,decreasing=F)])
-  
-  p <- ggplot(x, aes(x = Name, y = Obs.Freq, width=0.75)) +
-    geom_bar(stat = "identity") +
-    labs(x = "", y = "") + 
-    scale_y_continuous(labels = scales::percent, limits = c(0, 0.75)) + 
-    theme(
-      axis.text.x = element_text(angle = 20, hjust = 0.8),
-      plot.margin = margin(0.25, 0.5, -3, 0, "cm")
-    )
-})
-
-library(cowplot)
-
-do.call(
-  plot_grid,
-  c(
-    myplots,
-    align = "vh",
-    ncol = 5,
-    rel_heights = 0.25
-  )
-) + 
-  draw_plot_label(
-    label = 1:20
-  )
+# 
+# top10 <- googlesheets4::read_sheet(
+#   ss = "https://docs.google.com/spreadsheets/d/1PW1KCjvd6jVW3fu3rbPu-xWCg4MJjYPX-iLqtTLm6gs/edit#gid=1571980039"
+# ) %>% 
+#   select(
+#     contains("Pick a player")
+#   )
+# 
+# colnames(top10) <- 1:10
+# 
+# tables <- 
+#   apply(
+#     X = top10, 
+#     MARGIN = 2, 
+#     FUN = function(x) {table(x) %>% prop.table() %>% as.data.frame() %>% arrange(Freq) %>% slice_tail(n = 3)}, 
+#     simplify = TRUE)
+# 
+# pickFreq <- 
+#   data.frame(
+#     Pick = rep(names(tables), sapply(tables, nrow)) %>% as.numeric(),
+#     Obs = do.call(rbind,tables)
+#   ) %>% 
+#   dplyr::rename(
+#     Name = Obs.x
+#   ) %>% 
+#   mutate(
+#     Name = if_else(Name == "", "EMPTY", Name %>% as.character())
+#   )
+# 
+# 
+# ggplot(pickFreq) + 
+#   aes(
+#     x = Name,
+#     y = Obs.Freq) + 
+#   geom_bar(stat = "identity", position = "stack") + 
+#   facet_wrap(vars(Pick), scales = "free_x") + 
+#   labs(x = "Player", y = "Top 3\nPlayers\n\nPercentage\nof\nMocks") +
+#   theme(axis.text.x = element_text(angle = 20, hjust = 0.8)) + 
+#   scale_y_continuous(labels = scales::percent)
+# #   
+# 
+# myplots <- lapply(split(pickFreq,pickFreq$Pick), function(x){
+#   x$Name <- factor(x$Name, levels=x$Name[order(-x$Obs.Freq,decreasing=F)])
+#   
+#   p <- ggplot(x, aes(x = Name, y = Obs.Freq, width=0.75)) +
+#     geom_bar(stat = "identity") +
+#     labs(x = "", y = "") + 
+#     scale_y_continuous(labels = scales::percent, limits = c(0, 0.75)) + 
+#     theme(
+#       axis.text.x = element_text(angle = 20, hjust = 0.8),
+#       plot.margin = margin(0.25, 0.5, -3, 0, "cm")
+#     )
+# })
+# 
+# library(cowplot)
+# 
+# do.call(
+#   plot_grid,
+#   c(
+#     myplots,
+#     align = "vh",
+#     ncol = 5,
+#     rel_heights = 0.25
+#   )
+# ) + 
+#   draw_plot_label(
+#     label = 1:20
+#   )
 
 
 

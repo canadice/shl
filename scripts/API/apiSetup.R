@@ -133,7 +133,8 @@ print(paste("History done:", Sys.time()))
 ## Loading team information
 teamData <-
   tbl(con, "teamInfo") %>%
-  collect()
+  collect() %>% 
+  unique()
 
 print(paste("Team data done:", Sys.time()))
 
@@ -154,91 +155,6 @@ print(paste("IIHF Ranking History done:", Sys.time()))
 ############################################################################
 ############################################################################
 
-## Reads attribute values from SHL and SMJHL Index
-indexAttributes <- 
-  playerLoader(0) %>% 
-  do.call(what = rbind.fill, args = .) %>% 
-  rbind(
-    playerLoader(1) %>% 
-      do.call(what = rbind.fill, args = .)
-  ) %>% 
-  mutate(
-    name = str_trim(name),
-    position = 
-      factor(
-        position,
-        levels = 
-          c(
-            "C", "LW", "RW", "LD", "RD", "G"
-          )
-      )
-  ) %>% 
-  relocate(
-    usedTPE,
-    .after = position
-  ) %>% 
-  relocate(
-    team,
-    .before = name
-  ) %>% 
-  select(
-    -id, -league, -season
-  ) %>% 
-  arrange(
-    team, position, name
-  ) %>% 
-  dplyr::mutate(
-    Passing = case_when(
-      is.na(passing) ~ goaliePassing,
-      TRUE ~ passing
-    ),
-    Puckhandling = case_when(
-      is.na(puckhandling) ~ goaliePuckhandling,
-      TRUE ~ puckhandling
-    ),
-    Positioning = case_when(
-      is.na(positioning) ~ goaliePositioning,
-      TRUE ~ positioning
-    )
-  ) %>% 
-  dplyr::rename(
-    Rebound = rebound,
-    Recovery = recovery,
-    Low.Shots = lowShots,
-    Reflexes = reflexes,
-    Skating = skating,
-    X.Aggression = aggression,
-    Mental.Toughness = mentalToughness,
-    X.Determination = determination,
-    X.Team.Player = teamPlayer,
-    X.Leadership = leadership,
-    Goalie.Stamina = goalieStamina,
-    X.Professionalism = professionalism,
-    Aggression = aggression,
-    Bravery = bravery,
-    X.Temperament = temperament,
-    Poke.Check = pokeCheck,
-    Blocker = blocker,
-    Glove = glove,
-    Screening = screening,
-    Getting.Open = gettingOpen,
-    Shooting.Accuracy = shootingAccuracy,
-    Shooting.Range = shootingRange,
-    Offensive.Read = offensiveRead,
-    Checking = checking,
-    Hitting = hitting,
-    Stickchecking = stickchecking,
-    Shot.Blocking = shotBlocking,
-    Faceoffs = faceoffs,
-    Defensive.Read = defensiveRead,
-    Acceleration = acceleration,
-    Agility = agility,
-    Balance = balance,
-    Speed = speed,
-    Stamina = stamina,
-    Strength = strength,
-    Fighting = fighting
-  )
 
 
 print(paste("Total loading time: ", Sys.time() - start))
