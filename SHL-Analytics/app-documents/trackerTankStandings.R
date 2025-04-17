@@ -93,7 +93,11 @@ tankStandingsServer <- function(id) {
               wcRank = case_when(divRank < 4 ~ 99, TRUE ~ frank(data.frame(-points, -ROW, -gDiff))) %>% rank(),
               playoffTeam = if_else(divRank < 4 | wcRank < 3, TRUE, FALSE),
               minROW = ROW[points == min(points[playoffTeam]) & playoffTeam == TRUE] %>% unique() %>% sort() %>% .[1],
-              eliminated = if_else(maxPotPts <= min(points[playoffTeam]) & maxROW < minROW, TRUE, FALSE)
+              eliminated = if_else(
+                (maxPotPts < min(points[playoffTeam])) | 
+                  (maxPotPts == min(points[playoffTeam]) & maxROW < minROW), 
+                TRUE, 
+                FALSE)
             ) %>% 
             ungroup()
           
