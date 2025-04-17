@@ -250,7 +250,8 @@ rankingIIHFSERVER <- function(id){
             ## Fixes to allow for Austria's points to move to France
             Team = if_else(Team == "Team Austria", "Team France", Team),
             ## Fixes to allow for Russia's points to move to Independent Russia
-            Team = if_else(Team == "Team Russia", "Independent Russia", Team)
+            Team = if_else(Team == "Team Russia", "Independent Russia", Team),
+            Team = if_else(Team == "Independent Russia", "Team Quebec", Team)
           )
         
         medalRound <- 
@@ -305,7 +306,8 @@ rankingIIHFSERVER <- function(id){
             ## Fixes to allow for Austria's points to move to France
             Team = if_else(Team == "Team Austria", "Team France", Team),
             ## Fixes to allow for Russia's points to move to Independent Russia
-            Team = if_else(Team == "Team Russia", "Independent Russia", Team)
+            Team = if_else(Team == "Team Russia", "Independent Russia", Team),
+            Team = if_else(Team == "Independent Russia", "Team Quebec", Team)
           )
         
         standings <- 
