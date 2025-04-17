@@ -90,6 +90,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   ## Loading Shiny packages
   require(shiny)
   require(DT)
+  require(reactable)
   require(knitr)
   require(ggmap)
   require(osmdata)
