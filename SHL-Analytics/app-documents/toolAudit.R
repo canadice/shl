@@ -31,12 +31,8 @@ auditUI <- function(id){
         width = NULL,
         tabPanel(
           "Discrepancies",
-          uiOutput(
-            ns("count")
-          ),
-          DTOutput(
-            ns("comparison")
-          )
+          uiOutput(ns("count")),
+          reactableOutput(ns("comparison"))
         ),
         tabPanel(
           "Missing players",
@@ -47,17 +43,18 @@ auditUI <- function(id){
           column(
             width = 6,
             h4("Players only found on the Forum"),
-            DTOutput(
-              ns("forumMissing")
-            )
+            reactableOutput(ns("forumMissing"))
           ),
           column(
             width = 6,
             h4("Players only found in the Index"),
-            DTOutput(
-              ns("indexMissing")
-            )
+            reactableOutput(ns("indexMissing"))
           )
+        ),
+        tabPanel(
+          "TPE Checks",
+          p("This table shows players that in the file have exceeded the SMJHL cap or have applied more TPE than they have earned."),
+          reactableOutput(ns("tpeChecks"))
         )
       ) %>% 
         column(
@@ -74,96 +71,83 @@ auditSERVER <- function(id){
   moduleServer(
     id,
     function(input, output, session){
-
       
-      forumPlayers <- reactive({
-        forumData %>% 
-          filter(
-            leagueID == input$league
-          ) %>% 
+      portalBuilds <- reactive({
+        readAPI("https://portal.simulationhockey.com/api/v1/player/snapshot") |> 
           mutate(
-            name = 
-              NAME %>% 
-              tolower %>% 
-              stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-              str_remove_all(pattern = "[[:punct:]]")
+            currentLeague = if_else(currentLeague == "SMJHL", 1, 0)
+          ) |> 
+          filter(
+            currentLeague == input$league
           )
       })
-        
-      indexPlayers <- reactive({
-        indexAttributes %>% 
-          filter(
-            team %in% 
-              (teamInfo %>% 
-                 filter(
-                   leagueID == input$league
-                 ) %>% 
-                 select(
-                   abbr
-                 ) %>% 
-                 unlist()
+      
+      indexAttributes <- reactive({
+        playerLoader(input$league) %>% 
+          do.call(what = rbind.fill, args = .) |>  
+          mutate(
+            position = 
+              factor(
+                position,
+                levels = 
+                  c(
+                    "C", "LW", "RW", "LD", "RD", "G"
+                  )
               )
           ) %>% 
-          mutate(
-            name = 
-              name %>% 
-              tolower %>% 
-              stringi::stri_trans_general(id = "Latin-ASCII") %>% 
-              str_remove_all(pattern = "[[:punct:]]"),
-            abbr = team
+          relocate(
+            usedTPE,
+            .after = position
           ) %>% 
-          select(-team)
+          relocate(
+            team,
+            .before = name
+          ) %>% 
+          select(
+            -league, -season
+          ) %>% 
+          arrange(
+            team, position, name
+          ) |> 
+          dplyr::mutate(
+            Passing = case_when(
+              is.na(passing) ~ goaliePassing,
+              TRUE ~ passing
+            ),
+            Puckhandling = case_when(
+              is.na(puckhandling) ~ goaliePuckhandling,
+              TRUE ~ puckhandling
+            ),
+            Positioning = case_when(
+              is.na(positioning) ~ goaliePositioning,
+              TRUE ~ positioning
+            )
+          ) |> 
+          select(!c(goaliePassing, goaliePositioning, goaliePuckhandling)) |> 
+          rename(goaltenderStamina = goalieStamina)
       })
-        
       
       forumMissing <- reactive({
-        forumPlayers()$name[!((forumPlayers()$name) %in% (indexPlayers()$name))] %>% sort()
+        portalBuilds()$name[!((portalBuilds()$pid) %in% (indexAttributes()$id))] %>% sort()
       })
         
       indexMissing <- reactive({
-        indexPlayers()$name[!((indexPlayers()$name) %in% (forumPlayers()$name))] %>% sort()
+        indexAttributes()$name[!((indexAttributes()$id) %in% (portalBuilds()$pid))] %>% sort()
       })
       
       discrepancy <- reactive({
         comparedf(
-          forumPlayers() %>% 
-            arrange(name) %>% 
-            select(
-              name,
-              abbr,
-              screening:goaltenderStamina
-            ) %>% 
-            mutate(
-              across(
-                where(is.numeric),
-                ~ as.integer(.x)
-              ),
-              id = paste(name, abbr)
-            ) %>% 
-            rename_with(
-              ~ str_to_lower(.x) %>% 
-                str_replace_all(pattern = "x\\.|\\.", replacement = "")
-            ) %>% 
-            rename(goaliestamina = goaltenderstamina,
-                   ),
-          indexPlayers() %>% 
-            arrange(name) %>% 
-            select(
-              name,
-              abbr,
-              Screening:Positioning
-            ) %>% 
-            mutate(
-              id = paste(name, abbr)
-            ) %>% 
-            select(
-              !(c(passing, puckhandling, positioning) | contains("goalieP"))
-            ) %>% 
-            rename_with(
-              ~ str_to_lower(.x) %>% 
-                str_replace_all(pattern = "x\\.|\\.", replacement = "")
-            ),
-          by = c("id")
+          indexAttributes() |> 
+            select(id, screening:professionalism, blocker:goaltenderStamina) |> 
+            mutate(id = as.numeric(id)) |> 
+            arrange(id),
+          cbind(
+            pid = portalBuilds()$pid,
+            portalBuilds()$attributes
+            ) |> 
+            arrange(pid),
+          by.y = "pid",
+          by.x = "id"
         ) %>% 
           summary() %>% 
           .$diffs.table %>% 
@@ -171,181 +155,61 @@ auditSERVER <- function(id){
             !(values.x %>% is.na() | values.y %>% is.na()) 
           ) %>% 
           rename_with(
-            ~ str_replace(.x, pattern = "\\.x", replacement = " from Player Page")
+            ~ str_replace(.x, pattern = "\\.x", replacement = " from Index/FHM")
           ) %>% 
           rename_with(
-            ~ str_replace(.x, pattern = "\\.y", replacement = " from Index")
+            ~ str_replace(.x, pattern = "\\.y", replacement = " from Portal")
           ) %>% 
-          select(
-            !contains("row") &
-              !`var from Index`
-          ) %>% 
-          rename(
-            Attribute = `var from Player Page`
-          ) %>%
+          select(!contains("row") & !`var from Index/FHM`) %>% 
+          rename(Attribute = `var from Portal`) %>%
+          mutate(id = as.numeric(id)) |> 
           left_join(
-            forumPlayers() %>%
+            portalBuilds() %>%
               select(
+                pid,
                 name,
-                abbr,
-                team,
-                leagueID
-              ) %>% 
-              mutate(
-                id = paste(name, abbr)
+                currentTeamID
               ),
-            by = c("id")
+            by = c("id" = "pid")
           ) %>%
+          select(!id) %>%
+          arrange(currentTeamID, name)
+      })
+      
+      output$forumMissing <- renderReactable({
+        data.frame(
+          forum = forumMissing()
+          )|> 
+          reactable()
+      }) 
+        
+      output$indexMissing <- renderReactable({
+        data.frame(
+          index = indexMissing()
+          )|> 
+          reactable()
+      }) 
+        
+      output$comparison <- renderReactable({
+        discrepancy() |> 
+          reactable()
+      }) 
+      
+      output$tpeChecks <- renderReactable({
+        indexAttributes() |> 
+          filter(
+            if(input$league == 1){
+              appliedTPE > 425 | appliedTPE > usedTPE
+            } else {
+              appliedTPE > usedTPE
+            }
+          ) |> 
           select(
-            -abbr,
-            -id
-          ) %>% 
-          rename(
-            Name = name,
-            Team = team,
-            League = leagueID
-          ) %>%
-          arrange(League, Team, Name)
+            team, name, usedTPE, appliedTPE
+          ) |> 
+          arrange(team, name) |> 
+          reactable()
       })
-      
-      matches <- reactive({
-        stringdistmatrix(
-          forumMissing(),
-          indexMissing()
-        )
-      })
-        
-      output$count <- renderUI({
-        p("The number of errors found are:", discrepancy() %>% nrow(), ".", 
-          "The number of errors with differences larger than 1 are:", 
-          discrepancy() %>% 
-            mutate(
-              difference = unlist(`values from Player Page`) - unlist(`values from Index`)
-            ) %>% 
-            summarize(
-              n = sum(abs(difference) > 1)
-            ) %>% 
-            select(n) %>% 
-            unlist() %>% 
-            unname(),
-          ".", "Anything above 10 discrepancies of differences larger than 1 indicates erorrs other than scouting errors."
-          )
-      })
-      
-      output$forumMissing <- renderDT({
-        data.frame(
-          forum = forumMissing(),
-          index = 
-            indexMissing()[
-              apply(
-                matches(), 
-                MARGIN = 1, 
-                FUN = function(x){
-                  (x == min(x)) %>% which() %>% min()
-                }
-              )
-            ],
-          distance = 
-            apply(
-              matches(), 
-              MARGIN = 1, 
-              FUN = function(x){
-                x[(x == min(x)) %>% which() %>% min()]
-              }
-            )
-        ) %>% 
-          arrange(distance) %>% 
-          select(-distance)
-      },
-      rownames = FALSE,
-      escape = FALSE,
-      options = 
-        list(
-          orderClasses = TRUE, 
-          ## Sets a scroller for the rows
-          scrollX = '800px',
-          scrollY = '650px',
-          ## Sets size of rows shown
-          scrollCollapse = TRUE,
-          ## Sets width of columns
-          autoWidth = FALSE,
-          ## Removes pages in the table
-          paging = FALSE,
-          dom = 't'
-        )
-      ) 
-        
-      output$indexMissing <- renderDT({
-        data.frame(
-          index = indexMissing(),
-          forum = 
-            forumMissing()[
-              apply(
-                matches(), 
-                MARGIN = 2, 
-                FUN = function(x){
-                  (x == min(x)) %>% which() %>% min()
-                }
-              )
-            ],
-          distance = 
-            apply(
-              matches(), 
-              MARGIN = 2, 
-              FUN = function(x){
-                x[(x == min(x)) %>% which() %>% min()]
-              }
-            )
-        ) %>% 
-          arrange(distance) %>% 
-          select(-distance)
-      },
-      rownames = FALSE,
-      escape = FALSE,
-      options = 
-        list(
-          orderClasses = TRUE, 
-          ## Sets a scroller for the rows
-          scrollX = '800px',
-          scrollY = '650px',
-          ## Sets size of rows shown
-          scrollCollapse = TRUE,
-          ## Sets width of columns
-          autoWidth = FALSE,
-          ## Removes pages in the table
-          paging = FALSE,
-          dom = 't'
-        )
-      ) 
-      
-      
-        
-      output$comparison <- renderDT({
-        discrepancy()
-      },
-      escape = FALSE, 
-      extensions = c('Buttons', 'Scroller'),
-      fillContainer = TRUE,
-      rownames = FALSE,
-      options = 
-        list(
-          orderClasses = TRUE, 
-          ## Sets a scroller for the rows
-          scrollX = '800px',
-          scrollY = '650px',
-          ## Sets size of rows shown
-          scrollCollapse = TRUE,
-          ## Sets width of columns
-          autoWidth = FALSE,
-          ## Removes pages in the table
-          paging = FALSE,
-          ## Adds scrollable horizontal
-          # pageLength = 20,
-          # lengthMenu = c(10, 25, 50, 100),
-          dom = 'Bfrtip',
-          # bInfo = FALSE,
-          buttons = c('copy', 'csv', 'excel')
-        )) 
     }
   )
 }
