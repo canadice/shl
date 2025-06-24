@@ -31,20 +31,20 @@ teamData <-
 
 teamData <- 
   teamData %>% 
-  unique() #%>% 
-  # add_case(
-  #   franchiseID = 64,
-  #   teamID = 78,
-  #   fhmID = 16,
-  #   team = "Thunder Bay Walleye",
-  #   Inaugural.Season = 78,
-  #   leagueID = 1,
-  #   league = "SMJHL",
-  #   abbr = "TBW",
-  #   primary = "#2F0038",
-  #   secondary = "#FBBC19",
-  #   alt1 = "#D4780D"
-  #     )
+  unique() %>%
+  add_case(
+    franchiseID = 23,
+    teamID = 35,
+    fhmID = 16,
+    team = "Thunder Bay Walleye",
+    Inaugural.Season = 78,
+    leagueID = 1,
+    league = "SMJHL",
+    abbr = "TBW",
+    primary = "#2F0038",
+    secondary = "#FBBC19",
+    alt1 = "#D4780D"
+      )
 
 teamData$fhmID[teamData$team == "Regina Elk"] <- NA
 
@@ -183,7 +183,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 81){
+  for(j in 82){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
@@ -315,7 +315,7 @@ historyUpdate <- function(leagueId, season){
 }
 
 for(i in 0:3){
-  for(j in 81){
+  for(j in 82){
     print(paste(i,j))
     
     temp <- historyUpdate(leagueId = i, season = j)
