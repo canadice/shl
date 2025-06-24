@@ -16,49 +16,13 @@ leagueScheduleUI <- function(id){
   ns <- NS(id)
   
   tagList(
-    tags$head(
-      tags$style(HTML(".bucket-list-container {min-height: 350px;}"))
-    ),
     fluidRow(
       column(
-        tags$b("Division Setup"),
         width = 12,
-        bucket_list(
-          header = "Drag the teams to the desired divisions.",
-          group_name = ns("bucket_list_group"),
-          orientation = "horizontal",
-          add_rank_list(
-            text = "Division 1",
-            labels = NULL,
-            input_id = ns("division1")
-          ),
-          add_rank_list(
-            text = "Division 2",
-            labels = NULL,
-            input_id = ns("division2")
-          ),
-          add_rank_list(
-            text = "Division 3",
-            labels = NULL,
-            input_id = ns("division3")
-          ),
-          add_rank_list(
-            text = "Division 4",
-            labels = NULL,
-            input_id = ns("division4")
-          ),
-          add_rank_list(
-            text = "Drag from here",
-            labels = 
-              teamData %>% 
-              filter(league == "SMJHL", !is.na(fhmID)) %>% 
-              select(
-                team
-              ) %>% 
-              c() %>% 
-              nth(1),
-            input_id = ns("Teams")
-          )
+        radioButtons(
+          inputId = ns("league"),
+          label = "Select the league",
+          choices = c("SHL" = 0, "SMJHL" = 1)
         )
       )
     ),
@@ -117,15 +81,15 @@ leagueScheduleUI <- function(id){
           )
         )
       )
-      # ),
-      # br(),
-      # fluidRow(
-      #   column(
-      #     width = 12,
-      #     verbatimTextOutput(
-      #       ns("Results")
-      #     )
-      #   )
+      ),
+      br(),
+      fluidRow(
+        column(
+          width = 12,
+          verbatimTextOutput(
+            ns("Results")
+          )
+        )
     )
   )
 }
@@ -145,458 +109,343 @@ leagueScheduleSERVER <- function(id){
           dbFile
         )
       
+      teams <- reactive({
+        data <- readAPI("http://index.simulationhockey.com/api/v1/teams", query = list(league = input$league))
+        
+        if (input$league == 999) {
+          data |> select(team = name, conference, division)
+        } else {
+          data |> select(team = name, conference)
+        }
+      })
+      
       values <- reactiveValues(
-        divisions = 4,
+        divisions = 0,
         conferences = 2,
         nGames = 66
       )
       
-      observeEvent(input$startDate,{
+      observe({
         values$startDay <- input$startDate
-        
-        values$nDays <- lubridate::as_date(values$endDay) - lubridate::as_date(values$startDay)
-        
-        values$nWeeks <- (values$nDays / 7) %>% floor()
-      })
-      observeEvent(input$endDate,{
         values$endDay <- input$endDate
         
         values$nDays <- lubridate::as_date(values$endDay) - lubridate::as_date(values$startDay)
         
         values$nWeeks <- (values$nDays / 7) %>% floor()
-      })
+      }) |> 
+        bindEvent(c(input$startDate, input$endDate))
       
-      observeEvent({
-        input$Teams
-        input$division1
-        input$division2
-        input$division3
-        input$division4
-      }, {
-        values$teams <- c(input$Teams, input$division1, input$division2,input$division3,input$division4) %>% length()
+      
+      
+      observe({
+        values$teams <- teams() |> nrow()
         
-        # values$division1 <- input$division1
-        # values$division2 <- input$division2
-        # values$division3 <- input$division3
-        # values$division4 <- input$division4
+        if(input$league == 999) {
+          values$teamID <- teams() |> 
+            arrange(conference, division) |> 
+            mutate(ID = seq_len(n()))
+        } else {
+          values$teamID <- teams() |> 
+            arrange(conference) |> 
+            mutate(ID = seq_len(n()))
+        }
         
-        values$teamID <- 
-          data.frame(
-            team = 
-              c(
-                input$division1,
-                input$division2,
-                input$division3,
-                input$division4
-              )
-          ) %>% 
-          {
-            if(nrow(.)>0){
-              dplyr::mutate(
-                .,
-                ID = 1:n(),
-                division = 
-                  rep(
-                    1:4, 
-                    times = 
-                      c(
-                        length(input$division1),
-                        length(input$division2),
-                        length(input$division3),
-                        length(input$division4)
-                      )
-                  ),
-                conference = 
-                  rep(
-                    1:2, 
-                    times = 
-                      c(
-                        c(input$division1, input$division2) %>% length(),
-                        c(input$division3, input$division4) %>% length()
-                      )
-                  )
-              )
+        if(input$league != 999){
+          values$divisions = 0
+        }
+        
+      }) |> 
+        bindEvent(input$league)
+      
+      observe({
+        intraCon1 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 0) %>% sum(), ncol = (values$teamID$conference == 0) %>% sum())
+        intraCon2 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 1) %>% sum(), ncol = (values$teamID$conference == 1) %>% sum())
+        interCon <- matrix(input$interConference/2, nrow = (values$teamID$conference == 0) %>% sum(), ncol = (values$teamID$conference == 1) %>% sum())
+        
+        values$matchups <- bdiag(list(intraCon1, intraCon2))
+        if((values$teamID$conference == 0) %>% sum() > 0 & (values$teamID$conference == 1) %>% sum() > 0){
+          values$matchups[1:((values$teamID$conference == 0) %>% sum()), ((values$teamID$conference == 0) %>% sum()+1):((values$teamID$conference == 0) %>% sum()+(values$teamID$conference == 1) %>% sum())] <-
+            values$matchups[((values$teamID$conference == 0) %>% sum()+1):((values$teamID$conference == 0) %>% sum()+(values$teamID$conference == 1) %>% sum()), 1:((values$teamID$conference == 0) %>% sum())] <-
+            interCon
+        }
+        diag(values$matchups) <- 0
+        
+        values$games <- NA
+        
+        k <- 1
+        for(i in 1:nrow(values$matchups)){
+          for(j in 1:ncol(values$matchups)){
+            if(values$matchups[i,j] == 0){
+              #DO NOTHING
             } else {
-              .
+              values$games[k:(k+values$matchups[i,j]-1)] <-
+                paste(i, " @ ", j, " (",1:values$matchups[i,j], ")", sep = "")
+              
+              k <- k + values$matchups[i,j]
             }
           }
-      })
-      
-      observeEvent(
-        {
-          input$intraConference
-          input$interConference
-          input$division1
-          input$division2
-          input$division3
-          input$division4
-        },
-        {
-          intraCon1 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 1) %>% sum(), ncol = (values$teamID$conference == 1) %>% sum())
-          intraCon2 <- matrix(input$intraConference/2, nrow = (values$teamID$conference == 2) %>% sum(), ncol = (values$teamID$conference == 2) %>% sum())
-          interCon <- matrix(input$interConference/2, nrow = (values$teamID$conference == 1) %>% sum(), ncol = (values$teamID$conference == 2) %>% sum())
-          
-          values$matchups <- bdiag(list(intraCon1, intraCon2))
-          if((values$teamID$conference == 1) %>% sum() > 0 & (values$teamID$conference == 2) %>% sum() > 0){
-            values$matchups[1:((values$teamID$conference == 1) %>% sum()), ((values$teamID$conference == 1) %>% sum()+1):((values$teamID$conference == 1) %>% sum()+(values$teamID$conference == 2) %>% sum())] <-
-              values$matchups[((values$teamID$conference == 1) %>% sum()+1):((values$teamID$conference == 1) %>% sum()+(values$teamID$conference == 2) %>% sum()), 1:((values$teamID$conference == 1) %>% sum())] <-
-              interCon
-          }
-          diag(values$matchups) <- 0
-          
-          if(length(input$Teams) == 0){
-            values$games <- NA
-            
-            k <- 1
-            for(i in 1:nrow(values$matchups)){
-              for(j in 1:ncol(values$matchups)){
-                if(values$matchups[i,j] == 0){
-                  #DO NOTHING
-                } else {
-                  values$games[k:(k+values$matchups[i,j]-1)] <-
-                    paste(i, " @ ", j, " (",1:values$matchups[i,j], ")", sep = "")
-                  
-                  k <- k + values$matchups[i,j]
-                }
-              }
-            }
-            
-          }
-        },
-        ignoreInit = TRUE)
+        }
+        
+      }) |> 
+        bindEvent(c(input$intraConference, input$interConference, input$league))
       
       output$Results <- renderPrint({
         print(values %>% reactiveValuesToList())
       })
       
       observeEvent(input$createSchedule,{
-        if(ncol(values$matchups) != 14){
-          modalDialog(
-            title = "Something is wrong",
-            "Please move one team to and from their division.",
+        shinyjs::show("processing")
+        shinyjs::hide("scheduleResults")
+        shinyjs::disable("createSchedule")
+        shinyjs::disable("startDate")
+        shinyjs::disable("endDate")
+        shinyjs::disable("intraConference")
+        shinyjs::disable("interConference")
+        
+        # values$seed <- runif(1, min = 0, max = 1000) %>% floor()
+        values$seed <- sample(c(309), size = 1)
+        # values$seed <- 698
+        
+        set.seed(values$seed)
+        
+        print(values$seed)
+        
+        values$dataMatchups <- 
+          values$matchups %>% as.matrix() %>% as.data.frame() %>% rownames_to_column() %>% pivot_longer(cols = -1) %>% 
+          mutate(
+            name = stringr::str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% c()
           ) %>% 
-            showModal()
-        } else {
-          shinyjs::show("processing")
-          shinyjs::disable("createSchedule")
-          shinyjs::disable("startDate")
-          shinyjs::disable("endDate")
-          shinyjs::disable("intraConference")
-          shinyjs::disable("interConference")
+          filter(
+            value != 0
+          ) %>% 
+          rename(
+            away = rowname,
+            home = name,
+            meetings = value
+          )
+        
+        values$rounds <- matrix(nrow = values$teams / values$conferences, ncol = sum(values$matchups)/values$teams * 2)
+        
+        sampleGames <- filteredSampleGames <- values$samplingGames
+        
+        progress <- shiny::Progress$new(max = ncol(values$rounds))
+        on.exit(progress$close())
+        
+        progress$set(message = "Scheduling round:", value = 0)
+        
+        i <- 1
+        while(i <= ncol(values$rounds)){
           
-          # values$seed <- runif(1, min = 0, max = 1000) %>% floor()
-          values$seed <- sample(c(309), size = 1)
-          # values$seed <- 698
+          j <- 1
           
-          set.seed(values$seed)
+          k <- 1
           
-          print(values$seed)
-          
-          values$dataMatchups <- 
-            values$matchups %>% as.matrix() %>% as.data.frame() %>% rownames_to_column() %>% pivot_longer(cols = -1) %>% 
-            mutate(
-              name = stringr::str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% c()
-            ) %>% 
-            filter(
-              value != 0
-            ) %>% 
-            rename(
-              away = rowname,
-              home = name,
-              meetings = value
-            )
-          
-          values$rounds <- matrix(nrow = values$teams / values$conferences, ncol = sum(values$matchups)/values$teams * 2)
-          
-          sampleGames <- filteredSampleGames <- values$samplingGames
-          
-          progress <- shiny::Progress$new(max = ncol(values$rounds))
-          on.exit(progress$close())
-          
-          progress$set(message = "Scheduling round:", value = 0)
-          
-          i <- 1
-          while(i <= ncol(values$rounds)){
+          progress$set(value = i, detail = i)
+          while(j <= nrow(values$rounds)){
             
-            j <- 1
-            
-            k <- 1
-            
-            progress$set(value = i, detail = i)
-            while(j <= nrow(values$rounds)){
+            if(all(values$rounds[,i] %>% is.na())){
+              current <- 
+                values$dataMatchups %>% 
+                slice_sample(n = 1, weight_by = meetings)
               
-              if(all(values$rounds[,i] %>% is.na())){
+              values$rounds[j,i] <- paste(current$away, current$home, sep = " @ ")
+              
+              tempDataMatchups <- 
+                values$dataMatchups %>% 
+                mutate(
+                  meetings = if_else(away == current$away & home == current$home, meetings - 1, meetings)
+                )
+              
+            } else {
+              chosen <- values$rounds[,i] %>% str_split(pattern = " ", simplify = TRUE) %>% .[,c(1,3)] %>% c() %>% stringi::stri_remove_empty_na()
+              
+              filteredDataMatchups <- 
+                tempDataMatchups %>% 
+                filter(
+                  !(away %in% chosen | home %in% chosen) 
+                ) 
+              
+              if(all(filteredDataMatchups$meetings == 0) | (filteredDataMatchups %>% nrow() == 0)){
+                values$rounds[j:1, i] <- NA
+                
+                j <- 0
+                k <- k + 1
+                print(paste(i, j, k))
+                
+                if(k > 200){
+                  i <- 1000
+                  j <- 1000
+                  
+                  modalDialog(
+                    title = "The scheduling did not converge!",
+                    "Please restart the scheduling again.",
+                  ) %>%
+                    showModal()
+                }
+              } else {
                 current <- 
-                  values$dataMatchups %>% 
+                  filteredDataMatchups %>% 
                   slice_sample(n = 1, weight_by = meetings)
                 
                 values$rounds[j,i] <- paste(current$away, current$home, sep = " @ ")
                 
                 tempDataMatchups <- 
-                  values$dataMatchups %>% 
+                  tempDataMatchups %>% 
                   mutate(
                     meetings = if_else(away == current$away & home == current$home, meetings - 1, meetings)
                   )
-                
-              } else {
-                chosen <- values$rounds[,i] %>% str_split(pattern = " ", simplify = TRUE) %>% .[,c(1,3)] %>% c() %>% stringi::stri_remove_empty_na()
-                
-                filteredDataMatchups <- 
-                  tempDataMatchups %>% 
-                  filter(
-                    !(away %in% chosen | home %in% chosen) 
-                  ) 
-                
-                if(all(filteredDataMatchups$meetings == 0) | (filteredDataMatchups %>% nrow() == 0)){
-                  values$rounds[j:1, i] <- NA
-                  
-                  j <- 0
-                  k <- k + 1
-                  print(paste(i, j, k))
-                  
-                  if(k > 200){
-                    i <- 1000
-                    j <- 1000
-                    
-                    modalDialog(
-                      title = "The scheduling did not converge!",
-                      "Please restart the scheduling again.",
-                    ) %>% 
-                      showModal()
-                  }
-                } else {
-                  current <- 
-                    filteredDataMatchups %>% 
-                    slice_sample(n = 1, weight_by = meetings)
-                  
-                  values$rounds[j,i] <- paste(current$away, current$home, sep = " @ ")
-                  
-                  tempDataMatchups <- 
-                    tempDataMatchups %>% 
-                    mutate(
-                      meetings = if_else(away == current$away & home == current$home, meetings - 1, meetings)
-                    )
-                }
               }
-              j <- j + 1
             }
-            
-            ## Overwrites the sampling source when an entire round is finished.
-            values$dataMatchups <- 
-              tempDataMatchups
-            i <- i + 1
+            j <- j + 1
           }
           
-          if(any(values$rounds %>% is.na())){
-            # DO NOTHING
-          } else {
-            
-            values$schedule <- 
-              values$rounds %>% 
-              as.data.frame() %>% 
-              rownames_to_column() %>% 
-              pivot_longer(-1) %>% 
-              transmute(
-                round = str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% as.numeric(),
-                away = str_split(value, pattern = " @ ", simplify = TRUE)[,1] %>% as.numeric(),
-                home = str_split(value, pattern = " @ ", simplify = TRUE)[,2] %>% as.numeric()
-              ) %>%
-              arrange(round) %>% 
-              left_join(
-                values$teamID %>% 
-                  select(
-                    team, ID
-                  ),
-                by = c("away" = "ID")
-              ) %>% 
-              left_join(
-                values$teamID %>% 
-                  select(
-                    team, ID
-                  ),
-                by = c("home" = "ID"),
-                suffix = c(" away", " home")
-              ) %>% 
-              select(
-                round,
-                `team away`,
-                `team home`
-              ) %>% 
-              mutate(
-                date = values$startDay + lubridate::days((round-1)*((values$nDays/values$nGames) %>% round(0)))
-              ) %>% 
-              mutate(
-                date = 
-                  case_when(
-                    round < 9 ~ date,
-                    round < 17 ~ date - lubridate::days(((values$nDays/values$nGames) %>% round(0))-1),
-                    round < 25 ~ date - lubridate::days(2*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    round < 33 ~ date - lubridate::days(4*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    round < 41 ~ date - lubridate::days(6*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    round < 49 ~ date - lubridate::days(8*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    round < 57 ~ date - lubridate::days(10*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    round < 65 ~ date - lubridate::days(12*(((values$nDays/values$nGames) %>% round(0))-1)),
-                    TRUE ~ date - lubridate::days(14*(((values$nDays/values$nGames) %>% round(0))-1))
-                  )
-              )
-            
-            scheduledMatchups <- values$schedule %>% group_by(`team away`, `team home`) %>% summarize(n = n())
-            correctMatchups <- 
-              values$matchups %>% 
-              as.matrix() %>% 
-              as.data.frame() %>% 
-              rownames_to_column() %>% 
-              pivot_longer(cols = -1) %>% 
-              filter(value != 0) %>% 
-              mutate(
-                name = stringr::str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% as.numeric(),
-                rowname = rowname %>% as.numeric()
-              ) %>% 
-              left_join(
-                values$teamID %>% 
-                  select(
-                    team, ID
-                  ),
-                by = c("rowname" = "ID")
-              ) %>% 
-              left_join(
-                values$teamID %>% 
-                  select(
-                    team, ID
-                  ),
-                by = c("name" = "ID"),
-                suffix = c(" away", " home")
-              ) %>% 
-              arrange(
-                `team away`,
-                `team home`
-              )
-            
-            values$checkMatchups <- 
-              scheduledMatchups %>% 
-              left_join(
-                correctMatchups %>% 
-                  select(
-                    `team away`,
-                    `team home`,
-                    value
-                  ),
-                by = c("team away", "team home")
-              ) %>% 
-              filter(
-                n != value
-              )
-            
-            # progress$set(value = i, detail = "Pre-season")
-            
-            ### CREATING PRE-SEASON SCHEDULE
-            # pre_season <-
-            #   data.frame(
-            #     round = rep(-6, 7),
-            #     `team away` = c(input$division1, input$division2),
-            #     `team home` = c(input$division3, input$division4)
-            #   ) %>% 
-            #   add_row(
-            #     data.frame(
-            #       round = rep(-5, 7),
-            #       `team away` = c(input$division2, input$division3),
-            #       `team home` = c(input$division1, input$division4)  
-            #     )
-            #   ) %>% 
-            #   add_row(
-            #     data.frame(
-            #       round = rep(-4, 7),
-            #       `team away` = c(input$division3, input$division4),
-            #       `team home` = c(input$division2, input$division1)  
-            #     )
-            #   ) %>% 
-            #   mutate(
-            #     date = rep(c(values$startDay - 24, values$startDay - 21, values$startDay - 18), each = 7)
-            #   ) %>% 
-            #   add_row(
-            #     data.frame(
-            #       round = rep(-3, 7),
-            #       `team away` = c(input$division4, input$division3),
-            #       `team home` = c(input$division2, input$division1)
-            #     ) %>% 
-            #       add_row(
-            #         data.frame(
-            #           round = rep(-2, 7),
-            #           `team away` = c(input$division3, input$division2),
-            #           `team home` = c(input$division4, input$division1)  
-            #         )
-            #       ) %>% 
-            #       add_row(
-            #         data.frame(
-            #           round = rep(-1, 7),
-            #           `team away` = c(input$division1, input$division4),
-            #           `team home` = c(input$division2, input$division3)  
-            #         )
-            #       ) %>% 
-            #       mutate(
-            #         date = c(values$startDay - 15, values$startDay - 12, values$startDay - 9) %>% rep(each = 7)
-            #       ) 
-            #   ) %>% 
-            #   add_row(
-            #     data.frame(
-            #       round = rep(0, 7),
-            #       `team away` = c(input$division1 %>% sample(), input$division4 %>% sample()),
-            #       `team home` = c(input$division2 %>% sample(), input$division3 %>% sample()) 
-            #     ) %>% 
-            #       mutate(
-            #         date = rep(values$startDay - 6, 7)
-            #       )
-            #   ) %>% 
-            #   rename(
-            #     `team away` = team.away,
-            #     `team home` = team.home
-            #   )
-            
-            values$schedule <-
-              values$schedule %>%
-              # add_row(
-              #   pre_season
-              # ) %>% 
-              mutate(
-                date =
-                  case_when(
-                    lubridate::month(date) == 12 & lubridate::day(date) == 24 ~ date - lubridate::days(1),
-                    date > values$endDay ~ date - lubridate::days(1),
-                    TRUE ~ date
-                  ),
-                YEAR = lubridate::year(date),
-                MONTH = lubridate::month(date),
-                DAY = lubridate::day(date),
-                TYPE = if_else(date >= values$startDay, "Regular", "PreSeason")
-              ) %>%
-              rename(
-                `TEAM HOME` = `team home`,
-                `TEAM AWAY` = `team away`
-              ) %>% 
-              # arrange(
-              #   date
-              # ) %>% 
-              select(
-                YEAR, MONTH, DAY, `TEAM HOME`, `TEAM AWAY`, TYPE
-              ) 
-            
-            shinyjs::show("scheduleResults")
-            
-          }
-          
-          shinyjs::hide("processing")
-          shinyjs::enable("createSchedule")
-          shinyjs::enable("startDate")
-          shinyjs::enable("endDate")
-          shinyjs::enable("intraConference")
-          shinyjs::enable("interConference")
+          ## Overwrites the sampling source when an entire round is finished.
+          values$dataMatchups <- 
+            tempDataMatchups
+          i <- i + 1
         }
         
+        if(any(values$rounds %>% is.na())){
+          # DO NOTHING
+        } else {
+          
+          values$schedule <- 
+            values$rounds %>% 
+            as.data.frame() %>% 
+            rownames_to_column() %>% 
+            pivot_longer(-1) %>% 
+            transmute(
+              round = str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% as.numeric(),
+              away = str_split(value, pattern = " @ ", simplify = TRUE)[,1] %>% as.numeric(),
+              home = str_split(value, pattern = " @ ", simplify = TRUE)[,2] %>% as.numeric()
+            ) %>%
+            arrange(round) %>% 
+            left_join(
+              values$teamID %>% 
+                select(
+                  team, ID
+                ),
+              by = c("away" = "ID")
+            ) %>% 
+            left_join(
+              values$teamID %>% 
+                select(
+                  team, ID
+                ),
+              by = c("home" = "ID"),
+              suffix = c(" away", " home")
+            ) %>% 
+            select(
+              round,
+              `team away`,
+              `team home`
+            ) %>% 
+            mutate(
+              date = values$startDay + lubridate::days((round-1)*((values$nDays/values$nGames) %>% floor()))
+            ) %>% 
+            mutate(
+              date = 
+                case_when(
+                  round < 9 ~ date,
+                  round < 17 ~ date - lubridate::days(((values$nDays/values$nGames) %>% round(0))-1),
+                  round < 25 ~ date - lubridate::days(2*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  round < 33 ~ date - lubridate::days(4*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  round < 41 ~ date - lubridate::days(6*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  round < 49 ~ date - lubridate::days(8*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  round < 57 ~ date - lubridate::days(10*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  round < 65 ~ date - lubridate::days(12*(((values$nDays/values$nGames) %>% round(0))-1)),
+                  TRUE ~ date - lubridate::days(14*(((values$nDays/values$nGames) %>% round(0))-1))
+                )
+            )
+          
+          scheduledMatchups <- values$schedule %>% group_by(`team away`, `team home`) %>% summarize(n = n())
+          correctMatchups <- 
+            values$matchups %>% 
+            as.matrix() %>% 
+            as.data.frame() %>% 
+            rownames_to_column() %>% 
+            pivot_longer(cols = -1) %>% 
+            filter(value != 0) %>% 
+            mutate(
+              name = stringr::str_extract_all(name, pattern = "[0-9]+", simplify = TRUE) %>% as.numeric(),
+              rowname = rowname %>% as.numeric()
+            ) %>% 
+            left_join(
+              values$teamID %>% 
+                select(
+                  team, ID
+                ),
+              by = c("rowname" = "ID")
+            ) %>% 
+            left_join(
+              values$teamID %>% 
+                select(
+                  team, ID
+                ),
+              by = c("name" = "ID"),
+              suffix = c(" away", " home")
+            ) %>% 
+            arrange(
+              `team away`,
+              `team home`
+            )
+          
+          values$checkMatchups <- 
+            scheduledMatchups %>% 
+            left_join(
+              correctMatchups %>% 
+                select(
+                  `team away`,
+                  `team home`,
+                  value
+                ),
+              by = c("team away", "team home")
+            ) %>% 
+            filter(
+              n != value
+            )
+          
+          
+          values$schedule <-
+            values$schedule %>%
+            mutate(
+              date =
+                case_when(
+                  lubridate::month(date) == 12 & lubridate::day(date) == 24 ~ date - lubridate::days(1),
+                  date > values$endDay ~ date - lubridate::days(1),
+                  TRUE ~ date
+                ),
+              YEAR = lubridate::year(date),
+              MONTH = lubridate::month(date),
+              DAY = lubridate::day(date),
+              TYPE = if_else(date >= values$startDay, "Regular", "PreSeason")
+            ) %>%
+            rename(
+              `TEAM HOME` = `team home`,
+              `TEAM AWAY` = `team away`
+            ) %>% 
+            # arrange(
+            #   date
+            # ) %>% 
+            select(
+              YEAR, MONTH, DAY, `TEAM HOME`, `TEAM AWAY`, TYPE
+            ) 
+          
+          shinyjs::show("scheduleResults")
+          
+        }
+        
+        shinyjs::hide("processing")
+        shinyjs::enable("createSchedule")
+        shinyjs::enable("startDate")
+        shinyjs::enable("endDate")
+        shinyjs::enable("intraConference")
+        shinyjs::enable("interConference")
       })
       
       output$downloadData <- downloadHandler(
         filename = function() {
-          paste("schedule_SMJHL_", min(values$schedule$YEAR), ".csv", sep = "")
+          paste0("schedule_", input$league,"_", min(values$schedule$YEAR), ".csv")
         },
         content = function(file) {
           write.csv(values$schedule, file, row.names = FALSE, quote = FALSE)

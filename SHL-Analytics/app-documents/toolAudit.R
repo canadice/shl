@@ -32,22 +32,21 @@ auditUI <- function(id){
         tabPanel(
           "Discrepancies",
           uiOutput(ns("count")),
-          reactableOutput(ns("comparison"))
+          reactableOutput(ns("comparison")) |> 
+            withSpinner()
         ),
         tabPanel(
           "Missing players",
-          p("A number of players are either spelled wrong in the Updater Sheet or FHM and is not matched properly.",
-            "There are also instances of players either existing only on the forum or only in FHM.",
-            "For each name and source (Forum or Index/FHM), the closest match is shown in the respective column,",
-            "indicating what, if anything, is wrong and from what source."),
+          p("Some players are listed wrong on either the portal or FHM. Given the selected league, the Portal or FHM unique players are listed below. 
+            If the same name appears in both tables that means that the FHM ID matching is not correct, reach out to the Dev Team."),
           column(
             width = 6,
-            h4("Players only found on the Forum"),
+            h4("Players only found on the Portal"),
             reactableOutput(ns("forumMissing"))
           ),
           column(
             width = 6,
-            h4("Players only found in the Index"),
+            h4("Players only found in FHM"),
             reactableOutput(ns("indexMissing"))
           )
         ),
@@ -72,13 +71,40 @@ auditSERVER <- function(id){
     id,
     function(input, output, session){
       
+      # portalBuilds <- reactive({
+      #   readAPI("https://portal.simulationhockey.com/api/v1/player/snapshot") |>
+      #     mutate(
+      #       currentLeague = if_else(currentLeague == "SMJHL", 1, 0)
+      #     ) |>
+      #     filter(
+      #       currentLeague == input$league
+      #     )
+      # })
+      
       portalBuilds <- reactive({
-        readAPI("https://portal.simulationhockey.com/api/v1/player/snapshot") |> 
+        read_sheet("https://docs.google.com/spreadsheets/d/1bZ4jmZLQCvrWxnaS8ECrac0thd9XvEEhM2xKZMbzgAQ/edit?gid=1781582810#gid=1781582810") |> 
           mutate(
             currentLeague = if_else(currentLeague == "SMJHL", 1, 0)
-          ) |> 
+          ) |>
           filter(
             currentLeague == input$league
+          ) |> 
+          select(name, appliedTPE, currentTeamID, screening:professionalism...80, 
+                 contains(paste0("league_", input$league))) |> 
+          rename(
+            passing = passing...37,
+            puckhandling = puckhandling...38,
+            positioning = positioning...44,
+            aggression = aggression...56,
+            determination = determination...58,
+            teamPlayer = teamPlayer...59,
+            leadership = leadership...60,
+            professionalism = professionalism...62,
+            id = 50
+          ) |> 
+          select(!contains("...")) |> 
+          filter(
+            !is.na(id)
           )
       })
       
@@ -128,11 +154,11 @@ auditSERVER <- function(id){
       })
       
       forumMissing <- reactive({
-        portalBuilds()$name[!((portalBuilds()$pid) %in% (indexAttributes()$id))] %>% sort()
+        portalBuilds()$name[!((portalBuilds()$id) %in% (indexAttributes()$id))] %>% sort()
       })
         
       indexMissing <- reactive({
-        indexAttributes()$name[!((indexAttributes()$id) %in% (portalBuilds()$pid))] %>% sort()
+        indexAttributes()$name[!((indexAttributes()$id) %in% (portalBuilds()$id))] %>% sort()
       })
       
       discrepancy <- reactive({
@@ -141,13 +167,15 @@ auditSERVER <- function(id){
             select(id, screening:professionalism, blocker:goaltenderStamina) |> 
             mutate(id = as.numeric(id)) |> 
             arrange(id),
-          cbind(
-            pid = portalBuilds()$pid,
-            portalBuilds()$attributes
-            ) |> 
-            arrange(pid),
-          by.y = "pid",
-          by.x = "id"
+          # cbind(
+          #   pid = portalBuilds()$pid,
+          #   portalBuilds()$attributes
+          #   ) |> 
+          #   arrange(pid),
+          portalBuilds() |> 
+            select(id, screening:professionalism, blocker:goaltenderStamina) |> 
+            mutate(across(everything(), as.integer)),
+          by = "id"
         ) %>% 
           summary() %>% 
           .$diffs.table %>% 
@@ -166,11 +194,11 @@ auditSERVER <- function(id){
           left_join(
             portalBuilds() %>%
               select(
-                pid,
+                id,
                 name,
                 currentTeamID
               ),
-            by = c("id" = "pid")
+            by = "id"
           ) %>%
           select(!id) %>%
           arrange(currentTeamID, name)
@@ -197,15 +225,21 @@ auditSERVER <- function(id){
       
       output$tpeChecks <- renderReactable({
         indexAttributes() |> 
+          select(id, name, team, `Index Applied TPE` = appliedTPE) |> 
+          full_join(
+            portalBuilds() |> 
+              select(id, name, `Portal Applied TPE` = appliedTPE),
+            by = "id"
+          ) |> 
           filter(
             if(input$league == 1){
-              appliedTPE > 425 | appliedTPE > usedTPE
+              `Index Applied TPE` > 425 | `Index Applied TPE` != `Portal Applied TPE`
             } else {
-              appliedTPE > usedTPE
+              `Index Applied TPE` != `Portal Applied TPE` | `Index Applied TPE` < 155
             }
           ) |> 
           select(
-            team, name, usedTPE, appliedTPE
+            team, name = name.x, `Index Applied TPE`, `Portal Applied TPE`
           ) |> 
           arrange(team, name) |> 
           reactable()

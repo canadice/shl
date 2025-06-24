@@ -111,7 +111,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(future)
 }
 
-version <- "v2.4.1"
+version <- "v2.4.3"
 
 ## Sets up that evaluating futures is done in parallell
 plan(multisession)
@@ -670,6 +670,7 @@ server <- function(input, output, session) {
     loadedModulevisStatCards <- reactiveVal(FALSE)
     loadedModulevisSimilarity <- reactiveVal(FALSE)
     loadedModuletoolAudit <- reactiveVal(FALSE)
+    loadedModuleleagueSchedule <- reactiveVal(FALSE)
     
     
     ##---------------------------------------------------------------
@@ -684,8 +685,6 @@ server <- function(input, output, session) {
     careerGoalieSERVER(id = "careerGoalieUI")
     
     careerRecordsSERVER(id = "careerRecordsUI")
-    
-    leagueScheduleSERVER(id = "leagueSchedule")
     
     iihfSERVER(id = "iihfUI") 
     
@@ -758,7 +757,13 @@ server <- function(input, output, session) {
           
           auditSERVER(id = "toolAudit")
           
-        } 
+        } else if(input$tabs == "toolLeagueSchedule" & !loadedModuleleagueSchedule()){
+          
+          loadedModuleleagueSchedule(TRUE)
+          
+          leagueScheduleSERVER(id = "leagueSchedule")
+          
+        }  
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
     
     ### Sets the url for each tab

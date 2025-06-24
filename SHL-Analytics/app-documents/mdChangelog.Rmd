@@ -11,6 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Changelog
 
+## 2.4.3 (2025-06-03)
+
+- Updating tank standing tracker to account for new league structure in S83 and adding historical standing options.
+
+## 2.4.2 (2025-04-30)
+- Updated audit tool to make use of snapshot Google Sheet to compare with Index data. 
+
 ## 2.4.1 
 - Added Tank Standings Tracker
 

@@ -40,6 +40,14 @@ hypotenuse of the side lengths of the right angle triangle that is
 formed from the points. The distance in figure is thereby calculated as
 $\sqrt{1^2 + 1^2} = \sqrt{2} \approx 1.41$.
 
+    ## Warning in geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0), color = "black", : All aesthetics have length 1, but the data has 2 rows.
+    ## ℹ Please consider using `annotate()` or provide this layer with data
+    ##   containing a single row.
+
+    ## Warning in geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1), color = "black", : All aesthetics have length 1, but the data has 2 rows.
+    ## ℹ Please consider using `annotate()` or provide this layer with data
+    ##   containing a single row.
+
 <figure>
 <img
 src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/euclidean-1.png"
@@ -71,6 +79,14 @@ your destination. The distance calculation would then be the sum of all
 the lengths between the two points, in the case of the figure below:
 1 + 1 = 2.
 
+    ## Warning in geom_segment(aes(x = 0, y = 0, xend = 1, yend = 0), color = "red", : All aesthetics have length 1, but the data has 2 rows.
+    ## ℹ Please consider using `annotate()` or provide this layer with data
+    ##   containing a single row.
+
+    ## Warning in geom_segment(aes(x = 1, y = 0, xend = 1, yend = 1), color = "red", : All aesthetics have length 1, but the data has 2 rows.
+    ## ℹ Please consider using `annotate()` or provide this layer with data
+    ##   containing a single row.
+
 <figure>
 <img
 src="D:/GitHubs/shl_API/SHL-Analytics/app-documents/mdExplanation_files/figure-markdown_strict/manhattan-1.png"
@@ -81,7 +97,7 @@ points</figcaption>
 
 We can also calculate the distance as the sum of the individual
 differences for each dimension, in this case the difference in *x* from
-0 to 1, and difference in *y* from 0 to 1: (1−0) + (1−0) = 2
+0 to 1, and difference in *y* from 0 to 1: (1 − 0) + (1 − 0) = 2
 
 ### Calculating the distances
 
