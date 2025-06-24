@@ -111,7 +111,7 @@ options(repos = list(CRAN = "https://cloud.r-project.org", myrepo = "https://git
   require(future)
 }
 
-version <- "v2.4.3"
+version <- "v2.4.4"
 
 ## Sets up that evaluating futures is done in parallell
 plan(multisession)

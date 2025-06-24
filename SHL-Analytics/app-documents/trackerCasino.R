@@ -59,9 +59,7 @@ casinoSERVER <- function(id){
       
       casinoLines <- 
         googlesheets4::read_sheet(
-          ss = "https://docs.google.com/spreadsheets/d/1kisvxMASJvX26djRXzDVDxMz1ODqbaaMfuwUXtVwpWw/edit#gid=1074258598",
-          sheet = "Teams",
-          range = "A:D"
+          ss = "https://docs.google.com/spreadsheets/d/1YMnvEmMikRodX6k6Ig5tpGR8gpQuqNJIJNXZGuPHxcs/edit?usp=sharing"
         )
       
       ### Combines casino lines and standings
