@@ -122,12 +122,11 @@ mdsUI <- function(id){
           # The explanation of distances
           tabPanel(
             "Explanation",
-            p("Explanation doesn't work.")
-            # withMathJax(
-            #   includeMarkdown(
-            #     "app-documents/mdExplanation.md"
-            #   )
-            # )
+            withMathJax(
+              includeMarkdown(
+                "app-documents/mdExplanation.md"
+              )
+            )
           )
         )
       )
