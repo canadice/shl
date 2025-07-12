@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.4 (2025-06-24)
+
+-   Updated Casino tracker for 24 teams
+
 ## 2.4.3 (2025-06-03)
 
 -   Updating tank standing tracker to account for new league structure
