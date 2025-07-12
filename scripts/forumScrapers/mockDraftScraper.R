@@ -15,7 +15,7 @@ source("scripts/API/apiSetup.R")
   theme_set(theme)
 }
 
-url <- "https://simulationhockey.com/showthread.php?tid=138043"
+url <- "https://simulationhockey.com/showthread.php?tid=143333"
 
 mockDrafts <- 
   url %>% 
@@ -31,7 +31,7 @@ mockDrafts <-
 draftees <- 
   forumData %>% 
   filter(
-    CLASS == "S79"
+    CLASS == "S83"
   )
 
 combiner <- function(x){

@@ -6,7 +6,7 @@ require(stringr)
 
 seasonPrediction <- 
   googlesheets4::read_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/18qd7gnJYqRSxYQz2rDphOs4tc1b0CM5-uujqQ9QCBB0/edit?usp=sharing"
+    ss = "https://docs.google.com/spreadsheets/d/1JzZ8-KC4MhJVH5NdJE7olYO2-OBkPJo_sNV7mtX7-kI/edit?gid=160432151#gid=160432151"
   )
 
 visPredictions <- function(data){
@@ -42,13 +42,13 @@ visPredictions <- function(data){
   print(p)
 }
 
-pac <- 
+wes <- 
   seasonPrediction %>% 
   select(
-    contains("Pacific")
+    contains("Western")
   ) %>% 
   pivot_longer(
-    cols= everything()
+    cols = everything()
   ) %>% 
   mutate(
     name = name %>% str_extract_all("\\[[^()]+\\]") %>% str_remove_all(pattern = "\\[|\\]"),
@@ -57,13 +57,13 @@ pac <-
   visPredictions()
 
 
-cen <- 
+eas <- 
   seasonPrediction %>% 
   select(
-    contains("Central")
+    contains(" East")
   ) %>% 
   pivot_longer(
-    cols= everything()
+    cols = everything()
   ) %>% 
   mutate(
     name = name %>% str_extract_all("\\[[^()]+\\]") %>% str_remove_all(pattern = "\\[|\\]"),
@@ -71,32 +71,4 @@ cen <-
   ) %>% 
   visPredictions()
 
-ne <- 
-  seasonPrediction %>% 
-  select(
-    contains("North East")
-  ) %>% 
-  pivot_longer(
-    cols= everything()
-  ) %>% 
-  mutate(
-    name = name %>% str_extract_all("\\[[^()]+\\]") %>% str_remove_all(pattern = "\\[|\\]"),
-    value = value %>% as.factor()
-  ) %>% 
-  visPredictions()
-
-atl <- 
-  seasonPrediction %>% 
-  select(
-    contains("Atlantic")
-  ) %>% 
-  pivot_longer(
-    cols= everything()
-  ) %>% 
-  mutate(
-    name = name %>% str_extract_all("\\[[^()]+\\]") %>% str_remove_all(pattern = "\\[|\\]"),
-    value = value %>% as.factor()
-  ) %>% 
-  visPredictions()
-
-cowplot::plot_grid(pac, cen, ne, atl, ncol = 2)
+cowplot::plot_grid(wes, eas, ncol = 2)
