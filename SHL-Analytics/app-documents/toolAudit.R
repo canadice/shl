@@ -82,7 +82,7 @@ auditSERVER <- function(id){
       # })
       
       portalBuilds <- reactive({
-        read_sheet("https://docs.google.com/spreadsheets/d/1bZ4jmZLQCvrWxnaS8ECrac0thd9XvEEhM2xKZMbzgAQ/edit?gid=1781582810#gid=1781582810") |> 
+        read_sheet("https://docs.google.com/spreadsheets/d/1jxqfu5uXrFpv8_KfOfVnBpeQUhP6d0ag-tvoCCxj41Q/edit?usp=sharing") |> 
           mutate(
             currentLeague = if_else(currentLeague == "SMJHL", 1, 0)
           ) |>
