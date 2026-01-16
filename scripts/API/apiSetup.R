@@ -111,24 +111,24 @@ con <-
   )
 
 ## Loading career data
-historySkaterSeason <- 
-  tbl(con, "skaterHistory") %>%
-  filter(
-    Name != "CPU Player",
-    !(Name %like% "%Computer%")
-  ) %>% 
-  collect() 
-  
-historyGoalieSeason <- 
-  tbl(con, "goalieHistory") %>%
-  filter(
-    Name != "CPU Player",
-    Name != "CPU",
-    !(Name %like% "%Computer%")
-  ) %>% 
-  collect() 
-
-print(paste("History done:", Sys.time()))
+# historySkaterSeason <- 
+#   tbl(con, "skaterHistory") %>%
+#   filter(
+#     Name != "CPU Player",
+#     !(Name %like% "%Computer%")
+#   ) %>% 
+#   collect() 
+#   
+# historyGoalieSeason <- 
+#   tbl(con, "goalieHistory") %>%
+#   filter(
+#     Name != "CPU Player",
+#     Name != "CPU",
+#     !(Name %like% "%Computer%")
+#   ) %>% 
+#   collect() 
+# 
+# print(paste("History done:", Sys.time()))
 
 ## Loading team information
 teamData <-
@@ -146,16 +146,6 @@ historyIIHF <-
   )
 
 print(paste("IIHF Ranking History done:", Sys.time()))
-
-############################################################################
-############################################################################
-###                                                                      ###
-###                              AUDIT DATA                              ###
-###                                                                      ###
-############################################################################
-############################################################################
-
-
 
 print(paste("Total loading time: ", Sys.time() - start))
 

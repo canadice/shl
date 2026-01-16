@@ -431,27 +431,27 @@ ui <-
                 #################################################################
                 ##                       Menu of Careers                       ##
                 #################################################################
-                
-                menuItem(
-                    "Careers",
-                    icon = icon("address-card"),
-                    menuSubItem(
-                        "Skater Career",
-                        tabName = "careerSkater"
-                    ),
-                    menuSubItem(
-                        "Goalie Career",
-                        tabName = "careerGoalie"
-                    ),
-                    menuSubItem(
-                      "Career Data",
-                      tabName = "careerData"
-                    ),
-                    menuSubItem(
-                        "League Records",
-                        tabName = "careerRecords"
-                    )
-                ),
+                # 
+                # menuItem(
+                #     "Careers",
+                #     icon = icon("address-card"),
+                #     menuSubItem(
+                #         "Skater Career",
+                #         tabName = "careerSkater"
+                #     ),
+                #     menuSubItem(
+                #         "Goalie Career",
+                #         tabName = "careerGoalie"
+                #     ),
+                #     menuSubItem(
+                #       "Career Data",
+                #       tabName = "careerData"
+                #     ),
+                #     menuSubItem(
+                #         "League Records",
+                #         tabName = "careerRecords"
+                #     )
+                # ),
                 
                 #################################################################
                 ##                        Menu of Tools                        ##
@@ -593,34 +593,34 @@ ui <-
                   "toolLeagueSchedule",
                   leagueScheduleUI(id = "leagueSchedule")
                 ),
-                tabItem(
-                    "careerSkater",
-                    titlePanel(
-                        h1("Skater Career Card", align = "center")
-                    ),
-                    careerUI(id = "careerUI")
-                ),
-                tabItem(
-                    "careerGoalie",
-                    titlePanel(
-                        h1("Goalie Career Card", align = "center")
-                    ),
-                    careerGoalieUI(id = "careerGoalieUI")
-                ),
-                tabItem(
-                  "careerData",
-                  titlePanel(
-                    h1("Career Data", align = "center")
-                  ),
-                  careerDataUI(id = "careerData")
-                ),
-                tabItem(
-                    "careerRecords",
-                    titlePanel(
-                        h1("League Records", align = "center")
-                    ),
-                    careerRecordsUI(id = "careerRecordsUI")
-                ),
+                # tabItem(
+                #     "careerSkater",
+                #     titlePanel(
+                #         h1("Skater Career Card", align = "center")
+                #     ),
+                #     careerUI(id = "careerUI")
+                # ),
+                # tabItem(
+                #     "careerGoalie",
+                #     titlePanel(
+                #         h1("Goalie Career Card", align = "center")
+                #     ),
+                #     careerGoalieUI(id = "careerGoalieUI")
+                # ),
+                # tabItem(
+                #   "careerData",
+                #   titlePanel(
+                #     h1("Career Data", align = "center")
+                #   ),
+                #   careerDataUI(id = "careerData")
+                # ),
+                # tabItem(
+                #     "careerRecords",
+                #     titlePanel(
+                #         h1("League Records", align = "center")
+                #     ),
+                #     careerRecordsUI(id = "careerRecordsUI")
+                # ),
                 tabItem(
                     "toolSchedule",
                     titlePanel(
@@ -680,15 +680,15 @@ server <- function(input, output, session) {
     
     draftClassSERVER(id = "playersUI")
     
-    careerCardSERVER(id = "careerUI") 
-    
-    careerGoalieSERVER(id = "careerGoalieUI")
-    
-    careerRecordsSERVER(id = "careerRecordsUI")
+    # careerCardSERVER(id = "careerUI") 
+    # 
+    # careerGoalieSERVER(id = "careerGoalieUI")
+    # 
+    # careerRecordsSERVER(id = "careerRecordsUI")
     
     iihfSERVER(id = "iihfUI") 
     
-    careerDataSERVER(id = "careerData")
+    # careerDataSERVER(id = "careerData")
     
     limitsIIHFSERVER(id = "limitsIIHF")
     
