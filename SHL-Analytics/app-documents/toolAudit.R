@@ -192,16 +192,16 @@ auditSERVER <- function(id){
           rename(Attribute = `var from Portal`) %>%
           mutate(id = as.numeric(id)) |> 
           left_join(
-            portalBuilds() %>%
+            indexAttributes() %>%
               select(
                 id,
                 name,
-                currentTeamID
+                team
               ),
             by = "id"
           ) %>%
           select(!id) %>%
-          arrange(currentTeamID, name)
+          arrange(team, name)
       })
       
       output$forumMissing <- renderReactable({
@@ -220,7 +220,13 @@ auditSERVER <- function(id){
         
       output$comparison <- renderReactable({
         discrepancy() |> 
-          reactable()
+          reactable(
+            columns = list(
+              team = colDef(
+                filterable = TRUE
+              )
+            )
+          )
       }) 
       
       output$tpeChecks <- renderReactable({
